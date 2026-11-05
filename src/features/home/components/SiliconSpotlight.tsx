@@ -1,6 +1,18 @@
 import { useState } from 'react';
 
-const spotlights = {
+interface SpotlightItem {
+  readonly tab: string;
+  readonly eyebrow: string;
+  readonly title: string;
+  readonly description: string;
+  readonly image: string;
+  readonly alt: string;
+  readonly accent: string;
+}
+
+const SPOTLIGHT_KEYS: readonly ('cpu' | 'gpu')[] = ['cpu', 'gpu'];
+
+const spotlights: Record<'cpu' | 'gpu', SpotlightItem> = {
   cpu: {
     tab: 'Vortex compute engine',
     eyebrow: 'Vortex CPU architecture',
@@ -21,9 +33,9 @@ const spotlights = {
     alt: 'Aethel graphics card with triple cooling fans',
     accent: 'amber',
   },
-} as const;
+};
 
-type SpotlightKey = keyof typeof spotlights;
+type SpotlightKey = 'cpu' | 'gpu';
 
 export function SiliconSpotlight() {
   const [activeKey, setActiveKey] = useState<SpotlightKey>('cpu');
@@ -44,7 +56,7 @@ export function SiliconSpotlight() {
           role="tablist"
           aria-label="Silicon architecture"
         >
-          {(Object.keys(spotlights) as SpotlightKey[]).map((key) => (
+          {SPOTLIGHT_KEYS.map((key) => (
             <button
               id={`spotlight-tab-${key}`}
               className={`spotlight-tab${activeKey === key ? ' is-active' : ''}`}

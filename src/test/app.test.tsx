@@ -104,11 +104,15 @@ const mockCatalogProducts: Product[] = [sampleCpu, sampleCpu2, sampleGpu];
 // 1. PRODUCT SERVICE TESTS
 // =============================================================================
 describe('productService', () => {
-  const serviceProducts = Array.from({ length: 8 }, (_, index) => ({
-    id: index === 0 ? 'vortex-9950x' : `product-${index}`,
-    name: index === 0 ? 'Aethel Vortex 9950X' : `Product ${index}`,
-    category: (index < 4 ? 'cpu' : 'gpu') as 'cpu' | 'gpu',
-  }));
+  const serviceProducts: { id: string; name: string; category: 'cpu' | 'gpu' }[] =
+    Array.from({ length: 8 }, (_, index) => {
+      const category: 'cpu' | 'gpu' = index < 4 ? 'cpu' : 'gpu';
+      return {
+        id: index === 0 ? 'vortex-9950x' : `product-${index}`,
+        name: index === 0 ? 'Aethel Vortex 9950X' : `Product ${index}`,
+        category,
+      };
+    });
 
   beforeEach(() => {
     vi.stubGlobal(
@@ -188,7 +192,9 @@ describe('CartContext', () => {
     const rigItem = result.current.items.find((item) => item.type === 'rig');
 
     expect(rigItem).toBeDefined();
-    act(() => result.current.unbundleRig(rigItem!.id));
+    if (rigItem) {
+      act(() => result.current.unbundleRig(rigItem.id));
+    }
     expect(
       result.current.items.filter((item) => item.type === 'rig'),
     ).toHaveLength(0);

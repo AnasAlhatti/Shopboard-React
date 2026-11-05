@@ -9,6 +9,18 @@ export type SortOption =
   | 'name-desc'
   | 'compute-desc';
 
+export function isSortOption(value: string): value is SortOption {
+  return (
+    value === 'featured' ||
+    value === 'price-asc' ||
+    value === 'price-desc' ||
+    value === 'clock-desc' ||
+    value === 'name-asc' ||
+    value === 'name-desc' ||
+    value === 'compute-desc'
+  );
+}
+
 interface SortBarProps {
   sortOption: SortOption;
   onSortChange: (sort: SortOption) => void;
@@ -38,7 +50,11 @@ export function SortBar({
           <select
             id="catalog-sort"
             value={sortOption}
-            onChange={(e) => onSortChange(e.target.value as SortOption)}
+            onChange={(e) => {
+              if (isSortOption(e.target.value)) {
+                onSortChange(e.target.value);
+              }
+            }}
             className="sort-select"
           >
             <option value="featured">Default (Featured)</option>

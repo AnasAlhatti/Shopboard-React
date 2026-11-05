@@ -11,7 +11,7 @@ import './product-detail.css';
 
 export function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { products, loading, error } = useProducts();
+  const { products, loading, error, retry } = useProducts();
   const { addToCart } = useCart();
   const { toggleCompare, isInCompare, category } = useCompare();
 
@@ -42,7 +42,26 @@ export function ProductDetailPage() {
     );
   }
 
-  if (error || !product) {
+  if (error) {
+    return (
+      <main className="product-detail-page page-width">
+        <div className="product-not-found" role="alert">
+          <p className="eyebrow">Error Loading Blueprint</p>
+          <h1>Failed to Load Silicon Architecture</h1>
+          <p>{error}</p>
+          <button
+            type="button"
+            className="button button--secondary"
+            onClick={retry}
+          >
+            Try again
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  if (!product) {
     return (
       <main className="product-detail-page page-width">
         <div className="product-not-found" role="alert">

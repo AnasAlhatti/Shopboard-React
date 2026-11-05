@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
+import type { KeyboardEvent } from 'react';
 import { X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../hooks/useCart';
@@ -41,7 +41,7 @@ export function QuickCartDrawer({ isOpen, onClose }: QuickCartDrawerProps) {
 
   if (!isOpen) return null;
 
-  const keepFocusInside = (event: ReactKeyboardEvent<HTMLElement>) => {
+  const keepFocusInside = (event: KeyboardEvent<HTMLElement>) => {
     if (event.key !== 'Tab') return;
     const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
       'button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])',
@@ -50,7 +50,9 @@ export function QuickCartDrawer({ isOpen, onClose }: QuickCartDrawerProps) {
 
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
-    const current = event.target as HTMLElement;
+    const current = event.target instanceof HTMLElement ? event.target : null;
+    if (!current) return;
+
     if (event.shiftKey && current === first) {
       event.preventDefault();
       last.focus();

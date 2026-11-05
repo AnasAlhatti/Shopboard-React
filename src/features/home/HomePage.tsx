@@ -5,7 +5,7 @@ import { useProducts } from '../../hooks/useProducts';
 import './home.css';
 
 export function HomePage() {
-  const { products, loading, error } = useProducts();
+  const { products, loading, error, retry } = useProducts();
   const flagshipCpu = products.find((product) => product.id === 'vortex-9950x');
   const flagshipGpu = products.find(
     (product) => product.id === 'zenith-9900xtx',
@@ -19,9 +19,16 @@ export function HomePage() {
         loading={loading}
       />
       {error && (
-        <p className="home-page__error" role="status">
-          Performance data is unavailable: {error}
-        </p>
+        <div className="home-page__error" role="status">
+          <p>Performance data is unavailable: {error}</p>
+          <button
+            type="button"
+            className="button button--secondary button--sm"
+            onClick={retry}
+          >
+            Try again
+          </button>
+        </div>
       )}
       <ExplodedTeardown />
       <SiliconSpotlight />

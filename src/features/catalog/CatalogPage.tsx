@@ -3,11 +3,21 @@ import { useSearchParams } from 'react-router-dom';
 import { useProducts } from '../../hooks/useProducts';
 import { FilterSidebar } from './components/FilterSidebar';
 import { ProductGrid } from './components/ProductGrid';
-import { SortBar, type SortOption } from './components/SortBar';
+import { SortBar, isSortOption, type SortOption } from './components/SortBar';
 import './catalog.css';
 
+function parseCategory(val: string | null): 'all' | 'cpu' | 'gpu' {
+  if (val === 'cpu' || val === 'gpu') return val;
+  return 'all';
+}
+
+function parseSortOption(val: string | null): SortOption {
+  if (val && isSortOption(val)) return val;
+  return 'featured';
+}
+
 export function CatalogPage() {
-  const { products, loading, error } = useProducts();
+  const { products, loading, error, retry } = useProducts();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Initialize from URL search parameters on mount
@@ -16,7 +26,7 @@ export function CatalogPage() {
   );
   const [selectedCategory, setSelectedCategory] = useState<
     'all' | 'cpu' | 'gpu'
-  >(() => (searchParams.get('category') as 'all' | 'cpu' | 'gpu') ?? 'all');
+  >(() => parseCategory(searchParams.get('category')));
   const [maxPrice, setMaxPrice] = useState(() => {
     const param = searchParams.get('maxPrice');
     return param ? Number(param) : 1000;
@@ -33,8 +43,8 @@ export function CatalogPage() {
     const param = searchParams.get('minVram');
     return param ? Number(param) : 0;
   });
-  const [sortOption, setSortOption] = useState<SortOption>(
-    () => (searchParams.get('sort') as SortOption) ?? 'featured',
+  const [sortOption, setSortOption] = useState<SortOption>(() =>
+    parseSortOption(searchParams.get('sort')),
   );
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
@@ -170,7 +180,14 @@ export function CatalogPage() {
 
       {error && (
         <div className="home-page__error" role="status">
-          Failed to load silicon catalog: {error}
+          <p>Failed to load silicon catalog: {error}</p>
+          <button
+            type="button"
+            className="button button--secondary button--sm"
+            onClick={retry}
+          >
+            Try again
+          </button>
         </div>
       )}
 
@@ -208,7 +225,11 @@ export function CatalogPage() {
               itemCount={filteredProducts.length}
             />
 
-            <ProductGrid products={filteredProducts} viewMode={viewMode} />
+            <ProductGrid
+              products={filteredProducts}
+              viewMode={viewMode}
+              totalCount={products.length}
+            />
           </section>
         </div>
       )}

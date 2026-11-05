@@ -109,3 +109,178 @@ The project follows a strict, modular feature-first architecture (Rule 7: *"Clea
 5. **Route & Navigation:**
    - Register the route in `src/App.tsx` (`<Route path="/wishlist" element={<WishlistPage />} />`).
    - Add navigation entry/pill or header action in `src/shared/components/Header.tsx`.
+
+## Component Tree & State Ownership
+
+Matches the application hierarchy file-for-file as inspected in the **Components** tab of React DevTools:
+
+```
+App (src/App.tsx) [Props: {}] [State: none]
+│
+├── BrowserRouter (react-router-dom)
+│   │
+│   └── CartProvider (src/context/CartContext.tsx) [Props: { children: ReactNode }]
+│       │   [State Owned: items: CartItem[] (persisted in localStorage['aethel-cart'])]
+│       │
+│       └── CompareProvider (src/context/CompareContext.tsx) [Props: { children: ReactNode }]
+│           │   [State Owned: items: Product[] (persisted in localStorage['aethel-compare'])]
+│           │
+│           └── ApplicationShell (src/App.tsx) [Props: {}]
+│               │   [State Owned: cartOpen: boolean]
+│               │
+│               ├── Header (src/shared/components/Header.tsx)
+│               │   ├── Props: { onOpenCart: () => void }
+│               │   ├── State Owned: isScrolled: boolean
+│               │   └── Context Consumed: useCart (itemCount), useCompare (items.length)
+│               │
+│               ├── Routes (react-router-dom)
+│               │   │
+│               │   ├── Route path="/" ── HomePage (src/features/home/HomePage.tsx)
+│               │   │   ├── Props: {}
+│               │   │   ├── State Owned: products, loading, error, retry (via useProducts)
+│               │   │   ├── HeroShowcase (src/features/home/components/HeroShowcase.tsx)
+│               │   │   │   ├── Props: { boostClock: string, tflops: number, loading: boolean }
+│               │   │   │   └── State Owned: none
+│               │   │   ├── ExplodedTeardown (src/features/home/components/ExplodedTeardown.tsx)
+│               │   │   │   ├── Props: {}
+│               │   │   │   └── State Owned: activeId: string ('vstack' | 'compute' | 'vapor')
+│               │   │   └── SiliconSpotlight (src/features/home/components/SiliconSpotlight.tsx)
+│               │   │       ├── Props: {}
+│               │   │       └── State Owned: activeKey: 'cpu' | 'gpu'
+│               │   │
+│               │   ├── Route path="/catalog" ── CatalogPage (src/features/catalog/CatalogPage.tsx)
+│               │   │   ├── Props: {}
+│               │   │   ├── State Owned:
+│               │   │   │   • searchQuery: string (synced with ?search= URL param)
+│               │   │   │   • selectedCategory: 'all' | 'cpu' | 'gpu' (synced with ?category= URL param)
+│               │   │   │   • maxPrice: number (synced with ?maxPrice= URL param)
+│               │   │   │   • maxTdp: number (synced with ?maxTdp= URL param)
+│               │   │   │   • minCores: number (synced with ?minCores= URL param)
+│               │   │   │   • minVram: number (synced with ?minVram= URL param)
+│               │   │   │   • sortOption: SortOption (synced with ?sort= URL param)
+│               │   │   │   • viewMode: 'grid' | 'list'
+│               │   │   │   • products, loading, error, retry (via useProducts)
+│               │   │   │
+│               │   │   ├── FilterSidebar (src/features/catalog/components/FilterSidebar.tsx)
+│               │   │   │   ├── Props: {
+│               │   │   │   │     searchQuery: string, onSearchChange: (q: string) => void,
+│               │   │   │   │     selectedCategory: 'all' | 'cpu' | 'gpu', onCategoryChange: (c) => void,
+│               │   │   │   │     maxPrice: number, onMaxPriceChange: (p: number) => void,
+│               │   │   │   │     maxTdp: number, onMaxTdpChange: (t: number) => void,
+│               │   │   │   │     minCores: number, onMinCoresChange: (c: number) => void,
+│               │   │   │   │     minVram: number, onMinVramChange: (v: number) => void,
+│               │   │   │   │     onReset: () => void, totalCount: number, filteredCount: number
+│               │   │   │   │   }
+│               │   │   │   └── State Owned: none (pure controlled presentation component)
+│               │   │   │
+│               │   │   ├── SortBar (src/features/catalog/components/SortBar.tsx)
+│               │   │   │   ├── Props: {
+│               │   │   │   │     sortOption: SortOption, onSortChange: (opt: SortOption) => void,
+│               │   │   │   │     viewMode: 'grid' | 'list', onViewModeChange: (m: 'grid' | 'list') => void,
+│               │   │   │   │     itemCount: number
+│               │   │   │   │   }
+│               │   │   │   └── State Owned: none (pure controlled presentation component)
+│               │   │   │
+│               │   │   └── ProductGrid (src/features/catalog/components/ProductGrid.tsx)
+│               │   │       ├── Props: { products: Product[], viewMode: 'grid' | 'list', totalCount?: number }
+│               │   │       ├── State Owned: none
+│               │   │       └── ProductCard (src/features/catalog/components/ProductCard.tsx) [repeated per item]
+│               │   │           ├── Props: { product: Product }
+│               │   │           ├── State Owned: none
+│               │   │           └── Context Consumed: useCart (addToCart), useCompare (toggleCompare, isInCompare, category)
+│               │   │
+│               │   ├── Route path="/product/:id" ── ProductDetailPage (src/features/product-detail/ProductDetailPage.tsx)
+│               │   │   ├── Props: {}
+│               │   │   ├── State Owned:
+│               │   │   │   • quantity: number (local item quantity stepper)
+│               │   │   │   • justAdded: boolean (temporary addition pulse confirmation)
+│               │   │   │   • products, loading, error, retry (via useProducts)
+│               │   │   ├── Context Consumed: useCart (addToCart), useCompare (toggleCompare, isInCompare, category)
+│               │   │   ├── ProductGallery (src/features/product-detail/components/ProductGallery.tsx)
+│               │   │   │   ├── Props: { product: Product }
+│               │   │   │   └── State Owned: none
+│               │   │   ├── ArchitectureSpecTable (src/features/product-detail/components/ArchitectureSpecTable.tsx)
+│               │   │   │   ├── Props: { product: Product }
+│               │   │   │   └── State Owned: none
+│               │   │   └── MiniBenchmarkCard (src/features/product-detail/components/MiniBenchmarkCard.tsx)
+│               │   │       ├── Props: { product: Product }
+│               │   │       └── State Owned: none
+│               │   │
+│               │   ├── Route path="/compare" ── ComparePage (src/features/compare/ComparePage.tsx)
+│               │   │   ├── Props: {}
+│               │   │   ├── State Owned: pickerOpen: boolean
+│               │   │   ├── Context Consumed: useCompare (items, category, removeFromCompare, clearCompare, addToCompare)
+│               │   │   ├── CompareTable (src/features/compare/components/CompareTable.tsx)
+│               │   │   │   ├── Props: { items: Product[], onRemove: (id) => void, onClear: () => void, onAddSlot: () => void }
+│               │   │   │   └── State Owned: highlightDifferences: boolean
+│               │   │   ├── BenchmarkBarChart (src/features/compare/components/BenchmarkBarChart.tsx)
+│               │   │   │   ├── Props: { items: Product[], category: 'cpu' | 'gpu' }
+│               │   │   │   └── State Owned: none
+│               │   │   └── ProductPickerModal (src/features/compare/components/ProductPickerModal.tsx)
+│               │   │       ├── Props: { isOpen: boolean, onClose: () => void, onSelect: (p: Product) => void, category: 'cpu' | 'gpu', currentItemIds: string[] }
+│               │   │       └── State Owned: none
+│               │   │
+│               │   ├── Route path="/configurator" ── ConfiguratorPage (src/features/configurator/ConfiguratorPage.tsx)
+│               │   │   ├── Props: {}
+│               │   │   ├── State Owned:
+│               │   │   │   • selectedCpuId: string | null
+│               │   │   │   • selectedGpuId: string | null
+│               │   │   │   • selectedStorageTierId: string ('base' | 'mid' | 'extreme')
+│               │   │   │   • products, loading (via useProducts)
+│               │   │   ├── Context Consumed: useCart (addToCart, addRigToCart)
+│               │   │   ├── RigVisualizer (src/features/configurator/components/RigVisualizer.tsx)
+│               │   │   │   ├── Props: { cpu: Product | null, gpu: Product | null, tier: MemoryStorageTier }
+│               │   │   │   └── State Owned: none
+│               │   │   ├── ComponentSlotSelector (src/features/configurator/components/ComponentSlotSelector.tsx)
+│               │   │   │   ├── Props: {
+│               │   │   │   │     cpus: Product[], gpus: Product[],
+│               │   │   │   │     selectedCpuId: string | null, selectedGpuId: string | null,
+│               │   │   │   │     selectedStorageTierId: string,
+│               │   │   │   │     onSelectCpu: (id: string) => void, onSelectGpu: (id: string) => void,
+│               │   │   │   │     onSelectStorageTier: (id: string) => void
+│               │   │   │   │   }
+│               │   │   │   └── State Owned: none
+│               │   │   └── PowerSynergyMeter (src/features/configurator/components/PowerSynergyMeter.tsx)
+│               │   │       ├── Props: {
+│               │   │       │     cpu: Product | null, gpu: Product | null, tier: MemoryStorageTier,
+│               │   │       │     onAddRigToCart: () => void, onAddIndividualParts: () => void
+│               │   │       │   }
+│               │   │       └── State Owned: addedFeedback: boolean
+│               │   │
+│               │   └── Route path="/cart" ── CartPage (src/features/cart/CartPage.tsx)
+│               │       ├── Props: {}
+│               │       ├── State Owned:
+│               │       │   • promoCode: string
+│               │       │   • discountRate: number (0 or 0.10)
+│               │       │   • promoError: string | null
+│               │       │   • checkoutModalOpen: boolean
+│               │       │   • isSubmittingOrder: boolean
+│               │       ├── Context Consumed: useCart (items, subtotal, itemCount, updateQuantity, removeFromCart, unbundleRig, clearCart)
+│               │       ├── CartItemRow (src/features/cart/components/CartItemRow.tsx) [repeated per item]
+│               │       │   ├── Props: { item: CartItem, onUpdateQuantity: (id, q) => void, onRemove: (id) => void, onUnbundle: (id) => void }
+│               │       │   └── State Owned: none
+│               │       ├── OrderSummary (src/features/cart/components/OrderSummary.tsx)
+│               │       │   ├── Props: {
+│               │       │   │     subtotal: number, discount: number, promoCode: string,
+│               │       │   │     onPromoCodeChange: (c: string) => void, onApplyPromo: (e) => void,
+│               │       │   │     promoError: string | null, promoApplied: boolean, onCheckout: () => void
+│               │       │   │   }
+│               │       │   └── State Owned: none
+│               │       └── CheckoutModal (src/features/cart/components/CheckoutModal.tsx)
+│               │           ├── Props: { isOpen: boolean, onClose: () => void, onConfirm: () => void, total: number, isSubmitting: boolean }
+│               │           └── State Owned: none
+│               │
+│               ├── Footer (src/shared/components/Footer.tsx)
+│               │   ├── Props: {}
+│               │   └── State Owned: none
+│               │
+│               ├── CompareDock (src/shared/components/CompareDock.tsx)
+│               │   ├── Props: {}
+│               │   ├── State Owned: none
+│               │   └── Context Consumed: useCompare (items, clearCompare, removeFromCompare)
+│               │
+│               └── QuickCartDrawer (src/shared/components/QuickCartDrawer.tsx)
+│                   ├── Props: { isOpen: boolean, onClose: () => void }
+│                   ├── State Owned: none (active element ref management)
+│                   └── Context Consumed: useCart (items, subtotal)
+```

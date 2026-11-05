@@ -7,8 +7,11 @@ import { fetchProducts } from './services/productService';
 // Eagerly prefetch products on script initialization
 void fetchProducts();
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);
+const rootElement = document.getElementById('root');
+if (rootElement) {
+  createRoot(rootElement).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  );
+}

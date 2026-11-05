@@ -1,49 +1,58 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { fetchProducts, getCachedProducts } from '../services/productService';
 import type { Product } from '../types/product';
 
-interface ProductsState {
-  products: Product[];
-  loading: boolean;
-  error: string | null;
-}
-
 export function useProducts() {
-  const [state, setState] = useState<ProductsState>(() => {
-    const cached = getCachedProducts();
-    return {
-      products: cached ?? [],
-      loading: cached === null,
-      error: null,
-    };
-  });
+  const [products, setProducts] = useState<Product[]>(
+    () => getCachedProducts() ?? [],
+  );
+  const [loading, setLoading] = useState<boolean>(
+    () => getCachedProducts() === null,
+  );
+  const [error, setError] = useState<string | null>(null);
+  const [refreshIndex, setRefreshIndex] = useState(0);
 
   useEffect(() => {
     let isCurrent = true;
 
-    if (state.products.length > 0 && !state.loading) {
+    if (products.length > 0 && !loading && refreshIndex === 0) {
       return;
     }
 
-    fetchProducts()
-      .then((products) => {
+    fetchProducts({ forceRefresh: refreshIndex > 0 })
+      .then((data) => {
         if (isCurrent) {
-          setState({ products, loading: false, error: null });
+          setProducts(data);
+          setLoading(false);
+          setError(null);
         }
       })
-      .catch((error: unknown) => {
+      .catch((err: unknown) => {
         if (!isCurrent) return;
         const message =
-          error instanceof Error
-            ? error.message
+          err instanceof Error
+            ? err.message
             : 'Unable to load silicon products.';
-        setState({ products: [], loading: false, error: message });
+        setProducts([]);
+        setLoading(false);
+        setError(message);
       });
 
     return () => {
       isCurrent = false;
     };
-  }, [state.products.length, state.loading]);
+  }, [refreshIndex, products.length, loading]);
 
-  return state;
+  const retry = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    setRefreshIndex((prev) => prev + 1);
+  }, []);
+
+  return {
+    products,
+    loading,
+    error,
+    retry,
+  };
 }
