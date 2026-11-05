@@ -84,6 +84,9 @@ src/
 ├── shared/
 │   ├── components/            # Header, Footer, QuickCartDrawer, CompareDock
 │   └── styles/                # design-tokens.css
+├── test/
+│   ├── app.test.tsx           # Comprehensive consolidated unit test suite
+│   └── setup.ts               # Test environment setup & mocks
 ├── types/                     # product.ts, cart.ts, compare.ts
 ├── App.tsx                    # Route orchestration
 └── index.css                  # Base reset & design system foundation
