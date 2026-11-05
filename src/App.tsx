@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { CompareProvider } from './context/CompareContext';
+import { CartPage } from './features/cart/CartPage';
 import { CatalogPage } from './features/catalog/CatalogPage';
 import { ComparePage } from './features/compare/ComparePage';
 import { ConfiguratorPage } from './features/configurator/ConfiguratorPage';
@@ -37,6 +38,7 @@ function ApplicationShell() {
         <Route path="/product/:id" element={<ProductDetailPage />} />
         <Route path="/compare" element={<ComparePage />} />
         <Route path="/configurator" element={<ConfiguratorPage />} />
+        <Route path="/cart" element={<CartPage />} />
         <Route path="*" element={<RoutePlaceholder />} />
       </Routes>
       <Footer />
