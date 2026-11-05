@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { CompareProvider } from './context/CompareContext';
+import { HomePage } from './features/home/HomePage';
 import { CompareDock } from './shared/components/CompareDock';
 import { Footer } from './shared/components/Footer';
 import { Header } from './shared/components/Header';
@@ -12,7 +13,10 @@ function RoutePlaceholder() {
     <main className="route-placeholder page-width">
       <p className="eyebrow">Aethel Silicon</p>
       <h1>Forged for extreme compute.</h1>
-      <p>Explore the silicon ecosystem, compare hardware, and shape your next build.</p>
+      <p>
+        Explore the silicon ecosystem, compare hardware, and shape your next
+        build.
+      </p>
     </main>
   );
 }
@@ -24,7 +28,7 @@ function ApplicationShell() {
     <div className="app-shell">
       <Header onOpenCart={() => setCartOpen(true)} />
       <Routes>
-        <Route path="/" element={<RoutePlaceholder />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="*" element={<RoutePlaceholder />} />
       </Routes>
       <Footer />

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, ShoppingBag, X } from 'lucide-react';
+import { Menu, Scale, ShoppingBag, X } from 'lucide-react';
 import { Link, NavLink } from 'react-router-dom';
 import { useCart } from '../../hooks/useCart';
 import { useCompare } from '../../hooks/useCompare';
@@ -54,7 +54,9 @@ export function Header({ onOpenCart }: HeaderProps) {
               key={to}
               to={to}
               end={to === '/'}
-              className={({ isActive }) => `primary-nav__link${isActive ? ' is-active' : ''}`}
+              className={({ isActive }) =>
+                `primary-nav__link${isActive ? ' is-active' : ''}`
+              }
               onClick={closeMenu}
             >
               {label}
@@ -64,13 +66,23 @@ export function Header({ onOpenCart }: HeaderProps) {
 
         <div className="site-header__actions">
           <span className="status-badge" aria-label="Compare item count">
+            <Scale size={16} aria-hidden="true" />
             <span aria-hidden="true">COMPARE</span>
             <span className="status-badge__count">{comparedItems.length}</span>
           </span>
-          <button className="cart-trigger" type="button" onClick={onOpenCart}>
+          <button
+            className="cart-trigger"
+            type="button"
+            aria-label={`Open quick cart, ${itemCount} items`}
+            onClick={onOpenCart}
+          >
             <ShoppingBag size={18} strokeWidth={1.8} aria-hidden="true" />
             <span>Quick cart</span>
-            <span className="cart-trigger__count" aria-label="Cart item count" aria-live="polite">
+            <span
+              className="cart-trigger__count"
+              aria-label="Cart item count"
+              aria-live="polite"
+            >
               {itemCount}
             </span>
           </button>

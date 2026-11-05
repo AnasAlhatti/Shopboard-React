@@ -17,7 +17,13 @@ const product: Product = {
   tagline: 'Flagship Multi-Thread',
   price: 649,
   image: '/assets/CPU_heat_spreader_glowing_traces_eb58e993.jpg',
-  specs: { cores: '16', threads: '32', boostClock: '5.9 GHz', cache: '80MB', tdp: 170 },
+  specs: {
+    cores: '16',
+    threads: '32',
+    boostClock: '5.9 GHz',
+    cache: '80MB',
+    tdp: 170,
+  },
   benchmarks: { cinebenchMulti: 42000, efficiencyScore: 7.8 },
   description: 'A flagship processor.',
   features: ['16 cores'],
@@ -50,15 +56,34 @@ describe('Header', () => {
   it('renders the storefront routes and live cart and compare counts', () => {
     render(<Fixture />, { wrapper: Wrapper });
 
-    expect(screen.getByRole('link', { name: 'AETHEL SILICON' })).toHaveAttribute('href', '/');
-    expect(screen.getByRole('link', { name: 'Ecosystem' })).toHaveAttribute('href', '/');
-    expect(screen.getByRole('link', { name: 'Catalog' })).toHaveAttribute('href', '/catalog');
-    expect(screen.getByRole('link', { name: 'Benchmark Compare' })).toHaveAttribute('href', '/compare');
-    expect(screen.getByRole('link', { name: 'Rig Configurator' })).toHaveAttribute('href', '/configurator');
-    expect(screen.getByRole('link', { name: 'Cart' })).toHaveAttribute('href', '/cart');
+    expect(
+      screen.getByRole('link', { name: 'AETHEL SILICON' }),
+    ).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link', { name: 'Ecosystem' })).toHaveAttribute(
+      'href',
+      '/',
+    );
+    expect(screen.getByRole('link', { name: 'Catalog' })).toHaveAttribute(
+      'href',
+      '/catalog',
+    );
+    expect(
+      screen.getByRole('link', { name: 'Benchmark Compare' }),
+    ).toHaveAttribute('href', '/compare');
+    expect(
+      screen.getByRole('link', { name: 'Rig Configurator' }),
+    ).toHaveAttribute('href', '/configurator');
+    expect(screen.getByRole('link', { name: 'Cart' })).toHaveAttribute(
+      'href',
+      '/cart',
+    );
 
-    act(() => fireEvent.click(screen.getByRole('button', { name: 'Add cart item' })));
-    act(() => fireEvent.click(screen.getByRole('button', { name: 'Add compare item' })));
+    act(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Add cart item' })),
+    );
+    act(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Add compare item' })),
+    );
 
     expect(screen.getByLabelText('Cart item count')).toHaveTextContent('1');
     expect(screen.getByLabelText('Compare item count')).toHaveTextContent('1');

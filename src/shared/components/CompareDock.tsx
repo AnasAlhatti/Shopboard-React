@@ -8,7 +8,10 @@ export function CompareDock() {
   if (comparedItems.length === 0) return null;
 
   return (
-    <aside className="compare-dock" aria-label="Selected products for comparison">
+    <aside
+      className="compare-dock"
+      aria-label="Selected products for comparison"
+    >
       <span className="compare-dock__icon" aria-hidden="true">
         <Scale size={18} />
       </span>
@@ -19,7 +22,12 @@ export function CompareDock() {
       <Link className="compare-dock__action" to="/compare">
         Compare <ArrowUpRight size={16} aria-hidden="true" />
       </Link>
-      <button className="icon-button compare-dock__clear" type="button" aria-label="Clear comparison" onClick={clearCompare}>
+      <button
+        className="icon-button compare-dock__clear"
+        type="button"
+        aria-label="Clear comparison"
+        onClick={clearCompare}
+      >
         <X size={16} aria-hidden="true" />
       </button>
     </aside>
