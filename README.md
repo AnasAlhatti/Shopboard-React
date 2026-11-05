@@ -1,32 +1,32 @@
-# React + TypeScript + Vite
+# Aethel Silicon
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Aethel Silicon is a React storefront concept for a fictional CPU and GPU lineup. The current implementation includes typed product data and service access, along with persistent cart and comparison state.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19, TypeScript, and Vite
+- React Router for application routes
+- Lucide React for interface icons
+- ESLint and Prettier
+- Vitest, Testing Library, and jsdom
+- Husky and lint-staged for pre-commit checks
 
-## React Compiler
+## Development commands
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- `npm run dev` starts the local Vite development server.
+- `npm run build` creates the production build.
+- `npm run lint` checks the code with ESLint.
+- `npm run format` formats project files with Prettier.
+- `npm run typecheck` runs strict TypeScript checks.
+- `npm test` runs the browser-independent unit tests.
 
-## Expanding the Oxlint configuration
+## Current modules
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+- `src/types/` contains product, cart, and comparison models.
+- `public/data/products.json` contains eight fictional products: four CPUs and four GPUs.
+- `src/services/productService.ts` loads product data asynchronously from `/data/products.json`.
+- `src/context/` owns cart and comparison state, including localStorage persistence.
+- `src/hooks/` exposes `useCart` and `useCompare` to React components.
+- `public/assets/` contains the supplied hardware imagery referenced by the product data.
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
-
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+The cart supports standalone products and assembled rigs. Comparison is locked to one product category at a time. Both contexts safely recover to empty state when browser storage contains invalid JSON.
