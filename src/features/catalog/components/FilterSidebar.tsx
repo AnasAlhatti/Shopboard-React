@@ -9,6 +9,10 @@ interface FilterSidebarProps {
   onMaxPriceChange: (val: number) => void;
   maxTdp: number;
   onMaxTdpChange: (val: number) => void;
+  minCores: number;
+  onMinCoresChange: (cores: number) => void;
+  minVram: number;
+  onMinVramChange: (vram: number) => void;
   onReset: () => void;
   totalCount: number;
   filteredCount: number;
@@ -23,6 +27,10 @@ export function FilterSidebar({
   onMaxPriceChange,
   maxTdp,
   onMaxTdpChange,
+  minCores,
+  onMinCoresChange,
+  minVram,
+  onMinVramChange,
   onReset,
   totalCount,
   filteredCount,
@@ -136,6 +144,50 @@ export function FilterSidebar({
           <span>400W</span>
         </div>
       </div>
+
+      {/* Cores Facet (CPU or All) */}
+      {selectedCategory !== 'gpu' && (
+        <div className="filter-group">
+          <span className="filter-label" id="cores-filter-label">
+            CPU Physical Cores
+          </span>
+          <div className="category-pills" role="group" aria-labelledby="cores-filter-label">
+            {[0, 8, 16].map((cores) => (
+              <button
+                key={cores}
+                type="button"
+                className={`pill-button${minCores === cores ? ' is-active' : ''}`}
+                onClick={() => onMinCoresChange(cores)}
+                aria-pressed={minCores === cores}
+              >
+                {cores === 0 ? 'Any Cores' : `${cores}+ Cores`}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* VRAM Facet (GPU or All) */}
+      {selectedCategory !== 'cpu' && (
+        <div className="filter-group">
+          <span className="filter-label" id="vram-filter-label">
+            GPU Video Memory (VRAM)
+          </span>
+          <div className="category-pills" role="group" aria-labelledby="vram-filter-label">
+            {[0, 12, 16, 24].map((vram) => (
+              <button
+                key={vram}
+                type="button"
+                className={`pill-button${minVram === vram ? ' is-active' : ''}`}
+                onClick={() => onMinVramChange(vram)}
+                aria-pressed={minVram === vram}
+              >
+                {vram === 0 ? 'Any VRAM' : `${vram}GB+`}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <button
         type="button"

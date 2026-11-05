@@ -1,7 +1,7 @@
 export interface Product {
   id: string;
   name: string;
-  category: 'cpu' | 'gpu';
+  category: 'cpu' | 'gpu' | 'storage';
   series: string;
   tagline: string;
   price: number;

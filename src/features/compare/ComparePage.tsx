@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Cpu, Gauge, Plus, Scale, Trash2 } from 'lucide-react';
+import { ArrowLeft, Cpu, Gauge, Plus, Scale, Sparkles, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCompare } from '../../hooks/useCompare';
 import { useProducts } from '../../hooks/useProducts';
@@ -13,6 +13,7 @@ export function ComparePage() {
     useCompare();
   const { products } = useProducts();
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [highlightWinners, setHighlightWinners] = useState(true);
 
   // Available products of the same category that aren't yet in comparison
   const availableToAdd = products.filter(
@@ -62,6 +63,17 @@ export function ComparePage() {
         </div>
 
         <div className="compare-header-actions">
+          <button
+            type="button"
+            className={`button button--quiet button--sm${highlightWinners ? ' is-active' : ''}`}
+            onClick={() => setHighlightWinners((prev) => !prev)}
+            aria-pressed={highlightWinners}
+            title="Toggle difference and winner highlights"
+          >
+            <Sparkles size={14} aria-hidden="true" />
+            <span>{highlightWinners ? 'Highlights On' : 'Highlights Off'}</span>
+          </button>
+
           {comparedItems.length < 4 && (
             <button
               type="button"
@@ -86,11 +98,12 @@ export function ComparePage() {
         items={comparedItems}
         onRemove={removeFromCompare}
         onOpenPicker={() => setPickerOpen(true)}
+        highlightWinners={highlightWinners}
       />
 
       <BenchmarkBarChart items={comparedItems} />
 
-      {category && (
+      {category && category !== 'storage' && (
         <ProductPickerModal
           isOpen={pickerOpen}
           onClose={() => setPickerOpen(false)}

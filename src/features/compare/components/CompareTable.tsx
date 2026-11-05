@@ -7,11 +7,35 @@ interface CompareTableProps {
   items: Product[];
   onRemove: (id: string) => void;
   onOpenPicker: () => void;
+  highlightWinners?: boolean;
 }
 
-export function CompareTable({ items, onRemove, onOpenPicker }: CompareTableProps) {
+export function CompareTable({
+  items,
+  onRemove,
+  onOpenPicker,
+  highlightWinners = true,
+}: CompareTableProps) {
   const { addToCart } = useCart();
   const isCpu = items[0]?.category === 'cpu';
+
+  const maxCores = Math.max(
+    ...items.map((i) => parseInt(i.specs.cores || '0', 10)),
+  );
+  const maxThreads = Math.max(
+    ...items.map((i) => parseInt(i.specs.threads || '0', 10)),
+  );
+  const maxBoostClock = Math.max(
+    ...items.map((i) => parseFloat(i.specs.boostClock || '0')),
+  );
+  const maxVram = Math.max(
+    ...items.map((i) => parseInt(i.specs.vram || '0', 10)),
+  );
+  const maxTflops = Math.max(...items.map((i) => i.specs.tflops ?? 0));
+  const minTdp = Math.min(...items.map((i) => i.specs.tdp));
+  const maxEfficiency = Math.max(
+    ...items.map((i) => i.benchmarks.efficiencyScore),
+  );
 
   return (
     <div className="compare-table-container">
@@ -78,29 +102,56 @@ export function CompareTable({ items, onRemove, onOpenPicker }: CompareTableProp
               <>
                 <tr>
                   <th scope="row">Physical Cores</th>
-                  {items.map((item) => (
-                    <td key={item.id} className="matrix-data">
-                      {item.specs.cores} Cores
-                    </td>
-                  ))}
+                  {items.map((item) => {
+                    const isWinner =
+                      highlightWinners &&
+                      items.length > 1 &&
+                      parseInt(item.specs.cores || '0', 10) === maxCores;
+                    return (
+                      <td
+                        key={item.id}
+                        className={`matrix-data${isWinner ? ' matrix-data--highlight matrix-data--winner' : ''}`}
+                      >
+                        {item.specs.cores} Cores
+                      </td>
+                    );
+                  })}
                   {items.length < 4 && <td className="matrix-data matrix-data--empty" />}
                 </tr>
                 <tr>
                   <th scope="row">Concurrent Threads</th>
-                  {items.map((item) => (
-                    <td key={item.id} className="matrix-data">
-                      {item.specs.threads} Threads
-                    </td>
-                  ))}
+                  {items.map((item) => {
+                    const isWinner =
+                      highlightWinners &&
+                      items.length > 1 &&
+                      parseInt(item.specs.threads || '0', 10) === maxThreads;
+                    return (
+                      <td
+                        key={item.id}
+                        className={`matrix-data${isWinner ? ' matrix-data--highlight matrix-data--winner' : ''}`}
+                      >
+                        {item.specs.threads} Threads
+                      </td>
+                    );
+                  })}
                   {items.length < 4 && <td className="matrix-data matrix-data--empty" />}
                 </tr>
                 <tr>
                   <th scope="row">Boost Clock</th>
-                  {items.map((item) => (
-                    <td key={item.id} className="matrix-data matrix-data--highlight">
-                      {item.specs.boostClock}
-                    </td>
-                  ))}
+                  {items.map((item) => {
+                    const isWinner =
+                      highlightWinners &&
+                      items.length > 1 &&
+                      parseFloat(item.specs.boostClock || '0') === maxBoostClock;
+                    return (
+                      <td
+                        key={item.id}
+                        className={`matrix-data${isWinner ? ' matrix-data--highlight matrix-data--winner' : ''}`}
+                      >
+                        {item.specs.boostClock}
+                      </td>
+                    );
+                  })}
                   {items.length < 4 && <td className="matrix-data matrix-data--empty" />}
                 </tr>
                 <tr>
@@ -117,20 +168,38 @@ export function CompareTable({ items, onRemove, onOpenPicker }: CompareTableProp
               <>
                 <tr>
                   <th scope="row">VRAM Capacity</th>
-                  {items.map((item) => (
-                    <td key={item.id} className="matrix-data matrix-data--highlight">
-                      {item.specs.vram}
-                    </td>
-                  ))}
+                  {items.map((item) => {
+                    const isWinner =
+                      highlightWinners &&
+                      items.length > 1 &&
+                      parseInt(item.specs.vram || '0', 10) === maxVram;
+                    return (
+                      <td
+                        key={item.id}
+                        className={`matrix-data${isWinner ? ' matrix-data--highlight matrix-data--winner' : ''}`}
+                      >
+                        {item.specs.vram}
+                      </td>
+                    );
+                  })}
                   {items.length < 4 && <td className="matrix-data matrix-data--empty" />}
                 </tr>
                 <tr>
                   <th scope="row">Compute Engine (FP32)</th>
-                  {items.map((item) => (
-                    <td key={item.id} className="matrix-data">
-                      {item.specs.tflops?.toFixed(1)} TFLOPs
-                    </td>
-                  ))}
+                  {items.map((item) => {
+                    const isWinner =
+                      highlightWinners &&
+                      items.length > 1 &&
+                      (item.specs.tflops ?? 0) === maxTflops;
+                    return (
+                      <td
+                        key={item.id}
+                        className={`matrix-data${isWinner ? ' matrix-data--highlight matrix-data--winner' : ''}`}
+                      >
+                        {item.specs.tflops?.toFixed(1)} TFLOPs
+                      </td>
+                    );
+                  })}
                   {items.length < 4 && <td className="matrix-data matrix-data--empty" />}
                 </tr>
                 <tr>
@@ -144,11 +213,20 @@ export function CompareTable({ items, onRemove, onOpenPicker }: CompareTableProp
                 </tr>
                 <tr>
                   <th scope="row">Engine Clock</th>
-                  {items.map((item) => (
-                    <td key={item.id} className="matrix-data">
-                      {item.specs.boostClock}
-                    </td>
-                  ))}
+                  {items.map((item) => {
+                    const isWinner =
+                      highlightWinners &&
+                      items.length > 1 &&
+                      parseFloat(item.specs.boostClock || '0') === maxBoostClock;
+                    return (
+                      <td
+                        key={item.id}
+                        className={`matrix-data${isWinner ? ' matrix-data--highlight matrix-data--winner' : ''}`}
+                      >
+                        {item.specs.boostClock}
+                      </td>
+                    );
+                  })}
                   {items.length < 4 && <td className="matrix-data matrix-data--empty" />}
                 </tr>
               </>
@@ -161,20 +239,38 @@ export function CompareTable({ items, onRemove, onOpenPicker }: CompareTableProp
             </tr>
             <tr>
               <th scope="row">TDP Rating</th>
-              {items.map((item) => (
-                <td key={item.id} className="matrix-data">
-                  {item.specs.tdp} Watts
-                </td>
-              ))}
+              {items.map((item) => {
+                const isWinner =
+                  highlightWinners &&
+                  items.length > 1 &&
+                  item.specs.tdp === minTdp;
+                return (
+                  <td
+                    key={item.id}
+                    className={`matrix-data${isWinner ? ' matrix-data--highlight matrix-data--winner' : ''}`}
+                  >
+                    {item.specs.tdp} Watts
+                  </td>
+                );
+              })}
               {items.length < 4 && <td className="matrix-data matrix-data--empty" />}
             </tr>
             <tr>
               <th scope="row">Efficiency Rating</th>
-              {items.map((item) => (
-                <td key={item.id} className="matrix-data matrix-data--highlight">
-                  {item.benchmarks.efficiencyScore.toFixed(1)} / 10
-                </td>
-              ))}
+              {items.map((item) => {
+                const isWinner =
+                  highlightWinners &&
+                  items.length > 1 &&
+                  item.benchmarks.efficiencyScore === maxEfficiency;
+                return (
+                  <td
+                    key={item.id}
+                    className={`matrix-data${isWinner ? ' matrix-data--highlight matrix-data--winner' : ''}`}
+                  >
+                    {item.benchmarks.efficiencyScore.toFixed(1)} / 10
+                  </td>
+                );
+              })}
               {items.length < 4 && <td className="matrix-data matrix-data--empty" />}
             </tr>
           </tbody>

@@ -45,20 +45,20 @@ export function CheckoutModal({
             Your high-performance silicon hardware has been allocated from our precision testing lab.
           </p>
 
-          <div className="checkout-receipt-box">
+          <dl className="checkout-receipt-box">
             <div className="receipt-row">
-              <span className="receipt-label">Order Reference</span>
-              <strong className="receipt-val">{orderNumber}</strong>
+              <dt className="receipt-label">Order Reference</dt>
+              <dd className="receipt-val">{orderNumber}</dd>
             </div>
             <div className="receipt-row">
-              <span className="receipt-label">Total Amount Paid</span>
-              <strong className="receipt-val">${total.toFixed(2)}</strong>
+              <dt className="receipt-label">Total Amount Paid</dt>
+              <dd className="receipt-val">${total.toFixed(2)}</dd>
             </div>
             <div className="receipt-row">
-              <span className="receipt-label">Estimated Delivery</span>
-              <strong className="receipt-val">2–3 Business Days (Express Insured)</strong>
+              <dt className="receipt-label">Estimated Delivery</dt>
+              <dd className="receipt-val">2–3 Business Days (Express Insured)</dd>
             </div>
-          </div>
+          </dl>
 
           <button
             type="button"

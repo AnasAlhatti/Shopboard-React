@@ -1,9 +1,10 @@
-import { CheckCircle, PackagePlus, ShoppingBag, Sparkles, Zap } from 'lucide-react';
+import { AlertTriangle, CheckCircle, PackagePlus, ShoppingBag, Sparkles, Zap } from 'lucide-react';
+import type { BottleneckDiagnosis } from '../utils/bottleneck';
 
 interface PowerSynergyMeterProps {
   totalTdp: number;
   recommendedPsu: number;
-  synergyScore: number;
+  diagnosis: BottleneckDiagnosis;
   totalPrice: number;
   onAddAssembledRig: () => void;
   onAddIndividualComponents: () => void;
@@ -14,7 +15,7 @@ interface PowerSynergyMeterProps {
 export function PowerSynergyMeter({
   totalTdp,
   recommendedPsu,
-  synergyScore,
+  diagnosis,
   totalPrice,
   onAddAssembledRig,
   onAddIndividualComponents,
@@ -31,7 +32,9 @@ export function PowerSynergyMeter({
           <Zap size={18} className="synergy-icon" aria-hidden="true" />
           Live Synergy & Power Diagnostics
         </h3>
-        <span className="synergy-tag">Real-Time Validation</span>
+        <span className={`synergy-tag${diagnosis.isWarning ? ' synergy-tag--warning' : ''}`}>
+          {diagnosis.isWarning ? 'Bottleneck Notice' : 'Real-Time Validation'}
+        </span>
       </div>
 
       <div className="synergy-diagnostics-grid">
@@ -68,13 +71,22 @@ export function PowerSynergyMeter({
         <div className="diagnostic-block">
           <div className="diagnostic-header">
             <span className="diagnostic-label">Bottleneck Balance Index</span>
-            <strong className="diagnostic-value diagnostic-value--emerald">
-              <Sparkles size={14} aria-hidden="true" /> {synergyScore}% Optimal 4K Balance
+            <strong
+              className={`diagnostic-value ${
+                diagnosis.isWarning
+                  ? 'diagnostic-value--warning'
+                  : 'diagnostic-value--emerald'
+              }`}
+            >
+              {diagnosis.isWarning ? (
+                <AlertTriangle size={14} aria-hidden="true" />
+              ) : (
+                <Sparkles size={14} aria-hidden="true" />
+              )}
+              {diagnosis.score}% {diagnosis.label}
             </strong>
           </div>
-          <p className="diagnostic-desc">
-            Calculated zero compute starvation: CPU delivers frame pacing aligned with GPU compute fill-rate.
-          </p>
+          <p className="diagnostic-desc">{diagnosis.description}</p>
         </div>
       </div>
 
@@ -114,7 +126,7 @@ export function PowerSynergyMeter({
         {justAddedIndividual && (
           <div className="cart-feedback-pill" role="status">
             <CheckCircle size={15} aria-hidden="true" />
-            <span>Individual CPU and GPU components added to cart!</span>
+            <span>Components (CPU, GPU & Storage) added to cart!</span>
           </div>
         )}
       </div>

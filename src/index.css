@@ -393,6 +393,29 @@ p {
   color: #fff;
 }
 
+.button--quiet {
+  border-color: rgb(255 255 255 / 16%);
+  background: rgb(18 19 25 / 72%);
+  color: var(--color-text);
+}
+
+.button--quiet.is-active {
+  border-color: var(--color-crimson);
+  background: var(--color-crimson-soft);
+  color: var(--color-crimson);
+}
+
+.button--sm {
+  min-height: 2.2rem;
+  padding: 0.38rem 0.8rem;
+  border-radius: 0.6rem;
+  font-size: 0.8rem;
+}
+
+.button--full {
+  width: 100%;
+}
+
 .compare-dock {
   position: fixed;
   z-index: 20;
@@ -523,6 +546,12 @@ p {
 
   .button--primary:hover {
     background: #ff4b4b;
+  }
+
+  .button--quiet:hover {
+    border-color: rgb(255 255 255 / 35%);
+    background: rgb(255 255 255 / 8%);
+    color: var(--color-text);
   }
 }
 

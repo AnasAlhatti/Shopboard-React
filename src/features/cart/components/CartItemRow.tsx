@@ -74,7 +74,8 @@ export function CartItemRow({
             >
               <Minus size={14} aria-hidden="true" />
             </button>
-            <span className="qty-val" aria-label="Current quantity">
+            <span className="qty-val">
+              <span className="sr-only">Quantity: </span>
               {item.quantity}
             </span>
             <button
@@ -137,7 +138,8 @@ export function CartItemRow({
             >
               <Minus size={14} aria-hidden="true" />
             </button>
-            <span className="qty-val" aria-label="Current quantity">
+            <span className="qty-val">
+              <span className="sr-only">Quantity: </span>
               {item.quantity}
             </span>
             <button

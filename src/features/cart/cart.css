@@ -244,6 +244,7 @@
 }
 
 .order-summary-rows {
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -261,9 +262,11 @@
   display: flex;
   align-items: center;
   gap: 0.35rem;
+  font-weight: normal;
 }
 
 .summary-val {
+  margin: 0;
   font-weight: 700;
   color: var(--color-text);
   font-variant-numeric: tabular-nums;
@@ -448,6 +451,7 @@
 }
 
 .checkout-receipt-box {
+  margin: 0 0 var(--space-xl);
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -456,7 +460,6 @@
   flex-direction: column;
   gap: 0.5rem;
   text-align: left;
-  margin-bottom: var(--space-xl);
 }
 
 .receipt-row {
@@ -467,8 +470,11 @@
 
 .receipt-label {
   color: var(--color-text-dim);
+  font-weight: normal;
 }
 
 .receipt-val {
+  margin: 0;
   color: var(--color-text);
+  font-weight: 700;
 }

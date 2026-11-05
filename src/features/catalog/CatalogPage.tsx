@@ -25,6 +25,14 @@ export function CatalogPage() {
     const param = searchParams.get('maxTdp');
     return param ? Number(param) : 400;
   });
+  const [minCores, setMinCores] = useState(() => {
+    const param = searchParams.get('minCores');
+    return param ? Number(param) : 0;
+  });
+  const [minVram, setMinVram] = useState(() => {
+    const param = searchParams.get('minVram');
+    return param ? Number(param) : 0;
+  });
   const [sortOption, setSortOption] = useState<SortOption>(
     () => (searchParams.get('sort') as SortOption) ?? 'featured',
   );
@@ -37,6 +45,8 @@ export function CatalogPage() {
     if (searchQuery.trim()) next.set('search', searchQuery.trim());
     if (maxPrice < 1000) next.set('maxPrice', String(maxPrice));
     if (maxTdp < 400) next.set('maxTdp', String(maxTdp));
+    if (minCores > 0) next.set('minCores', String(minCores));
+    if (minVram > 0) next.set('minVram', String(minVram));
     if (sortOption !== 'featured') next.set('sort', sortOption);
     setSearchParams(next, { replace: true });
   }, [
@@ -44,6 +54,8 @@ export function CatalogPage() {
     searchQuery,
     maxPrice,
     maxTdp,
+    minCores,
+    minVram,
     sortOption,
     setSearchParams,
   ]);
@@ -53,6 +65,8 @@ export function CatalogPage() {
     setSelectedCategory('all');
     setMaxPrice(1000);
     setMaxTdp(400);
+    setMinCores(0);
+    setMinVram(0);
     setSortOption('featured');
   };
 
@@ -85,7 +99,23 @@ export function CatalogPage() {
     // 4. TDP Filter
     result = result.filter((p) => p.specs.tdp <= maxTdp);
 
-    // 5. Sorting
+    // 5. Cores Facet Filter (for CPUs)
+    if (minCores > 0) {
+      result = result.filter((p) => {
+        if (p.category !== 'cpu') return true;
+        return parseInt(p.specs.cores || '0', 10) >= minCores;
+      });
+    }
+
+    // 6. VRAM Facet Filter (for GPUs)
+    if (minVram > 0) {
+      result = result.filter((p) => {
+        if (p.category !== 'gpu') return true;
+        return parseInt(p.specs.vram || '0', 10) >= minVram;
+      });
+    }
+
+    // 7. Sorting
     const sorted = [...result];
     switch (sortOption) {
       case 'price-asc':
@@ -101,13 +131,28 @@ export function CatalogPage() {
           return bClock - aClock;
         });
         break;
+      case 'compute-desc':
+        sorted.sort((a, b) => (b.specs.tflops ?? 0) - (a.specs.tflops ?? 0));
+        break;
+      case 'name-asc':
+        sorted.sort((a, b) => a.name.localeCompare(b.name));
+        break;
       case 'featured':
       default:
         break;
     }
 
     return sorted;
-  }, [products, selectedCategory, searchQuery, maxPrice, maxTdp, sortOption]);
+  }, [
+    products,
+    selectedCategory,
+    searchQuery,
+    maxPrice,
+    maxTdp,
+    minCores,
+    minVram,
+    sortOption,
+  ]);
 
   return (
     <main className="catalog-page page-width">
@@ -142,6 +187,10 @@ export function CatalogPage() {
             onMaxPriceChange={setMaxPrice}
             maxTdp={maxTdp}
             onMaxTdpChange={setMaxTdp}
+            minCores={minCores}
+            onMinCoresChange={setMinCores}
+            minVram={minVram}
+            onMinVramChange={setMinVram}
             onReset={handleReset}
             totalCount={products.length}
             filteredCount={filteredProducts.length}

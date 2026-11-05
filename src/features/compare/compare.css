@@ -206,6 +206,12 @@
   font-weight: 800;
 }
 
+.matrix-data--winner {
+  color: var(--color-accent);
+  font-weight: 800;
+  background: rgba(255, 51, 51, 0.08);
+}
+
 .matrix-data--empty {
   background: rgba(0, 0, 0, 0.15);
 }
@@ -285,6 +291,18 @@
   border: 1px solid rgba(255, 51, 51, 0.35);
   border-radius: 4px;
   padding: 0.1rem 0.4rem;
+}
+
+.delta-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--color-text-dim);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
 }
 
 .benchmark-bar-row__val {

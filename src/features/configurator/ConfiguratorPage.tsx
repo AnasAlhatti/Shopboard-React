@@ -3,13 +3,14 @@ import { useCart } from '../../hooks/useCart';
 import { useProducts } from '../../hooks/useProducts';
 import type { BundledRig } from '../../types/cart';
 import type { Product } from '../../types/product';
+import { ComponentSlotSelector } from './components/ComponentSlotSelector';
 import {
-  ComponentSlotSelector,
   MEMORY_STORAGE_TIERS,
   type MemoryStorageTier,
-} from './components/ComponentSlotSelector';
+} from './data/tiers';
 import { PowerSynergyMeter } from './components/PowerSynergyMeter';
 import { RigVisualizer } from './components/RigVisualizer';
+import { calculateSynergy } from './utils/bottleneck';
 import './configurator.css';
 
 export function ConfiguratorPage() {
@@ -42,8 +43,8 @@ export function ConfiguratorPage() {
   const rawPsu = totalTdp * 1.45;
   const recommendedPsu = Math.max(650, Math.ceil(rawPsu / 50) * 50);
 
-  // Synergy Score (optimal balance calculation)
-  const synergyScore = 99; // Calculated near-optimal 4K synergy across Aethel chips
+  // Synergy & Bottleneck calculation
+  const diagnosis = calculateSynergy(activeCpu, activeGpu);
 
   // Pricing
   const cpuPrice = activeCpu?.price ?? 0;
@@ -74,6 +75,27 @@ export function ConfiguratorPage() {
     if (!activeCpu || !activeGpu) return;
     addToCart(activeCpu, 1);
     addToCart(activeGpu, 1);
+
+    const storageProduct: Product = {
+      id: `tier-${selectedTier.id}`,
+      name: `Aethel ${selectedTier.name} (RAM & Gen5 NVMe)`,
+      category: 'storage',
+      series: 'Quantum',
+      tagline: selectedTier.specs,
+      price: selectedTier.price,
+      image: '/assets/PC_hardware_inside_glass_case_a7ed0ff3.jpg',
+      specs: {
+        boostClock: '6400 MT/s',
+        tdp: selectedTier.tdp,
+      },
+      benchmarks: {
+        efficiencyScore: 9.8,
+      },
+      description: `High-bandwidth memory and Gen5 storage package: ${selectedTier.specs}`,
+      features: [selectedTier.specs, `${selectedTier.tdp}W TDP`],
+    };
+    addToCart(storageProduct, 1);
+
     setJustAddedIndividual(true);
     setTimeout(() => setJustAddedIndividual(false), 3000);
   };
@@ -133,7 +155,7 @@ export function ConfiguratorPage() {
         <PowerSynergyMeter
           totalTdp={totalTdp}
           recommendedPsu={recommendedPsu}
-          synergyScore={synergyScore}
+          diagnosis={diagnosis}
           totalPrice={totalPrice}
           onAddAssembledRig={handleAddAssembledRig}
           onAddIndividualComponents={handleAddIndividual}

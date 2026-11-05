@@ -44,36 +44,36 @@ export function OrderSummary({
         Order Summary
       </h2>
 
-      <div className="order-summary-rows">
+      <dl className="order-summary-rows">
         <div className="summary-row">
-          <span className="summary-label">Hardware Subtotal</span>
-          <span className="summary-val">${subtotal.toLocaleString()}</span>
+          <dt className="summary-label">Hardware Subtotal</dt>
+          <dd className="summary-val">${subtotal.toLocaleString()}</dd>
         </div>
 
         {discountAmount > 0 && (
           <div className="summary-row summary-row--discount">
-            <span className="summary-label">
+            <dt className="summary-label">
               <Tag size={13} aria-hidden="true" /> Promo ({appliedPromo})
-            </span>
-            <span className="summary-val">-${discountAmount.toFixed(2)}</span>
+            </dt>
+            <dd className="summary-val">-${discountAmount.toFixed(2)}</dd>
           </div>
         )}
 
         <div className="summary-row">
-          <span className="summary-label">Estimated Tax (7%)</span>
-          <span className="summary-val">${tax.toFixed(2)}</span>
+          <dt className="summary-label">Estimated Tax (7%)</dt>
+          <dd className="summary-val">${tax.toFixed(2)}</dd>
         </div>
 
         <div className="summary-row">
-          <span className="summary-label">Insured Express Shipping</span>
-          <span className="summary-val summary-val--free">Complimentary</span>
+          <dt className="summary-label">Insured Express Shipping</dt>
+          <dd className="summary-val summary-val--free">Complimentary</dd>
         </div>
 
         <div className="summary-row summary-row--total">
-          <span className="summary-label">Final Order Total</span>
-          <span className="summary-val">${total.toFixed(2)}</span>
+          <dt className="summary-label">Final Order Total</dt>
+          <dd className="summary-val">${total.toFixed(2)}</dd>
         </div>
-      </div>
+      </dl>
 
       {/* Promo Code Form */}
       <form onSubmit={handleApply} className="promo-code-form">

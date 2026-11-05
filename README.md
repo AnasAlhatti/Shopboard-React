@@ -30,28 +30,28 @@ Aethel Silicon is an AMD-inspired, dark hardware storefront and architecture sho
 
 2. **Silicon Storefront Catalog (`/catalog`)**
    - Full hardware matrix consuming asynchronous data from `/data/products.json`.
-   - Faceted filtering: category pills (All, CPUs, GPUs), keyword search, price slider, and TDP range slider.
-   - Sorting by featured, price (ascending/descending), and peak clock speed.
+   - Faceted filtering: category pills (All, CPUs, GPUs), keyword search, price slider ($250–$1,000), TDP range slider (65W–400W), and physical cores/VRAM multi-facets.
+   - Sorting by featured, price (ascending/descending), peak clock speed, compute throughput (TFLOPs), and alphabetical product name (A–Z).
    - Grid and list layout toggles.
    - URL synchronization via search parameters for shareable and bookmarkable filter states.
 
 3. **Product Detail Architecture Sheets (`/product/:id`)**
    - High-resolution hardware viewer with preserved aspect ratios.
-   - Comprehensive technical specification table (node, lithography, cache, cores, bus width, PCIe support).
+   - Comprehensive technical specification table (node, lithography, cache, cores, bus width, PCIe support, transistor estimates, and instruction sets).
    - Mini-benchmark performance cards (Cinebench, Blender, 4K ray tracing, efficiency per watt).
-   - Quantity selector with semantic label, Add to Cart feedback, and Compare tray toggle.
+   - Quantity selector with semantic label, Add to Cart feedback, Compare tray toggle, and direct Custom Rig Builder launcher.
 
 4. **Benchmark Comparison Dashboard (`/compare`)**
-   - Head-to-head comparison table for up to 4 products with differential metric highlighting.
+   - Head-to-head comparison table for up to 4 products with dynamic winning metric calculation and toggleable highlight mode.
    - Category-locked comparison (CPU vs. CPU or GPU vs. GPU) to preserve 1:1 metric integrity.
-   - Animated AMD-style horizontal benchmark bars for gaming FPS (Cyberpunk 2077, Black Myth: Wukong), synthetic compute (Cinebench R24, Blender), and efficiency per watt.
+   - Animated AMD-style horizontal benchmark bars with leader badges and percentage delta indicators (`-% vs leader` / `+% time`).
    - Silicon picker modal to quickly add available models into empty comparison slots.
 
 5. **Custom Rig Configurator (`/configurator`)**
    - Interactive battlestation workbench framed by the illuminated tempered glass PC chassis render.
    - 3-step slot selector: 1. Processor (Vortex) -> 2. Graphics (Zenith) -> 3. Memory & Storage package tier.
-   - Live power diagnostics: estimated system TDP calculation, dynamic safety gauge, recommended 80+ Gold PSU sizing, and bottleneck synergy balance rating.
-   - Dual cart integration: *"Add as Assembled Custom Rig"* (single bundled item) vs. *"Add Components Individually"*.
+   - Live power diagnostics: estimated system TDP calculation, dynamic safety gauge, recommended 80+ Gold PSU sizing, and real-time bottleneck synergy analysis with mismatch warning advisories.
+   - Dual cart integration: *"Add as Assembled Custom Rig"* (single bundled item) vs. *"Add Components Individually"* (adds CPU, GPU, and RAM/Storage package).
 
 6. **Shopping Cart & Checkout Simulation (`/cart`)**
    - Supports both standalone items and bundled custom rigs with nested component breakdowns.

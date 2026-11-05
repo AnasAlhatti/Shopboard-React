@@ -42,6 +42,14 @@ export function ArchitectureSpecTable({ product }: ArchitectureSpecTableProps) {
                   <th scope="row">Total Unified Cache</th>
                   <td>{product.specs.cache}</td>
                 </tr>
+                <tr>
+                  <th scope="row">Estimated Transistors</th>
+                  <td>71.5 Billion High-Density FinFET</td>
+                </tr>
+                <tr>
+                  <th scope="row">Vector & Matrix Acceleration</th>
+                  <td>AVX-512, Dual-Issue SIMD, FP16 Hardware Engines</td>
+                </tr>
               </>
             ) : (
               <>
@@ -60,6 +68,14 @@ export function ArchitectureSpecTable({ product }: ArchitectureSpecTableProps) {
                 <tr>
                   <th scope="row">Engine Clock</th>
                   <td>{product.specs.boostClock}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Estimated Transistors</th>
+                  <td>84.8 Billion High-Density FinFET</td>
+                </tr>
+                <tr>
+                  <th scope="row">Ray Tracing & Neural Pipeline</th>
+                  <td>Gen-3 Hardware Ray Accelerators, Neural Supersampling</td>
                 </tr>
               </>
             )}

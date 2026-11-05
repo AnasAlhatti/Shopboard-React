@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Check, Plus, Scale } from 'lucide-react';
+import { ArrowLeft, Check, Layers, Plus, Scale } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { useCart } from '../../hooks/useCart';
 import { useCompare } from '../../hooks/useCompare';
@@ -128,6 +128,11 @@ export function ProductDetailPage() {
                 <Scale size={16} aria-hidden="true" />
                 <span>{isCompared ? 'In Compare Bench' : 'Compare Silicon'}</span>
               </button>
+
+              <Link to="/configurator" className="button button--quiet">
+                <Layers size={16} aria-hidden="true" />
+                <span>Custom Rig Builder</span>
+              </Link>
             </div>
 
             {justAdded && (

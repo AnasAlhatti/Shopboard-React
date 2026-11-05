@@ -106,11 +106,17 @@ export function BenchmarkBarChart({ items }: BenchmarkBarChartProps) {
                     <div key={item.id} className="benchmark-bar-row">
                       <div className="benchmark-bar-row__info">
                         <span className="benchmark-bar-row__name">{item.name}</span>
-                        {isLeader && (
+                        {isLeader ? (
                           <span className="leader-pill">
                             <Trophy size={11} aria-hidden="true" /> Leader
                           </span>
-                        )}
+                        ) : items.length > 1 ? (
+                          <span className="delta-pill">
+                            {metric.higherIsBetter
+                              ? `-${Math.round((1 - val / bestValue) * 100)}%`
+                              : `+${Math.round(((val - bestValue) / bestValue) * 100)}% time`}
+                          </span>
+                        ) : null}
                         <strong className="benchmark-bar-row__val">
                           {metric.formatValue(val)}
                         </strong>

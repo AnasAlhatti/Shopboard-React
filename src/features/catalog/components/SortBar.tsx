@@ -1,6 +1,12 @@
 import { LayoutGrid, List } from 'lucide-react';
 
-export type SortOption = 'featured' | 'price-asc' | 'price-desc' | 'clock-desc';
+export type SortOption =
+  | 'featured'
+  | 'price-asc'
+  | 'price-desc'
+  | 'clock-desc'
+  | 'name-asc'
+  | 'compute-desc';
 
 interface SortBarProps {
   sortOption: SortOption;
@@ -38,6 +44,8 @@ export function SortBar({
             <option value="price-asc">Price: Low to High</option>
             <option value="price-desc">Price: High to Low</option>
             <option value="clock-desc">Highest Clock Speed</option>
+            <option value="compute-desc">Compute Throughput (TFLOPs)</option>
+            <option value="name-asc">Product Name (A–Z)</option>
           </select>
         </div>
 

@@ -344,6 +344,10 @@
   font-weight: 700;
 }
 
+.synergy-tag--warning {
+  color: #ff9f0a;
+}
+
 .synergy-diagnostics-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -391,6 +395,13 @@
 
 .diagnostic-value--emerald {
   color: #34c759;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.diagnostic-value--warning {
+  color: #ff9f0a;
   display: flex;
   align-items: center;
   gap: 0.35rem;
