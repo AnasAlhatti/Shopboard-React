@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchProducts } from '../services/productService';
+import { fetchProducts, getCachedProducts } from '../services/productService';
 import type { Product } from '../types/product';
 
 interface ProductsState {
@@ -9,18 +9,27 @@ interface ProductsState {
 }
 
 export function useProducts() {
-  const [state, setState] = useState<ProductsState>({
-    products: [],
-    loading: true,
-    error: null,
+  const [state, setState] = useState<ProductsState>(() => {
+    const cached = getCachedProducts();
+    return {
+      products: cached ?? [],
+      loading: cached === null,
+      error: null,
+    };
   });
 
   useEffect(() => {
     let isCurrent = true;
 
+    if (state.products.length > 0 && !state.loading) {
+      return;
+    }
+
     fetchProducts()
       .then((products) => {
-        if (isCurrent) setState({ products, loading: false, error: null });
+        if (isCurrent) {
+          setState({ products, loading: false, error: null });
+        }
       })
       .catch((error: unknown) => {
         if (!isCurrent) return;
@@ -34,7 +43,7 @@ export function useProducts() {
     return () => {
       isCurrent = false;
     };
-  }, []);
+  }, [state.products.length, state.loading]);
 
   return state;
 }

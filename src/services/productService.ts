@@ -1,23 +1,45 @@
 import type { Product } from '../types/product';
 
 const PRODUCTS_URL = '/data/products.json';
-const RESPONSE_DELAY_MS = 100;
 
-function simulateNetworkDelay(): Promise<void> {
-  return new Promise((resolve) =>
-    window.setTimeout(resolve, RESPONSE_DELAY_MS),
-  );
+let productsCache: Product[] | null = null;
+let inFlightRequest: Promise<Product[]> | null = null;
+
+export function getCachedProducts(): Product[] | null {
+  return productsCache;
 }
 
-export async function fetchProducts(): Promise<Product[]> {
-  await simulateNetworkDelay();
+export function clearProductCache(): void {
+  productsCache = null;
+  inFlightRequest = null;
+}
 
-  const response = await fetch(PRODUCTS_URL);
-  if (!response.ok) {
-    throw new Error(`Unable to load products (${response.status}).`);
+export async function fetchProducts(options?: {
+  forceRefresh?: boolean;
+}): Promise<Product[]> {
+  if (productsCache && !options?.forceRefresh) {
+    return productsCache;
   }
 
-  return (await response.json()) as Product[];
+  if (inFlightRequest && !options?.forceRefresh) {
+    return inFlightRequest;
+  }
+
+  inFlightRequest = (async () => {
+    try {
+      const response = await fetch(PRODUCTS_URL);
+      if (!response.ok) {
+        throw new Error(`Unable to load products (${response.status}).`);
+      }
+      const data = (await response.json()) as Product[];
+      productsCache = data;
+      return data;
+    } finally {
+      inFlightRequest = null;
+    }
+  })();
+
+  return inFlightRequest;
 }
 
 export async function fetchProductById(id: string): Promise<Product | null> {
