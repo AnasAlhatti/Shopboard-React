@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { CompareProvider } from './context/CompareContext';
+import { CatalogPage } from './features/catalog/CatalogPage';
 import { HomePage } from './features/home/HomePage';
 import { CompareDock } from './shared/components/CompareDock';
 import { Footer } from './shared/components/Footer';
@@ -29,6 +30,7 @@ function ApplicationShell() {
       <Header onOpenCart={() => setCartOpen(true)} />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/catalog" element={<CatalogPage />} />
         <Route path="*" element={<RoutePlaceholder />} />
       </Routes>
       <Footer />
