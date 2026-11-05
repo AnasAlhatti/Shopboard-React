@@ -4,6 +4,7 @@ import { CartProvider } from './context/CartContext';
 import { CompareProvider } from './context/CompareContext';
 import { CatalogPage } from './features/catalog/CatalogPage';
 import { ComparePage } from './features/compare/ComparePage';
+import { ConfiguratorPage } from './features/configurator/ConfiguratorPage';
 import { HomePage } from './features/home/HomePage';
 import { ProductDetailPage } from './features/product-detail/ProductDetailPage';
 import { CompareDock } from './shared/components/CompareDock';
@@ -35,6 +36,7 @@ function ApplicationShell() {
         <Route path="/catalog" element={<CatalogPage />} />
         <Route path="/product/:id" element={<ProductDetailPage />} />
         <Route path="/compare" element={<ComparePage />} />
+        <Route path="/configurator" element={<ConfiguratorPage />} />
         <Route path="*" element={<RoutePlaceholder />} />
       </Routes>
       <Footer />
