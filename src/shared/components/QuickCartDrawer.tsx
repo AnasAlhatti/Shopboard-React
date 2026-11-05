@@ -28,10 +28,6 @@ export function QuickCartDrawer({ isOpen, onClose }: QuickCartDrawerProps) {
   useEffect(() => {
     if (!isOpen) return;
 
-    const previouslyFocused =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null;
     closeButtonRef.current?.focus();
     const closeOnEscape = (event: globalThis.KeyboardEvent) => {
       if (event.key === 'Escape') closeRef.current();
@@ -40,7 +36,6 @@ export function QuickCartDrawer({ isOpen, onClose }: QuickCartDrawerProps) {
 
     return () => {
       window.removeEventListener('keydown', closeOnEscape);
-      previouslyFocused?.focus();
     };
   }, [isOpen]);
 
@@ -55,10 +50,11 @@ export function QuickCartDrawer({ isOpen, onClose }: QuickCartDrawerProps) {
 
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
+    const current = event.target as HTMLElement;
+    if (event.shiftKey && current === first) {
       event.preventDefault();
       last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
+    } else if (!event.shiftKey && current === last) {
       event.preventDefault();
       first.focus();
     }

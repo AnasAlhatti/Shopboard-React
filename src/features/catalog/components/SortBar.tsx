@@ -6,6 +6,7 @@ export type SortOption =
   | 'price-desc'
   | 'clock-desc'
   | 'name-asc'
+  | 'name-desc'
   | 'compute-desc';
 
 interface SortBarProps {
@@ -40,12 +41,13 @@ export function SortBar({
             onChange={(e) => onSortChange(e.target.value as SortOption)}
             className="sort-select"
           >
-            <option value="featured">Featured Silicon</option>
+            <option value="featured">Default (Featured)</option>
             <option value="price-asc">Price: Low to High</option>
             <option value="price-desc">Price: High to Low</option>
+            <option value="name-asc">Name: A to Z</option>
+            <option value="name-desc">Name: Z to A</option>
             <option value="clock-desc">Highest Clock Speed</option>
             <option value="compute-desc">Compute Throughput (TFLOPs)</option>
-            <option value="name-asc">Product Name (A–Z)</option>
           </select>
         </div>
 

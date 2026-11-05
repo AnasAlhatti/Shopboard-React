@@ -137,6 +137,9 @@ export function CatalogPage() {
       case 'name-asc':
         sorted.sort((a, b) => a.name.localeCompare(b.name));
         break;
+      case 'name-desc':
+        sorted.sort((a, b) => b.name.localeCompare(a.name));
+        break;
       case 'featured':
       default:
         break;

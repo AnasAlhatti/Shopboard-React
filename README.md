@@ -91,3 +91,21 @@ src/
 ├── App.tsx                    # Route orchestration
 └── index.css                  # Base reset & design system foundation
 ```
+
+### Adding New Features (e.g., Wishlist)
+
+The project follows a strict, modular feature-first architecture (Rule 7: *"Clear feature modules. Every file has one job, and everything is in its place."*). Any engineer adding a new capability (such as a Wishlist) can immediately locate and place files according to this pattern:
+
+1. **Feature UI Module (`src/features/wishlist/`):**
+   - `WishlistPage.tsx`: Primary page component for the `/wishlist` route.
+   - `wishlist.css`: Scoped styling using tokens from `src/shared/styles/design-tokens.css`.
+   - `components/`: Feature-scoped child components (e.g., `WishlistItemCard.tsx`).
+2. **Global State & Context (`src/context/WishlistContext.tsx`):**
+   - React context managing wishlist items with `localStorage` persistence.
+3. **Custom Hook (`src/hooks/useWishlist.ts`):**
+   - Clean consumer hook exposing items and action dispatchers (`toggleWishlist`, `isInWishlist`).
+4. **Types (`src/types/wishlist.ts`):**
+   - Strict TypeScript interfaces for wishlist item shapes and context signatures.
+5. **Route & Navigation:**
+   - Register the route in `src/App.tsx` (`<Route path="/wishlist" element={<WishlistPage />} />`).
+   - Add navigation entry/pill or header action in `src/shared/components/Header.tsx`.
