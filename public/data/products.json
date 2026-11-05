@@ -1,0 +1,222 @@
+[
+  {
+    "id": "vortex-9950x",
+    "name": "Aethel Vortex 9950X",
+    "category": "cpu",
+    "series": "Vortex",
+    "tagline": "Flagship Multi-Thread",
+    "price": 649,
+    "image": "/assets/CPU_heat_spreader_glowing_traces_eb58e993.jpg",
+    "specs": {
+      "cores": "16",
+      "threads": "32",
+      "boostClock": "5.9 GHz",
+      "cache": "80MB",
+      "tdp": 170
+    },
+    "benchmarks": {
+      "cinebenchMulti": 42000,
+      "blenderRenderSec": 52,
+      "efficiencyScore": 7.8
+    },
+    "description": "A high-throughput flagship processor built for demanding creative and compute workloads.",
+    "features": [
+      "16 cores and 32 threads",
+      "Precision boost up to 5.9 GHz",
+      "80MB total cache"
+    ]
+  },
+  {
+    "id": "vortex-9800x3d",
+    "name": "Aethel Vortex 9800X3D",
+    "category": "cpu",
+    "series": "Vortex",
+    "tagline": "Ultimate Gaming",
+    "price": 479,
+    "image": "/assets/Sleek_minimal_CPU_processor_0f31f51b.jpg",
+    "specs": {
+      "cores": "8",
+      "threads": "16",
+      "boostClock": "5.4 GHz",
+      "cache": "104MB 3D V-Cache",
+      "tdp": 120
+    },
+    "benchmarks": {
+      "cinebenchMulti": 24600,
+      "blenderRenderSec": 88,
+      "efficiencyScore": 9.1
+    },
+    "description": "A gaming-focused processor pairing fast cores with a large stacked cache.",
+    "features": [
+      "8 cores and 16 threads",
+      "104MB 3D V-Cache",
+      "120W thermal design power"
+    ]
+  },
+  {
+    "id": "vortex-9700x",
+    "name": "Aethel Vortex 9700X",
+    "category": "cpu",
+    "series": "Vortex",
+    "tagline": "High-Performance Compute",
+    "price": 359,
+    "image": "/assets/CPU_processor_with_glowing_traces_b43fba0f.jpg",
+    "specs": {
+      "cores": "8",
+      "threads": "16",
+      "boostClock": "5.5 GHz",
+      "cache": "40MB",
+      "tdp": 65
+    },
+    "benchmarks": {
+      "cinebenchMulti": 21400,
+      "blenderRenderSec": 101,
+      "efficiencyScore": 10.2
+    },
+    "description": "Efficient eight-core performance for creators and power users.",
+    "features": [
+      "8 cores and 16 threads",
+      "Boost clock up to 5.5 GHz",
+      "65W thermal design power"
+    ]
+  },
+  {
+    "id": "vortex-9600x",
+    "name": "Aethel Vortex 9600X",
+    "category": "cpu",
+    "series": "Vortex",
+    "tagline": "Mainstream Precision",
+    "price": 279,
+    "image": "/assets/CPU_heat_spreader_glowing_traces_eb58e993.jpg",
+    "specs": {
+      "cores": "6",
+      "threads": "12",
+      "boostClock": "5.4 GHz",
+      "cache": "38MB",
+      "tdp": 65
+    },
+    "benchmarks": {
+      "cinebenchMulti": 16300,
+      "blenderRenderSec": 134,
+      "efficiencyScore": 9.6
+    },
+    "description": "Responsive six-core performance in a balanced, low-power package.",
+    "features": [
+      "6 cores and 12 threads",
+      "Boost clock up to 5.4 GHz",
+      "65W thermal design power"
+    ]
+  },
+  {
+    "id": "zenith-9900xtx",
+    "name": "Aethel Zenith 9900 XTX",
+    "category": "gpu",
+    "series": "Zenith",
+    "tagline": "Flagship 4K Ultra & AI",
+    "price": 999,
+    "image": "/assets/Sleek_minimalist_GPU_design_with…_f3b58b35.jpg",
+    "specs": {
+      "boostClock": "2.8 GHz",
+      "vram": "24GB GDDR6",
+      "busWidth": "384-bit",
+      "tflops": 88.4,
+      "tdp": 355
+    },
+    "benchmarks": {
+      "cyberpunk4k": 118,
+      "blackMyth1440p": 152,
+      "blenderRenderSec": 18,
+      "efficiencyScore": 8.4
+    },
+    "description": "A high-end graphics engine tuned for uncompromising 4K gaming and accelerated compute.",
+    "features": [
+      "24GB GDDR6 memory",
+      "384-bit memory bus",
+      "88.4 TFLOPs FP32 compute"
+    ]
+  },
+  {
+    "id": "zenith-9800xt",
+    "name": "Aethel Zenith 9800 XT",
+    "category": "gpu",
+    "series": "Zenith",
+    "tagline": "Triple-Fan High-Refresh",
+    "price": 649,
+    "image": "/assets/GPU_design_with_fans_0d40afa8.jpg",
+    "specs": {
+      "boostClock": "2.6 GHz",
+      "vram": "16GB GDDR6",
+      "busWidth": "256-bit",
+      "tflops": 64.2,
+      "tdp": 260
+    },
+    "benchmarks": {
+      "cyberpunk4k": 87,
+      "blackMyth1440p": 119,
+      "blenderRenderSec": 27,
+      "efficiencyScore": 8.7
+    },
+    "description": "A fast, cool-running graphics card designed for high-refresh 1440p and 4K gaming.",
+    "features": [
+      "16GB GDDR6 memory",
+      "256-bit memory bus",
+      "64.2 TFLOPs FP32 compute"
+    ]
+  },
+  {
+    "id": "zenith-9700xt",
+    "name": "Aethel Zenith 9700 XT",
+    "category": "gpu",
+    "series": "Zenith",
+    "tagline": "Performance 1440p",
+    "price": 499,
+    "image": "/assets/Sleek_minimalist_GPU_design_with…_f3b58b35.jpg",
+    "specs": {
+      "boostClock": "2.5 GHz",
+      "vram": "12GB GDDR6",
+      "busWidth": "192-bit",
+      "tflops": 48,
+      "tdp": 220
+    },
+    "benchmarks": {
+      "cyberpunk4k": 65,
+      "blackMyth1440p": 96,
+      "blenderRenderSec": 36,
+      "efficiencyScore": 8.1
+    },
+    "description": "A balanced graphics card with the memory bandwidth and compute for detailed 1440p play.",
+    "features": [
+      "12GB GDDR6 memory",
+      "192-bit memory bus",
+      "48 TFLOPs FP32 compute"
+    ]
+  },
+  {
+    "id": "zenith-9600xt",
+    "name": "Aethel Zenith 9600 XT",
+    "category": "gpu",
+    "series": "Zenith",
+    "tagline": "Esports High-Velocity",
+    "price": 329,
+    "image": "/assets/GPU_design_with_fans_0d40afa8.jpg",
+    "specs": {
+      "boostClock": "2.4 GHz",
+      "vram": "10GB GDDR6",
+      "busWidth": "160-bit",
+      "tflops": 36.5,
+      "tdp": 160
+    },
+    "benchmarks": {
+      "cyberpunk4k": 43,
+      "blackMyth1440p": 71,
+      "blenderRenderSec": 49,
+      "efficiencyScore": 8.9
+    },
+    "description": "A compact, efficient card built for competitive play and smooth 1080p gaming.",
+    "features": [
+      "10GB GDDR6 memory",
+      "160-bit memory bus",
+      "36.5 TFLOPs FP32 compute"
+    ]
+  }
+]
