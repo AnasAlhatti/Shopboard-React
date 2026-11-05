@@ -1,0 +1,17 @@
+:root {
+  color-scheme: dark;
+  --color-obsidian: #08080a;
+  --color-carbon: #0c0d12;
+  --color-surface: #121319;
+  --color-surface-raised: #181922;
+  --color-crimson: #ff3333;
+  --color-crimson-soft: rgb(255 51 51 / 16%);
+  --color-amber: #ff8c00;
+  --color-emerald: #00e676;
+  --color-graphite: #23242f;
+  --color-text: #f9fafb;
+  --color-muted: #9ca3af;
+  --font-sans: Inter, 'Segoe UI', sans-serif;
+  --radius-card: 1rem;
+  --shadow-card: 0 24px 70px rgb(0 0 0 / 35%);
+}
