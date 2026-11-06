@@ -1,13 +1,10 @@
 import { useState } from 'react';
-import { useCart } from '../../hooks/useCart';
-import { useProducts } from '../../hooks/useProducts';
-import type { BundledRig } from '../../types/cart';
-import type { Product } from '../../types/product';
+import { useCart } from '../cart/hooks/useCart';
+import { useProducts } from '../catalog/hooks/useProducts';
+import type { BundledRig } from '../cart/types/cart';
+import type { Product } from '../../shared/types/product';
 import { ComponentSlotSelector } from './components/ComponentSlotSelector';
-import {
-  MEMORY_STORAGE_TIERS,
-  type MemoryStorageTier,
-} from './data/tiers';
+import { MEMORY_STORAGE_TIERS, type MemoryStorageTier } from './data/tiers';
 import { PowerSynergyMeter } from './components/PowerSynergyMeter';
 import { RigVisualizer } from './components/RigVisualizer';
 import { calculateSynergy } from './utils/bottleneck';
@@ -50,7 +47,8 @@ export function ConfiguratorPage() {
   const cpuPrice = activeCpu?.price ?? 0;
   const gpuPrice = activeGpu?.price ?? 0;
   const chassisBasePrice = 180; // Premium chassis + thermal assembly
-  const totalPrice = cpuPrice + gpuPrice + selectedTier.price + chassisBasePrice;
+  const totalPrice =
+    cpuPrice + gpuPrice + selectedTier.price + chassisBasePrice;
 
   const handleAddAssembledRig = () => {
     if (!activeCpu || !activeGpu) return;
@@ -83,7 +81,7 @@ export function ConfiguratorPage() {
       series: 'Quantum',
       tagline: selectedTier.specs,
       price: selectedTier.price,
-      image: '/assets/PC_hardware_inside_glass_case_a7ed0ff3.jpg',
+      image: '/assets/pc-hardware-glass-case-a7ed0ff3.jpg',
       specs: {
         boostClock: '6400 MT/s',
         tdp: selectedTier.tdp,
@@ -127,8 +125,9 @@ export function ConfiguratorPage() {
         <p className="eyebrow">Precision System Engineering</p>
         <h1>Custom Rig Engine</h1>
         <p>
-          Configure an extreme workstation or gaming battlestation. Monitor real-time TDP power
-          dissipation, verify PSU headroom, and validate zero compute bottleneck.
+          Configure an extreme workstation or gaming battlestation. Monitor
+          real-time TDP power dissipation, verify PSU headroom, and validate
+          zero compute bottleneck.
         </p>
       </header>
 

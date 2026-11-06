@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useProducts } from '../../hooks/useProducts';
+import { useProducts } from './hooks/useProducts';
 import { FilterSidebar } from './components/FilterSidebar';
 import { ProductGrid } from './components/ProductGrid';
 import { SortBar, isSortOption, type SortOption } from './components/SortBar';
@@ -173,8 +173,8 @@ export function CatalogPage() {
         <p className="eyebrow">Silicon Storefront</p>
         <h1>Engineered for absolute compute.</h1>
         <p>
-          Explore precision-crafted desktop microprocessors and graphics
-          engines built for extreme gaming, 3D rendering, and heavy AI workloads.
+          Explore precision-crafted desktop microprocessors and graphics engines
+          built for extreme gaming, 3D rendering, and heavy AI workloads.
         </p>
       </header>
 

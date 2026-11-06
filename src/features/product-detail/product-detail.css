@@ -78,7 +78,11 @@
 .product-gallery__glow {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(255, 51, 51, 0.12) 0%, transparent 70%);
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 51, 51, 0.12) 0%,
+    transparent 70%
+  );
   pointer-events: none;
 }
 

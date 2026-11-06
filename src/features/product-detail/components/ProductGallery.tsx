@@ -1,4 +1,4 @@
-import type { Product } from '../../../types/product';
+import type { Product } from '../../../shared/types/product';
 
 interface ProductGalleryProps {
   product: Product;

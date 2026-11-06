@@ -19,7 +19,7 @@ const spotlights: Record<'cpu' | 'gpu', SpotlightItem> = {
     title: 'Parallel power. Precise control.',
     description:
       'High-frequency cores and generous on-chip cache adapt to demanding creative workloads and low-latency play.',
-    image: '/assets/CPU_heat_spreader_glowing_traces_eb58e993.jpg',
+    image: '/assets/cpu-heat-spreader-glowing-traces-eb58e993.jpg',
     alt: 'Processor heat spreader with glowing circuit traces',
     accent: 'crimson',
   },
@@ -29,7 +29,7 @@ const spotlights: Record<'cpu' | 'gpu', SpotlightItem> = {
     title: 'More frames. More worlds.',
     description:
       'A wide graphics pipeline brings high-throughput compute, immersive ray tracing, and expansive memory to every frame.',
-    image: '/assets/GPU_design_with_fans_0d40afa8.jpg',
+    image: '/assets/gpu-design-with-fans-0d40afa8.jpg',
     alt: 'Aethel graphics card with triple cooling fans',
     accent: 'amber',
   },

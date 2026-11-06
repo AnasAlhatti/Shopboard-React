@@ -1,6 +1,6 @@
 import { ArrowUpRight, Scale, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useCompare } from '../../hooks/useCompare';
+import { useCompare } from '../../features/compare/hooks/useCompare';
 
 export function CompareDock() {
   const { comparedItems, category, clearCompare } = useCompare();

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { fetchProducts, getCachedProducts } from '../services/productService';
-import type { Product } from '../types/product';
+import type { Product } from '../../../shared/types/product';
 
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>(

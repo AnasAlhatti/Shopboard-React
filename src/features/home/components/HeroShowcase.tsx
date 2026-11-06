@@ -17,7 +17,7 @@ export function HeroShowcase({
       <div className="home-hero__image-wrap" aria-hidden="true">
         <img
           className="home-hero__image"
-          src="/assets/GPU_and_CPU_processors_displayed_1f861609.jpg"
+          src="/assets/gpu-and-cpu-processors-1f861609.jpg"
           alt=""
         />
       </div>

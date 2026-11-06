@@ -1,5 +1,5 @@
 import { BarChart3, Trophy } from 'lucide-react';
-import type { Product } from '../../../types/product';
+import type { Product } from '../../../shared/types/product';
 
 interface BenchmarkBarChartProps {
   items: Product[];
@@ -67,11 +67,17 @@ export function BenchmarkBarChart({ items }: BenchmarkBarChartProps) {
       ];
 
   return (
-    <section className="benchmark-chart-section" aria-labelledby="benchmark-bars-heading">
+    <section
+      className="benchmark-chart-section"
+      aria-labelledby="benchmark-bars-heading"
+    >
       <div className="section-heading">
         <p className="eyebrow">Aethel Performance Lab</p>
         <h2 id="benchmark-bars-heading">Head-to-Head Benchmark Bars</h2>
-        <p>Comparative architectural benchmarks validated on standardized 3nm testbenches.</p>
+        <p>
+          Comparative architectural benchmarks validated on standardized 3nm
+          testbenches.
+        </p>
       </div>
 
       <div className="benchmark-charts-list">
@@ -88,7 +94,9 @@ export function BenchmarkBarChart({ items }: BenchmarkBarChartProps) {
                   <h3 className="benchmark-chart-card__title">
                     <BarChart3 size={16} aria-hidden="true" /> {metric.title}
                   </h3>
-                  <p className="benchmark-chart-card__subtitle">{metric.subtitle}</p>
+                  <p className="benchmark-chart-card__subtitle">
+                    {metric.subtitle}
+                  </p>
                 </div>
               </div>
 
@@ -105,7 +113,9 @@ export function BenchmarkBarChart({ items }: BenchmarkBarChartProps) {
                   return (
                     <div key={item.id} className="benchmark-bar-row">
                       <div className="benchmark-bar-row__info">
-                        <span className="benchmark-bar-row__name">{item.name}</span>
+                        <span className="benchmark-bar-row__name">
+                          {item.name}
+                        </span>
                         {isLeader ? (
                           <span className="leader-pill">
                             <Trophy size={11} aria-hidden="true" /> Leader

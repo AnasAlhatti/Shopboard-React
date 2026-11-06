@@ -1,4 +1,4 @@
-import type { Product } from '../../../types/product';
+import type { Product } from '../../../shared/types/product';
 
 interface ArchitectureSpecTableProps {
   product: Product;
@@ -8,7 +8,10 @@ export function ArchitectureSpecTable({ product }: ArchitectureSpecTableProps) {
   const isCpu = product.category === 'cpu';
 
   return (
-    <section className="spec-table-section" aria-labelledby="architecture-specs-heading">
+    <section
+      className="spec-table-section"
+      aria-labelledby="architecture-specs-heading"
+    >
       <h3 id="architecture-specs-heading" className="spec-table-title">
         Technical Specifications
       </h3>

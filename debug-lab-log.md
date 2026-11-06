@@ -9,11 +9,13 @@
 - **Fix:**
 
   ```tsx
-  {categories.map((category) => (
-    <span key={category} className="chip">
-      {category}
-    </span>
-  ))}
+  {
+    categories.map((category) => (
+      <span key={category} className="chip">
+        {category}
+      </span>
+    ));
+  }
   ```
 
 ---
@@ -51,17 +53,19 @@
   }
 
   // ... pass the same callback down:
-  <CartRow key={item.id} item={item} product={product} onChange={onChange} />
+  <CartRow key={item.id} item={item} product={product} onChange={onChange} />;
   ```
 
   ```tsx
   // App.tsx
   function updateQty(id: number, qty: number) {
-    setCart((prev) => prev.map((item) => (item.id === id ? { ...item, qty } : item)));
+    setCart((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, qty } : item)),
+    );
   }
 
   // ...
-  <CartPanel cart={cart} products={PRODUCTS} onChange={updateQty} />
+  <CartPanel cart={cart} products={PRODUCTS} onChange={updateQty} />;
   ```
 
 ---
@@ -76,7 +80,7 @@
 
   ```tsx
   const shown =
-    sort === "price-asc"
+    sort === 'price-asc'
       ? [...products].sort((a, b) => a.price - b.price)
       : products;
   ```
@@ -94,9 +98,11 @@
 - **Fix:** Use the stable, unique product id as the key:
 
   ```tsx
-  {shown.map((product) => (
-    <ProductCard key={product.id} product={product} onAdd={onAdd} />
-  ))}
+  {
+    shown.map((product) => (
+      <ProductCard key={product.id} product={product} onAdd={onAdd} />
+    ));
+  }
   ```
 
 ---
@@ -106,7 +112,7 @@
 - **What I saw:** Sold-out products (`stock: 0` -"Mini Crossbody Bag" and "Wool Scarf") show a stray `0` in the stock line instead of showing nothing.
 - **Component:** `src/components/StockNote.tsx` (line 6)
 - **How I found it:** Rendered output/props inspection. `stock` is `0`, yet the paragraph contains the text `0`.
-- **Cause:** `stock && <span>…</span>` short-circuits to the number `0` when `stock` is `0`. React renders numbers  including `0`   as text. Only `null`, `undefined`, `false`, and `""` render nothing.
+- **Cause:** `stock && <span>…</span>` short-circuits to the number `0` when `stock` is `0`. React renders numbers including `0` as text. Only `null`, `undefined`, `false`, and `""` render nothing.
 - **Fix:** Compare explicitly so the expression returns a boolean:
 
   ```tsx

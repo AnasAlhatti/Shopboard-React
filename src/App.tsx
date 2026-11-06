@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { CartProvider } from './context/CartContext';
-import { CompareProvider } from './context/CompareContext';
+import { CartProvider } from './features/cart/context/CartContext';
+import { CompareProvider } from './features/compare/context/CompareContext';
 import { CartPage } from './features/cart/CartPage';
 import { CatalogPage } from './features/catalog/CatalogPage';
 import { ComparePage } from './features/compare/ComparePage';

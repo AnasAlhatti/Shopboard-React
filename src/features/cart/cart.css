@@ -64,7 +64,13 @@
 }
 
 .cart-item-card--rig {
-  background: radial-gradient(circle at 10% 50%, rgba(255, 51, 51, 0.05) 0%, transparent 70%), var(--color-surface);
+  background:
+    radial-gradient(
+      circle at 10% 50%,
+      rgba(255, 51, 51, 0.05) 0%,
+      transparent 70%
+    ),
+    var(--color-surface);
   border-color: rgba(255, 51, 51, 0.3);
 }
 

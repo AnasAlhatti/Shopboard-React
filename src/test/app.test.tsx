@@ -1,18 +1,33 @@
 import type { ReactNode } from 'react';
-import { act, fireEvent, render, renderHook, screen } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Contexts & Hooks
-import { CartContext, CartProvider } from '../context/CartContext';
-import { CompareContext, CompareProvider } from '../context/CompareContext';
-import { useCart } from '../hooks/useCart';
-import { useCompare } from '../hooks/useCompare';
+import {
+  CartContext,
+  CartProvider,
+} from '../features/cart/context/CartContext';
+import {
+  CompareContext,
+  CompareProvider,
+} from '../features/compare/context/CompareContext';
+import { useCart } from '../features/cart/hooks/useCart';
+import { useCompare } from '../features/compare/hooks/useCompare';
 
 // Services & Types
-import { fetchProductById, fetchProducts } from '../services/productService';
-import type { CartContextValue, CartItem } from '../types/cart';
-import type { Product } from '../types/product';
+import {
+  fetchProductById,
+  fetchProducts,
+} from '../features/catalog/services/productService';
+import type { CartContextValue, CartItem } from '../features/cart/types/cart';
+import type { Product } from '../shared/types/product';
 
 // Pages & Components
 import { CartPage } from '../features/cart/CartPage';
@@ -31,7 +46,7 @@ const sampleCpu: Product = {
   series: 'Vortex',
   tagline: 'Flagship Multi-Thread',
   price: 649,
-  image: '/assets/CPU_heat_spreader_glowing_traces_eb58e993.jpg',
+  image: '/assets/cpu-heat-spreader-glowing-traces-eb58e993.jpg',
   specs: {
     cores: '16',
     threads: '32',
@@ -59,7 +74,7 @@ const sampleCpu2: Product = {
   series: 'Vortex',
   tagline: 'Ultimate Gaming',
   price: 479,
-  image: '/assets/Sleek_minimal_CPU_processor_0f31f51b.jpg',
+  image: '/assets/minimal-cpu-processor-0f31f51b.jpg',
   specs: {
     cores: '8',
     threads: '16',
@@ -83,7 +98,7 @@ const sampleGpu: Product = {
   series: 'Zenith',
   tagline: 'Flagship 4K Ultra & AI',
   price: 999,
-  image: '/assets/Sleek_minimalist_GPU_design_with._f3b58b35.jpg',
+  image: '/assets/minimalist-gpu-design-f3b58b35.jpg',
   specs: {
     boostClock: '2.8 GHz',
     vram: '24GB GDDR6',
@@ -104,15 +119,16 @@ const mockCatalogProducts: Product[] = [sampleCpu, sampleCpu2, sampleGpu];
 // 1. PRODUCT SERVICE TESTS
 // =============================================================================
 describe('productService', () => {
-  const serviceProducts: { id: string; name: string; category: 'cpu' | 'gpu' }[] =
-    Array.from({ length: 8 }, (_, index) => {
-      const category: 'cpu' | 'gpu' = index < 4 ? 'cpu' : 'gpu';
-      return {
-        id: index === 0 ? 'vortex-9950x' : `product-${index}`,
-        name: index === 0 ? 'Aethel Vortex 9950X' : `Product ${index}`,
-        category,
-      };
-    });
+  const serviceProducts: Product[] = Array.from({ length: 8 }, (_, index) => {
+    const isCpu = index < 4;
+    const base = isCpu ? sampleCpu : sampleGpu;
+    return {
+      ...base,
+      id: index === 0 ? 'vortex-9950x' : `product-${index}`,
+      name: index === 0 ? 'Aethel Vortex 9950X' : `Product ${index}`,
+      category: isCpu ? 'cpu' : 'gpu',
+    };
+  });
 
   beforeEach(() => {
     vi.stubGlobal(
@@ -203,7 +219,8 @@ describe('CartContext', () => {
     );
     expect(standaloneItems).toHaveLength(2);
     expect(
-      standaloneItems.find((item) => item.product?.id === sampleCpu.id)?.quantity,
+      standaloneItems.find((item) => item.product?.id === sampleCpu.id)
+        ?.quantity,
     ).toBe(4);
     expect(
       standaloneItems.find((item) => item.product?.category === 'gpu')
@@ -243,7 +260,9 @@ describe('CompareContext', () => {
   });
 
   it('locks the comparison to one category and persists selected products', () => {
-    const { result, unmount } = renderHook(() => useCompare(), { wrapper: compareWrapper });
+    const { result, unmount } = renderHook(() => useCompare(), {
+      wrapper: compareWrapper,
+    });
     const warning = vi
       .spyOn(console, 'warn')
       .mockImplementation(() => undefined);
@@ -255,12 +274,16 @@ describe('CompareContext', () => {
     expect(warning).toHaveBeenCalled();
     unmount();
 
-    const restored = renderHook(() => useCompare(), { wrapper: compareWrapper });
+    const restored = renderHook(() => useCompare(), {
+      wrapper: compareWrapper,
+    });
     expect(restored.result.current.comparedItems).toEqual([sampleCpu]);
     restored.unmount();
 
     window.localStorage.setItem('aethel-compare', '{broken');
-    const corrupted = renderHook(() => useCompare(), { wrapper: compareWrapper });
+    const corrupted = renderHook(() => useCompare(), {
+      wrapper: compareWrapper,
+    });
     expect(corrupted.result.current.comparedItems).toEqual([]);
   });
 });
@@ -277,7 +300,9 @@ describe('Header', () => {
       <>
         <Header onOpenCart={() => undefined} />
         <button onClick={() => addToCart(sampleCpu)}>Add cart item</button>
-        <button onClick={() => toggleCompare(sampleCpu)}>Add compare item</button>
+        <button onClick={() => toggleCompare(sampleCpu)}>
+          Add compare item
+        </button>
       </>
     );
   }
@@ -336,7 +361,10 @@ describe('HomePage', () => {
   beforeEach(() => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({ ok: true, json: async () => [sampleCpu, sampleGpu] }),
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => [sampleCpu, sampleGpu],
+      }),
     );
   });
 
@@ -398,7 +426,9 @@ describe('CatalogPage', () => {
     window.history.replaceState(null, '', '/catalog');
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({ ok: true, json: async () => mockCatalogProducts }),
+      vi
+        .fn()
+        .mockResolvedValue({ ok: true, json: async () => mockCatalogProducts }),
     );
   });
 
@@ -429,7 +459,9 @@ describe('CatalogPage', () => {
 
     expect(screen.getByText('Aethel Vortex 9800X3D')).toBeInTheDocument();
     expect(screen.queryByText('Aethel Vortex 9950X')).not.toBeInTheDocument();
-    expect(screen.queryByText('Aethel Zenith 9900 XTX')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Aethel Zenith 9900 XTX'),
+    ).not.toBeInTheDocument();
   });
 
   it('sorts products by price ascending and descending', async () => {
@@ -512,7 +544,9 @@ describe('ProductDetailPage', () => {
     const addButton = screen.getByRole('button', { name: /add to cart/i });
     fireEvent.click(addButton);
 
-    expect(screen.getByText(/added 2 unit\(s\) of aethel vortex 9950x to cart/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/added 2 unit\(s\) of aethel vortex 9950x to cart/i),
+    ).toBeInTheDocument();
   });
 
   it('shows graceful missing state for unknown product id', async () => {
@@ -529,7 +563,9 @@ describe('ProductDetailPage', () => {
 // 8. COMPARE PAGE TESTS
 // =============================================================================
 describe('ComparePage', () => {
-  function renderComparePage(comparedItems: Product[] = [sampleCpu, sampleCpu2]) {
+  function renderComparePage(
+    comparedItems: Product[] = [sampleCpu, sampleCpu2],
+  ) {
     const toggleCompare = vi.fn();
     const removeFromCompare = vi.fn();
     const clearCompare = vi.fn();
@@ -587,12 +623,18 @@ describe('ComparePage', () => {
         name: /benchmark comparison bench/i,
       }),
     ).toBeInTheDocument();
-    expect(screen.getAllByText('Aethel Vortex 9950X').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Aethel Vortex 9800X3D').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Aethel Vortex 9950X').length).toBeGreaterThan(
+      0,
+    );
+    expect(screen.getAllByText('Aethel Vortex 9800X3D').length).toBeGreaterThan(
+      0,
+    );
 
     expect(screen.getByText(/physical cores/i)).toBeInTheDocument();
     expect(screen.getByText(/boost clock/i)).toBeInTheDocument();
-    expect(screen.getByText(/head-to-head benchmark bars/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/head-to-head benchmark bars/i),
+    ).toBeInTheDocument();
     expect(screen.getByText(/cinebench r24 multi-core/i)).toBeInTheDocument();
   });
 
@@ -611,8 +653,12 @@ describe('ComparePage', () => {
   it('shows empty comparison state when no products are selected', () => {
     renderComparePage([]);
 
-    expect(screen.getByRole('heading', { name: /comparison bench empty/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /explore catalog/i })).toHaveAttribute('href', '/catalog');
+    expect(
+      screen.getByRole('heading', { name: /comparison bench empty/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: /explore catalog/i }),
+    ).toHaveAttribute('href', '/catalog');
   });
 });
 
@@ -675,9 +721,18 @@ describe('ConfiguratorPage', () => {
   it('renders custom rig visualizer, component slots, and live power meter', async () => {
     renderConfigurator();
 
-    expect(await screen.findByRole('heading', { level: 1, name: /custom rig engine/i })).toBeInTheDocument();
-    expect(screen.getAllByText('Aethel Vortex 9800X3D').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Aethel Zenith 9900 XTX').length).toBeGreaterThan(0);
+    expect(
+      await screen.findByRole('heading', {
+        level: 1,
+        name: /custom rig engine/i,
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText('Aethel Vortex 9800X3D').length).toBeGreaterThan(
+      0,
+    );
+    expect(
+      screen.getAllByText('Aethel Zenith 9900 XTX').length,
+    ).toBeGreaterThan(0);
 
     expect(screen.getByText(/estimated system power/i)).toBeInTheDocument();
     expect(screen.getByText(/recommended psu/i)).toBeInTheDocument();
@@ -686,8 +741,13 @@ describe('ConfiguratorPage', () => {
   it('adds custom build as a bundled rig item when "Add as Assembled Rig" is clicked', async () => {
     const { addRigToCart } = renderConfigurator();
 
-    await screen.findByRole('heading', { level: 1, name: /custom rig engine/i });
-    const bundleBtn = screen.getByRole('button', { name: /add as assembled custom rig/i });
+    await screen.findByRole('heading', {
+      level: 1,
+      name: /custom rig engine/i,
+    });
+    const bundleBtn = screen.getByRole('button', {
+      name: /add as assembled custom rig/i,
+    });
     fireEvent.click(bundleBtn);
 
     expect(addRigToCart).toHaveBeenCalledTimes(1);
@@ -702,12 +762,23 @@ describe('ConfiguratorPage', () => {
   it('adds components individually when "Add Components Individually" is clicked', async () => {
     const { addToCart } = renderConfigurator();
 
-    await screen.findByRole('heading', { level: 1, name: /custom rig engine/i });
-    const individualBtn = screen.getByRole('button', { name: /add components individually/i });
+    await screen.findByRole('heading', {
+      level: 1,
+      name: /custom rig engine/i,
+    });
+    const individualBtn = screen.getByRole('button', {
+      name: /add components individually/i,
+    });
     fireEvent.click(individualBtn);
 
-    expect(addToCart).toHaveBeenCalledWith(expect.objectContaining({ id: 'vortex-9800x3d' }), 1);
-    expect(addToCart).toHaveBeenCalledWith(expect.objectContaining({ id: 'zenith-9900xtx' }), 1);
+    expect(addToCart).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'vortex-9800x3d' }),
+      1,
+    );
+    expect(addToCart).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'zenith-9900xtx' }),
+      1,
+    );
   });
 });
 
@@ -740,7 +811,9 @@ describe('CartPage', () => {
     unitPrice: 649,
   };
 
-  function renderCartPage(initialItems: CartItem[] = [mockStandaloneItem, mockRigItem]) {
+  function renderCartPage(
+    initialItems: CartItem[] = [mockStandaloneItem, mockRigItem],
+  ) {
     const addToCart = vi.fn();
     const addRigToCart = vi.fn();
     const unbundleRig = vi.fn();
@@ -748,8 +821,14 @@ describe('CartPage', () => {
     const updateQuantity = vi.fn();
     const clearCart = vi.fn();
 
-    const subtotal = initialItems.reduce((acc, item) => acc + item.unitPrice * item.quantity, 0);
-    const itemCount = initialItems.reduce((acc, item) => acc + item.quantity, 0);
+    const subtotal = initialItems.reduce(
+      (acc, item) => acc + item.unitPrice * item.quantity,
+      0,
+    );
+    const itemCount = initialItems.reduce(
+      (acc, item) => acc + item.quantity,
+      0,
+    );
 
     const mockCartValue: CartContextValue = {
       items: initialItems,
@@ -793,20 +872,28 @@ describe('CartPage', () => {
   it('renders cart line items, pricing summary, and bundled rig breakdown', () => {
     renderCartPage();
 
-    expect(screen.getByRole('heading', { level: 1, name: /silicon shopping cart/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 1, name: /silicon shopping cart/i }),
+    ).toBeInTheDocument();
     expect(screen.getByText('Aethel Vortex 9950X')).toBeInTheDocument();
     expect(screen.getByText('Aethel Custom Battlestation')).toBeInTheDocument();
     expect(screen.getByText(/64GB DDR5 \+ 2TB Gen5 SSD/i)).toBeInTheDocument();
   });
 
   it('allows adjusting quantity and removing standalone items', () => {
-    const { updateQuantity, removeFromCart } = renderCartPage([mockStandaloneItem]);
+    const { updateQuantity, removeFromCart } = renderCartPage([
+      mockStandaloneItem,
+    ]);
 
-    const incrementBtn = screen.getByRole('button', { name: /increase quantity of aethel vortex 9950x/i });
+    const incrementBtn = screen.getByRole('button', {
+      name: /increase quantity of aethel vortex 9950x/i,
+    });
     fireEvent.click(incrementBtn);
     expect(updateQuantity).toHaveBeenCalledWith('product-vortex-9950x', 3);
 
-    const removeBtn = screen.getByRole('button', { name: /remove aethel vortex 9950x from cart/i });
+    const removeBtn = screen.getByRole('button', {
+      name: /remove aethel vortex 9950x from cart/i,
+    });
     fireEvent.click(removeBtn);
     expect(removeFromCart).toHaveBeenCalledWith('product-vortex-9950x');
   });
@@ -814,7 +901,9 @@ describe('CartPage', () => {
   it('allows unbundling a custom rig into individual components', () => {
     const { unbundleRig } = renderCartPage([mockRigItem]);
 
-    const unbundleBtn = screen.getByRole('button', { name: /unbundle rig into individual components/i });
+    const unbundleBtn = screen.getByRole('button', {
+      name: /unbundle rig into individual components/i,
+    });
     fireEvent.click(unbundleBtn);
     expect(unbundleRig).toHaveBeenCalledWith('rig-item-1');
   });
@@ -830,12 +919,18 @@ describe('CartPage', () => {
 
     expect(screen.getByText(/10% promo applied/i)).toBeInTheDocument();
 
-    const checkoutBtn = screen.getByRole('button', { name: /proceed to checkout/i });
+    const checkoutBtn = screen.getByRole('button', {
+      name: /proceed to checkout/i,
+    });
     fireEvent.click(checkoutBtn);
 
-    expect(screen.getByRole('heading', { level: 2, name: /order confirmed/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 2, name: /order confirmed/i }),
+    ).toBeInTheDocument();
 
-    const closeBtn = screen.getByRole('button', { name: /complete & clear cart/i });
+    const closeBtn = screen.getByRole('button', {
+      name: /complete & clear cart/i,
+    });
     fireEvent.click(closeBtn);
     expect(clearCart).toHaveBeenCalledTimes(1);
   });

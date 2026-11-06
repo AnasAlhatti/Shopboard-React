@@ -1,8 +1,8 @@
 import { Cpu, Gauge, Plus, Scale } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useCart } from '../../../hooks/useCart';
-import { useCompare } from '../../../hooks/useCompare';
-import type { Product } from '../../../types/product';
+import { useCart } from '../../cart/hooks/useCart';
+import { useCompare } from '../../compare/hooks/useCompare';
+import type { Product } from '../../../shared/types/product';
 
 interface ProductCardProps {
   product: Product;
@@ -13,7 +13,8 @@ export function ProductCard({ product }: ProductCardProps) {
   const { toggleCompare, isInCompare, category } = useCompare();
 
   const isCompared = isInCompare(product.id);
-  const compareDisabled = category !== null && category !== product.category && !isCompared;
+  const compareDisabled =
+    category !== null && category !== product.category && !isCompared;
 
   return (
     <article className="product-card" aria-labelledby={`title-${product.id}`}>
@@ -49,7 +50,9 @@ export function ProductCard({ product }: ProductCardProps) {
             <>
               <div className="spec-badge">
                 <dt>Cores</dt>
-                <dd>{product.specs.cores}C / {product.specs.threads}T</dd>
+                <dd>
+                  {product.specs.cores}C / {product.specs.threads}T
+                </dd>
               </div>
               <div className="spec-badge">
                 <dt>Boost</dt>
@@ -90,14 +93,20 @@ export function ProductCard({ product }: ProductCardProps) {
       <footer className="product-card__footer">
         <div className="product-card__price-wrap">
           <span className="product-card__price-label">MSRP</span>
-          <span className="product-card__price">${product.price.toLocaleString()}</span>
+          <span className="product-card__price">
+            ${product.price.toLocaleString()}
+          </span>
         </div>
 
         <div className="product-card__actions">
           <label
             htmlFor={`compare-${product.id}`}
             className={`compare-checkbox-label${compareDisabled ? ' is-disabled' : ''}${isCompared ? ' is-active' : ''}`}
-            title={compareDisabled ? `Compare tray is locked to ${category?.toUpperCase()}s` : 'Toggle comparison'}
+            title={
+              compareDisabled
+                ? `Compare tray is locked to ${category?.toUpperCase()}s`
+                : 'Toggle comparison'
+            }
           >
             <input
               id={`compare-${product.id}`}

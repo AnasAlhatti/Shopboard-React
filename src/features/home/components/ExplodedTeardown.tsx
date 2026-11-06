@@ -44,7 +44,7 @@ export function ExplodedTeardown() {
         <figure className="teardown-visual">
           <img
             className="teardown-visual__image"
-            src="/assets/Exploded_assembly_view_of_hardware_627c842e.jpg"
+            src="/assets/exploded-hardware-assembly-627c842e.jpg"
             alt="An exploded assembly view of a processor and its cooling layers"
             loading="lazy"
           />

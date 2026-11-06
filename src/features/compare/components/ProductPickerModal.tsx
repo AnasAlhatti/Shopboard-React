@@ -1,5 +1,5 @@
 import { Plus, X } from 'lucide-react';
-import type { Product } from '../../../types/product';
+import type { Product } from '../../../shared/types/product';
 
 interface ProductPickerModalProps {
   isOpen: boolean;
@@ -19,12 +19,19 @@ export function ProductPickerModal({
   if (!isOpen) return null;
 
   return (
-    <div className="picker-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="picker-title">
+    <div
+      className="picker-modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="picker-title"
+    >
       <div className="picker-modal">
         <header className="picker-modal__header">
           <div>
             <p className="eyebrow">Silicon Slots (Max 4)</p>
-            <h2 id="picker-title">Select {category.toUpperCase()} to Compare</h2>
+            <h2 id="picker-title">
+              Select {category.toUpperCase()} to Compare
+            </h2>
           </div>
           <button
             type="button"
@@ -38,7 +45,9 @@ export function ProductPickerModal({
 
         <div className="picker-modal__list">
           {availableProducts.length === 0 ? (
-            <p className="picker-modal__empty">All available {category.toUpperCase()}s are already in comparison.</p>
+            <p className="picker-modal__empty">
+              All available {category.toUpperCase()}s are already in comparison.
+            </p>
           ) : (
             availableProducts.map((product) => (
               <div key={product.id} className="picker-product-row">
@@ -55,7 +64,9 @@ export function ProductPickerModal({
                   </span>
                 </div>
                 <div className="picker-product-action">
-                  <span className="picker-product-price">${product.price.toLocaleString()}</span>
+                  <span className="picker-product-price">
+                    ${product.price.toLocaleString()}
+                  </span>
                   <button
                     type="button"
                     className="button button--primary button--sm"

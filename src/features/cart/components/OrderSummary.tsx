@@ -103,7 +103,8 @@ export function OrderSummary({
         )}
         {appliedPromo && (
           <p className="promo-success-msg" role="status">
-            <Check size={14} aria-hidden="true" /> 10% promo applied successfully!
+            <Check size={14} aria-hidden="true" /> 10% promo applied
+            successfully!
           </p>
         )}
       </form>

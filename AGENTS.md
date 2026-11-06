@@ -13,21 +13,19 @@
 
 ```
 src/
-├── context/                   # Global state providers (CartContext, CompareContext)
 ├── features/                  # Independent, domain-driven feature modules
-│   ├── cart/                  # CartPage, CartItemRow, OrderSummary, CheckoutModal, cart.css
-│   ├── catalog/               # CatalogPage, FilterSidebar, ProductGrid, ProductCard, SortBar, catalog.css
-│   ├── compare/               # ComparePage, CompareTable, BenchmarkBarChart, ProductPickerModal, compare.css
-│   ├── configurator/          # ConfiguratorPage, RigVisualizer, ComponentSlotSelector, PowerSynergyMeter, configurator.css
-│   ├── home/                  # HomePage, HeroShowcase, ExplodedTeardown, SiliconSpotlight, home.css
-│   └── product-detail/        # ProductDetailPage, ProductGallery, ArchitectureSpecTable, MiniBenchmarkCard, product-detail.css
-├── hooks/                     # Custom reusable hooks (useCart, useCompare, useProducts)
-├── services/                  # API and async data services (productService)
-├── shared/                    # Cross-feature reusable building blocks
+│   ├── cart/                  # CartPage, components/, context/, hooks/, types/, cart.css
+│   ├── catalog/               # CatalogPage, components/, hooks/, services/, catalog.css
+│   ├── compare/               # ComparePage, components/, context/, hooks/, types/, compare.css
+│   ├── configurator/          # ConfiguratorPage, components/, data/, utils/, configurator.css
+│   ├── home/                  # HomePage, components/, home.css
+│   └── product-detail/        # ProductDetailPage, components/, product-detail.css
+├── shared/                    # Cross-feature reusable building blocks & infrastructure
+│   ├── api/                   # apiClient.ts (general network client used by all features)
 │   ├── components/            # Header, Footer, QuickCartDrawer, CompareDock
-│   └── styles/                # design-tokens.css
-├── test/                      # Test suites (app.test.tsx, setup.ts)
-├── types/                     # Shared TypeScript domain contracts (product.ts, cart.ts, compare.ts)
+│   ├── styles/                # design-tokens.css
+│   └── types/                 # product.ts (shared domain entity across features)
+├── test/                      # Unified test suite (app.test.tsx, setup.ts)
 ├── App.tsx                    # Top-level shell and route orchestration
 ├── main.tsx                   # Application DOM mounting entry point
 └── index.css                  # CSS reset and root design token foundations
@@ -41,17 +39,25 @@ When adding a new capability (e.g., `wishlist`, `reviews`, `account`):
    - Create `<Feature>Page.tsx` as the main route view.
    - Create `<feature-name>.css` for feature-scoped styles (mobile-first, min-width, using tokens).
    - Place feature-exclusive components inside `src/features/<feature-name>/components/`.
-2. **State & Persistence (`src/context/<Feature>Context.tsx`):**
-   - If state is shared across multiple pages or survives refresh, create a React Context provider with `localStorage` synchronization.
-3. **Custom Consumer Hook (`src/hooks/use<Feature>.ts`):**
-   - Encapsulate context consumption and dispatch actions cleanly.
-4. **Types (`src/types/<feature>.ts`):**
-   - Define strict TypeScript interfaces and data models (never use `any`).
-5. **Routing & Navigation:**
+   - Place feature state in `src/features/<feature-name>/context/<Feature>Context.tsx` with `localStorage` synchronization if needed.
+   - Place custom consumer hooks in `src/features/<feature-name>/hooks/use<Feature>.ts`.
+   - Place feature-specific types in `src/features/<feature-name>/types/<feature>.ts`.
+   - Place data fetching/services in `src/features/<feature-name>/services/<feature>Service.ts` using `getJson` from `src/shared/api/apiClient`.
+2. **Shared Infrastructure (`src/shared/`):**
+   - Only place code in `src/shared/` if it is genuinely shared across multiple features (e.g. `apiClient`, shared `Product` type, global shell components).
+3. **Routing & Navigation:**
    - Register the route in `src/App.tsx`.
    - Add navigation links or trigger buttons in `src/shared/components/Header.tsx` or feature cards.
-6. **Testing (`src/test/app.test.tsx`):**
+4. **Testing (`src/test/app.test.tsx`):**
    - Add unit and integration tests to the unified test suite.
+
+## Naming Rules
+
+- **React components, pages, contexts, and providers:** PascalCase, e.g. `CartPage.tsx`, `CartContext.tsx`.
+- **Hooks:** `use` + PascalCase name in camelCase filename, e.g. `useCart.ts`, `useProducts.ts`.
+- **Non-component TypeScript modules (services, utilities, data, and type contracts):** lower camelCase, e.g. `productService.ts`, `apiClient.ts`, `bottleneck.ts`, `tiers.ts`, `product.ts`.
+- **Stylesheets:** kebab-case, e.g. `product-detail.css`, `design-tokens.css`.
+- **Static asset filenames:** lowercase kebab-case with descriptive names and normal extensions (e.g. `minimalist-gpu-design-f3b58b35.jpg`); avoid spaces, ellipses, and special punctuation.
 
 ## Commands
 
@@ -60,7 +66,6 @@ When adding a new capability (e.g., `wishlist`, `reviews`, `account`):
 - `npm run lint` checks the code with ESLint.
 - `npm run typecheck` runs strict TypeScript checks.
 - `npm test` runs the browser-independent unit tests.
-
 
 ## Rules
 

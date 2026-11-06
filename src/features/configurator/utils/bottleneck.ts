@@ -1,4 +1,4 @@
-import type { Product } from '../../../types/product';
+import type { Product } from '../../../shared/types/product';
 
 export interface BottleneckDiagnosis {
   score: number;
@@ -29,7 +29,8 @@ export function calculateSynergy(
     return {
       score: 100,
       label: 'Optimal Balance',
-      description: 'Select CPU and GPU to calculate real-time architecture balance.',
+      description:
+        'Select CPU and GPU to calculate real-time architecture balance.',
       isWarning: false,
     };
   }

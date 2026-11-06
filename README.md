@@ -17,6 +17,7 @@ Aethel Silicon is an AMD-inspired, dark hardware storefront and architecture sho
 - `npm run build` creates the production bundle (`dist/`).
 - `npm run lint` lints all source files with ESLint.
 - `npm run format` formats project files with Prettier.
+- `npm run format:check` checks formatting without changing files.
 - `npm run typecheck` runs strict TypeScript checks (`tsc -b`).
 - `npm test` runs the unit test suite across all feature modules with Vitest.
 
@@ -51,11 +52,11 @@ Aethel Silicon is an AMD-inspired, dark hardware storefront and architecture sho
    - Interactive battlestation workbench framed by the illuminated tempered glass PC chassis render.
    - 3-step slot selector: 1. Processor (Vortex) -> 2. Graphics (Zenith) -> 3. Memory & Storage package tier.
    - Live power diagnostics: estimated system TDP calculation, dynamic safety gauge, recommended 80+ Gold PSU sizing, and real-time bottleneck synergy analysis with mismatch warning advisories.
-   - Dual cart integration: *"Add as Assembled Custom Rig"* (single bundled item) vs. *"Add Components Individually"* (adds CPU, GPU, and RAM/Storage package).
+   - Dual cart integration: _"Add as Assembled Custom Rig"_ (single bundled item) vs. _"Add Components Individually"_ (adds CPU, GPU, and RAM/Storage package).
 
 6. **Shopping Cart & Checkout Simulation (`/cart`)**
    - Supports both standalone items and bundled custom rigs with nested component breakdowns.
-   - *"Unbundle Rig"* action to decompose a prebuilt system into individual parts at any time.
+   - _"Unbundle Rig"_ action to decompose a prebuilt system into individual parts at any time.
    - Quantity adjustments, item removal, and full cart clearing.
    - Promo code validation (code `SILICON10` provides 10% discount).
    - Checkout modal simulating order confirmation, reference generation, and express dispatch.
@@ -64,47 +65,37 @@ Aethel Silicon is an AMD-inspired, dark hardware storefront and architecture sho
 
 ```
 src/
-├── api/
-├── context/
-│   ├── CartContext.tsx        # Cart state with localStorage persistence and unbundling
-│   └── CompareContext.tsx     # Category-locked comparison tray with localStorage
-├── features/
-│   ├── cart/                  # CartPage, CartItemRow, OrderSummary, CheckoutModal
-│   ├── catalog/               # CatalogPage, FilterSidebar, ProductGrid, ProductCard, SortBar
-│   ├── compare/               # ComparePage, CompareTable, BenchmarkBarChart, ProductPickerModal
-│   ├── configurator/          # ConfiguratorPage, RigVisualizer, ComponentSlotSelector, PowerSynergyMeter
-│   ├── home/                  # HomePage, HeroShowcase, ExplodedTeardown, SiliconSpotlight
-│   └── product-detail/        # ProductDetailPage, ProductGallery, ArchitectureSpecTable, MiniBenchmarkCard
-├── hooks/
-│   ├── useCart.ts
-│   ├── useCompare.ts
-│   └── useProducts.ts
-├── services/
-│   └── productService.ts      # Asynchronous mock API service
-├── shared/
+├── features/                  # Independent, domain-driven feature modules
+│   ├── cart/                  # CartPage, components/, context/, hooks/, types/, cart.css
+│   ├── catalog/               # CatalogPage, components/, hooks/, services/, catalog.css
+│   ├── compare/               # ComparePage, components/, context/, hooks/, types/, compare.css
+│   ├── configurator/          # ConfiguratorPage, components/, data/, utils/, configurator.css
+│   ├── home/                  # HomePage, components/, home.css
+│   └── product-detail/        # ProductDetailPage, components/, product-detail.css
+├── shared/                    # Cross-feature reusable building blocks & infrastructure
+│   ├── api/                   # apiClient.ts (general network client used by all features)
 │   ├── components/            # Header, Footer, QuickCartDrawer, CompareDock
-│   └── styles/                # design-tokens.css
-├── test/
-│   ├── app.test.tsx           # Comprehensive consolidated unit test suite
-│   └── setup.ts               # Test environment setup & mocks
-├── types/                     # product.ts, cart.ts, compare.ts
+│   ├── styles/                # design-tokens.css
+│   └── types/                 # product.ts (shared domain entity across features)
+├── test/                      # Unified test suite (app.test.tsx, setup.ts)
 ├── App.tsx                    # Route orchestration
+├── main.tsx                   # Mounting entry point
 └── index.css                  # Base reset & design system foundation
 ```
 
 ### Adding New Features (e.g., Wishlist)
 
-The project follows a strict, modular feature-first architecture (Rule 7: *"Clear feature modules. Every file has one job, and everything is in its place."*). Any engineer adding a new capability (such as a Wishlist) can immediately locate and place files according to this pattern:
+The project follows a strict, modular feature-first architecture (Rule 7: _"Clear feature modules. Every file has one job, and everything is in its place."_). Any engineer adding a new capability (such as a Wishlist) can immediately locate and place files according to this pattern:
 
 1. **Feature UI Module (`src/features/wishlist/`):**
    - `WishlistPage.tsx`: Primary page component for the `/wishlist` route.
    - `wishlist.css`: Scoped styling using tokens from `src/shared/styles/design-tokens.css`.
    - `components/`: Feature-scoped child components (e.g., `WishlistItemCard.tsx`).
-2. **Global State & Context (`src/context/WishlistContext.tsx`):**
+2. **Global State & Context (`src/features/wishlist/context/WishlistContext.tsx`):**
    - React context managing wishlist items with `localStorage` persistence.
-3. **Custom Hook (`src/hooks/useWishlist.ts`):**
+3. **Custom Hook (`src/features/wishlist/hooks/useWishlist.ts`):**
    - Clean consumer hook exposing items and action dispatchers (`toggleWishlist`, `isInWishlist`).
-4. **Types (`src/types/wishlist.ts`):**
+4. **Types (`src/features/wishlist/types/wishlist.ts`):**
    - Strict TypeScript interfaces for wishlist item shapes and context signatures.
 5. **Route & Navigation:**
    - Register the route in `src/App.tsx` (`<Route path="/wishlist" element={<WishlistPage />} />`).
@@ -119,10 +110,10 @@ App (src/App.tsx) [Props: {}] [State: none]
 │
 ├── BrowserRouter (react-router-dom)
 │   │
-│   └── CartProvider (src/context/CartContext.tsx) [Props: { children: ReactNode }]
+│   └── CartProvider (src/features/cart/context/CartContext.tsx) [Props: { children: ReactNode }]
 │       │   [State Owned: items: CartItem[] (persisted in localStorage['aethel-cart'])]
 │       │
-│       └── CompareProvider (src/context/CompareContext.tsx) [Props: { children: ReactNode }]
+│       └── CompareProvider (src/features/compare/context/CompareContext.tsx) [Props: { children: ReactNode }]
 │           │   [State Owned: items: Product[] (persisted in localStorage['aethel-compare'])]
 │           │
 │           └── ApplicationShell (src/App.tsx) [Props: {}]
@@ -284,3 +275,7 @@ App (src/App.tsx) [Props: {}] [State: none]
 │                   ├── State Owned: none (active element ref management)
 │                   └── Context Consumed: useCart (items, subtotal)
 ```
+
+## Code ownership
+
+Feature logic is colocated under `src/features/<feature>/`: pages, components, hooks, context/state, types, and feature data loading. Cart and compare own their persisted state; catalog owns product loading. `src/shared/` holds cross-feature contracts and infrastructure, including the shared product type, generic API client, design tokens, and shell components. All network calls use `src/shared/api/apiClient.ts` for fetch, HTTP error handling, and JSON decoding. See `CLAUDE.md` for the naming rules and detailed engineering conventions.

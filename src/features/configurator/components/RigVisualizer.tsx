@@ -1,5 +1,5 @@
 import { ShieldCheck } from 'lucide-react';
-import type { Product } from '../../../types/product';
+import type { Product } from '../../../shared/types/product';
 
 interface RigVisualizerProps {
   selectedCpu: Product | null;
@@ -20,7 +20,7 @@ export function RigVisualizer({
     <div className="rig-visualizer">
       <div className="rig-visualizer__frame">
         <img
-          src="/assets/PC_hardware_inside_glass_case_a7ed0ff3.jpg"
+          src="/assets/pc-hardware-glass-case-a7ed0ff3.jpg"
           alt="Aethel battlestation inside illuminated tempered glass chassis"
           className="rig-visualizer__image"
         />
@@ -51,12 +51,16 @@ export function RigVisualizer({
 
         <div className="rig-footer-item">
           <span className="rig-footer-label">Total Power Draw</span>
-          <strong className="rig-footer-value rig-footer-value--accent">{totalTdp}W TDP</strong>
+          <strong className="rig-footer-value rig-footer-value--accent">
+            {totalTdp}W TDP
+          </strong>
         </div>
 
         <div className="rig-footer-item">
           <span className="rig-footer-label">Rig Price</span>
-          <strong className="rig-footer-value">${totalPrice.toLocaleString()}</strong>
+          <strong className="rig-footer-value">
+            ${totalPrice.toLocaleString()}
+          </strong>
         </div>
 
         <div className="rig-warranty-badge">

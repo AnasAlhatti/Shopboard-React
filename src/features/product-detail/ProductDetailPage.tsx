@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { ArrowLeft, Check, Layers, Plus, Scale } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
-import { useCart } from '../../hooks/useCart';
-import { useCompare } from '../../hooks/useCompare';
-import { useProducts } from '../../hooks/useProducts';
+import { useCart } from '../cart/hooks/useCart';
+import { useCompare } from '../compare/hooks/useCompare';
+import { useProducts } from '../catalog/hooks/useProducts';
 import { ArchitectureSpecTable } from './components/ArchitectureSpecTable';
 import { MiniBenchmarkCard } from './components/MiniBenchmarkCard';
 import { ProductGallery } from './components/ProductGallery';
@@ -22,7 +22,10 @@ export function ProductDetailPage() {
 
   const isCompared = product ? isInCompare(product.id) : false;
   const compareDisabled =
-    product && category !== null && category !== product.category && !isCompared;
+    product &&
+    category !== null &&
+    category !== product.category &&
+    !isCompared;
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -67,7 +70,10 @@ export function ProductDetailPage() {
         <div className="product-not-found" role="alert">
           <p className="eyebrow">404 Architecture Error</p>
           <h1>Silicon Not Found</h1>
-          <p>The processor or graphics chip you requested does not exist in our silicon matrix.</p>
+          <p>
+            The processor or graphics chip you requested does not exist in our
+            silicon matrix.
+          </p>
           <Link to="/catalog" className="button button--primary">
             <ArrowLeft size={16} aria-hidden="true" /> Return to Catalog
           </Link>
@@ -80,25 +86,40 @@ export function ProductDetailPage() {
     <main className="product-detail-page page-width">
       <nav className="product-detail-breadcrumbs" aria-label="Breadcrumb">
         <Link to="/catalog">Silicon Catalog</Link>
-        <span className="separator" aria-hidden="true">/</span>
-        <span className="separator" aria-hidden="true">{product.series}</span>
-        <span className="separator" aria-hidden="true">/</span>
-        <span className="current" aria-current="page">{product.name}</span>
+        <span className="separator" aria-hidden="true">
+          /
+        </span>
+        <span className="separator" aria-hidden="true">
+          {product.series}
+        </span>
+        <span className="separator" aria-hidden="true">
+          /
+        </span>
+        <span className="current" aria-current="page">
+          {product.name}
+        </span>
       </nav>
 
-      <section className="product-detail-hero" aria-labelledby="product-name-heading">
+      <section
+        className="product-detail-hero"
+        aria-labelledby="product-name-heading"
+      >
         <ProductGallery product={product} />
 
         <div className="product-info-panel">
           <header className="product-info-header">
-            <p className="eyebrow">{product.series} Series // {product.category.toUpperCase()}</p>
+            <p className="eyebrow">
+              {product.series} Series // {product.category.toUpperCase()}
+            </p>
             <h1 id="product-name-heading">{product.name}</h1>
             <p className="product-info-tagline">{product.tagline}</p>
           </header>
 
           <div className="product-price-bar">
             <span className="product-price-bar__label">MSRP Starting at</span>
-            <span className="product-price-bar__val">${product.price.toLocaleString()}</span>
+            <span className="product-price-bar__val">
+              ${product.price.toLocaleString()}
+            </span>
           </div>
 
           <p className="product-info-desc">{product.description}</p>
@@ -123,7 +144,9 @@ export function ProductDetailPage() {
                 min={1}
                 max={10}
                 value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
+                onChange={(e) =>
+                  setQuantity(Math.max(1, Number(e.target.value) || 1))
+                }
                 className="qty-input"
               />
             </div>
@@ -134,7 +157,8 @@ export function ProductDetailPage() {
                 className="button button--primary"
                 onClick={handleAddToCart}
               >
-                <Plus size={16} aria-hidden="true" /> Add to Cart (${(product.price * quantity).toLocaleString()})
+                <Plus size={16} aria-hidden="true" /> Add to Cart ($
+                {(product.price * quantity).toLocaleString()})
               </button>
 
               <button
@@ -142,10 +166,16 @@ export function ProductDetailPage() {
                 className={`button button--quiet${isCompared ? ' is-active' : ''}`}
                 disabled={Boolean(compareDisabled)}
                 onClick={() => toggleCompare(product)}
-                title={compareDisabled ? `Compare locked to ${category?.toUpperCase()}s` : ''}
+                title={
+                  compareDisabled
+                    ? `Compare locked to ${category?.toUpperCase()}s`
+                    : ''
+                }
               >
                 <Scale size={16} aria-hidden="true" />
-                <span>{isCompared ? 'In Compare Bench' : 'Compare Silicon'}</span>
+                <span>
+                  {isCompared ? 'In Compare Bench' : 'Compare Silicon'}
+                </span>
               </button>
 
               <Link to="/configurator" className="button button--quiet">
@@ -157,7 +187,9 @@ export function ProductDetailPage() {
             {justAdded && (
               <div className="added-confirmation" role="status">
                 <Check size={16} aria-hidden="true" />
-                <span>Added {quantity} unit(s) of {product.name} to cart.</span>
+                <span>
+                  Added {quantity} unit(s) of {product.name} to cart.
+                </span>
               </div>
             )}
           </div>

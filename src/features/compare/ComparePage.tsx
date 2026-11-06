@@ -1,16 +1,29 @@
 import { useState } from 'react';
-import { ArrowLeft, Cpu, Gauge, Plus, Scale, Sparkles, Trash2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  Cpu,
+  Gauge,
+  Plus,
+  Scale,
+  Sparkles,
+  Trash2,
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useCompare } from '../../hooks/useCompare';
-import { useProducts } from '../../hooks/useProducts';
+import { useCompare } from './hooks/useCompare';
+import { useProducts } from '../catalog/hooks/useProducts';
 import { BenchmarkBarChart } from './components/BenchmarkBarChart';
 import { CompareTable } from './components/CompareTable';
 import { ProductPickerModal } from './components/ProductPickerModal';
 import './compare.css';
 
 export function ComparePage() {
-  const { comparedItems, category, removeFromCompare, clearCompare, toggleCompare } =
-    useCompare();
+  const {
+    comparedItems,
+    category,
+    removeFromCompare,
+    clearCompare,
+    toggleCompare,
+  } = useCompare();
   const { products } = useProducts();
   const [pickerOpen, setPickerOpen] = useState(false);
   const [highlightWinners, setHighlightWinners] = useState(true);
@@ -30,8 +43,9 @@ export function ComparePage() {
           <p className="eyebrow">Benchmark Arena</p>
           <h1>Comparison Bench Empty</h1>
           <p>
-            Pin 2 to 4 processors or graphics cards from the silicon storefront to run head-to-head
-            architectural benchmarks and performance breakdowns.
+            Pin 2 to 4 processors or graphics cards from the silicon storefront
+            to run head-to-head architectural benchmarks and performance
+            breakdowns.
           </p>
           <Link to="/catalog" className="button button--primary">
             <ArrowLeft size={16} aria-hidden="true" /> Explore Catalog
@@ -58,7 +72,8 @@ export function ComparePage() {
           </div>
           <h1>Benchmark Comparison Bench</h1>
           <p>
-            Side-by-side silicon metrics, thermal TDP dissipation, and standardized testbench performance bars.
+            Side-by-side silicon metrics, thermal TDP dissipation, and
+            standardized testbench performance bars.
           </p>
         </div>
 

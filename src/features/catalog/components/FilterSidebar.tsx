@@ -69,7 +69,11 @@ export function FilterSidebar({
         <span className="filter-label" id="category-filter-label">
           Category
         </span>
-        <div className="category-pills" role="group" aria-labelledby="category-filter-label">
+        <div
+          className="category-pills"
+          role="group"
+          aria-labelledby="category-filter-label"
+        >
           <button
             type="button"
             className={`pill-button${selectedCategory === 'all' ? ' is-active' : ''}`}
@@ -151,7 +155,11 @@ export function FilterSidebar({
           <span className="filter-label" id="cores-filter-label">
             CPU Physical Cores
           </span>
-          <div className="category-pills" role="group" aria-labelledby="cores-filter-label">
+          <div
+            className="category-pills"
+            role="group"
+            aria-labelledby="cores-filter-label"
+          >
             {[0, 8, 16].map((cores) => (
               <button
                 key={cores}
@@ -173,7 +181,11 @@ export function FilterSidebar({
           <span className="filter-label" id="vram-filter-label">
             GPU Video Memory (VRAM)
           </span>
-          <div className="category-pills" role="group" aria-labelledby="vram-filter-label">
+          <div
+            className="category-pills"
+            role="group"
+            aria-labelledby="vram-filter-label"
+          >
             {[0, 12, 16, 24].map((vram) => (
               <button
                 key={vram}

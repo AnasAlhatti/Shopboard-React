@@ -1,4 +1,11 @@
-import { AlertTriangle, CheckCircle, PackagePlus, ShoppingBag, Sparkles, Zap } from 'lucide-react';
+import {
+  AlertTriangle,
+  CheckCircle,
+  PackagePlus,
+  ShoppingBag,
+  Sparkles,
+  Zap,
+} from 'lucide-react';
 import type { BottleneckDiagnosis } from '../utils/bottleneck';
 
 interface PowerSynergyMeterProps {
@@ -26,13 +33,18 @@ export function PowerSynergyMeter({
   const powerPercentage = Math.min(100, (totalTdp / 900) * 100);
 
   return (
-    <div className="power-synergy-meter" aria-labelledby="synergy-meter-heading">
+    <div
+      className="power-synergy-meter"
+      aria-labelledby="synergy-meter-heading"
+    >
       <div className="synergy-header">
         <h3 id="synergy-meter-heading" className="synergy-title">
           <Zap size={18} className="synergy-icon" aria-hidden="true" />
           Live Synergy & Power Diagnostics
         </h3>
-        <span className={`synergy-tag${diagnosis.isWarning ? ' synergy-tag--warning' : ''}`}>
+        <span
+          className={`synergy-tag${diagnosis.isWarning ? ' synergy-tag--warning' : ''}`}
+        >
           {diagnosis.isWarning ? 'Bottleneck Notice' : 'Real-Time Validation'}
         </span>
       </div>
@@ -64,7 +76,8 @@ export function PowerSynergyMeter({
             </strong>
           </div>
           <p className="diagnostic-desc">
-            Provides ample transient spike headroom for sustained all-core rendering and peak gaming clocks.
+            Provides ample transient spike headroom for sustained all-core
+            rendering and peak gaming clocks.
           </p>
         </div>
 
@@ -92,8 +105,12 @@ export function PowerSynergyMeter({
 
       <div className="configurator-price-dock">
         <div className="configurator-price-info">
-          <span className="configurator-price-label">Configured Total (Includes Assembly)</span>
-          <strong className="configurator-price-val">${totalPrice.toLocaleString()}</strong>
+          <span className="configurator-price-label">
+            Configured Total (Includes Assembly)
+          </span>
+          <strong className="configurator-price-val">
+            ${totalPrice.toLocaleString()}
+          </strong>
         </div>
 
         <div className="configurator-actions-group">

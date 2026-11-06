@@ -7,29 +7,9 @@ import {
 } from 'react';
 import type { ReactNode } from 'react';
 import type { CompareContextValue } from '../types/compare';
-import type { Product } from '../types/product';
+import { isProduct, type Product } from '../../../shared/types/product';
 
 const STORAGE_KEY = 'aethel-compare';
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
-}
-
-function isProduct(value: unknown): value is Product {
-  if (!isRecord(value) || !isRecord(value.specs) || !isRecord(value.benchmarks))
-    return false;
-  return (
-    typeof value.id === 'string' &&
-    typeof value.name === 'string' &&
-    (value.category === 'cpu' || value.category === 'gpu') &&
-    typeof value.price === 'number' &&
-    typeof value.image === 'string' &&
-    typeof value.specs.boostClock === 'string' &&
-    typeof value.specs.tdp === 'number' &&
-    typeof value.benchmarks.efficiencyScore === 'number' &&
-    Array.isArray(value.features)
-  );
-}
 
 function readStoredProducts(): Product[] {
   if (typeof window === 'undefined') return [];

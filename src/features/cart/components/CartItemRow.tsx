@@ -1,6 +1,6 @@
 import { Minus, Plus, Split, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import type { CartItem } from '../../../types/cart';
+import type { CartItem } from '../types/cart';
 
 interface CartItemRowProps {
   item: CartItem;
@@ -21,10 +21,13 @@ export function CartItemRow({
   if (isRig && item.rig) {
     const { rig } = item;
     return (
-      <article className="cart-item-card cart-item-card--rig" aria-labelledby={`rig-title-${item.id}`}>
+      <article
+        className="cart-item-card cart-item-card--rig"
+        aria-labelledby={`rig-title-${item.id}`}
+      >
         <div className="cart-item-media">
           <img
-            src="/assets/PC_hardware_inside_glass_case_a7ed0ff3.jpg"
+            src="/assets/pc-hardware-glass-case-a7ed0ff3.jpg"
             alt={rig.name}
             className="cart-item-image"
           />
@@ -39,11 +42,15 @@ export function CartItemRow({
           <div className="rig-nested-breakdown">
             <div className="rig-nested-part">
               <span className="nested-label">CPU:</span>
-              <span className="nested-val">{rig.cpu.name} ({rig.cpu.specs.cores}C/{rig.cpu.specs.threads}T)</span>
+              <span className="nested-val">
+                {rig.cpu.name} ({rig.cpu.specs.cores}C/{rig.cpu.specs.threads}T)
+              </span>
             </div>
             <div className="rig-nested-part">
               <span className="nested-label">GPU:</span>
-              <span className="nested-val">{rig.gpu.name} ({rig.gpu.specs.vram})</span>
+              <span className="nested-val">
+                {rig.gpu.name} ({rig.gpu.specs.vram})
+              </span>
             </div>
             <div className="rig-nested-part">
               <span className="nested-label">Memory & Storage:</span>
@@ -89,7 +96,9 @@ export function CartItemRow({
           </div>
 
           <div className="cart-item-totals">
-            <span className="cart-item-price">${(item.unitPrice * item.quantity).toLocaleString()}</span>
+            <span className="cart-item-price">
+              ${(item.unitPrice * item.quantity).toLocaleString()}
+            </span>
             <button
               type="button"
               className="cart-remove-btn"
@@ -107,7 +116,10 @@ export function CartItemRow({
   if (isStandalone && item.product) {
     const { product } = item;
     return (
-      <article className="cart-item-card" aria-labelledby={`item-title-${item.id}`}>
+      <article
+        className="cart-item-card"
+        aria-labelledby={`item-title-${item.id}`}
+      >
         <div className="cart-item-media">
           <img
             src={product.image}
@@ -117,7 +129,9 @@ export function CartItemRow({
         </div>
 
         <div className="cart-item-info">
-          <span className="cart-item-tag">{product.series} Series // {product.category.toUpperCase()}</span>
+          <span className="cart-item-tag">
+            {product.series} Series // {product.category.toUpperCase()}
+          </span>
           <h3 id={`item-title-${item.id}`} className="cart-item-name">
             <Link to={`/product/${product.id}`}>{product.name}</Link>
           </h3>
@@ -153,7 +167,9 @@ export function CartItemRow({
           </div>
 
           <div className="cart-item-totals">
-            <span className="cart-item-price">${(item.unitPrice * item.quantity).toLocaleString()}</span>
+            <span className="cart-item-price">
+              ${(item.unitPrice * item.quantity).toLocaleString()}
+            </span>
             <button
               type="button"
               className="cart-remove-btn"

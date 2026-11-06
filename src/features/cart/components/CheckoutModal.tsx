@@ -21,7 +21,12 @@ export function CheckoutModal({
   if (!isOpen) return null;
 
   return (
-    <div className="checkout-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+    <div
+      className="checkout-modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="checkout-title"
+    >
       <div className="checkout-modal">
         <header className="checkout-modal__header">
           <button
@@ -42,7 +47,8 @@ export function CheckoutModal({
           <p className="eyebrow">Order Dispatched to Fabrication</p>
           <h2 id="checkout-title">Order Confirmed</h2>
           <p className="checkout-desc">
-            Your high-performance silicon hardware has been allocated from our precision testing lab.
+            Your high-performance silicon hardware has been allocated from our
+            precision testing lab.
           </p>
 
           <dl className="checkout-receipt-box">
@@ -56,7 +62,9 @@ export function CheckoutModal({
             </div>
             <div className="receipt-row">
               <dt className="receipt-label">Estimated Delivery</dt>
-              <dd className="receipt-val">2–3 Business Days (Express Insured)</dd>
+              <dd className="receipt-val">
+                2–3 Business Days (Express Insured)
+              </dd>
             </div>
           </dl>
 

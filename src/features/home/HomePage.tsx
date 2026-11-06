@@ -1,7 +1,7 @@
 import { ExplodedTeardown } from './components/ExplodedTeardown';
 import { HeroShowcase } from './components/HeroShowcase';
 import { SiliconSpotlight } from './components/SiliconSpotlight';
-import { useProducts } from '../../hooks/useProducts';
+import { useProducts } from '../catalog/hooks/useProducts';
 import './home.css';
 
 export function HomePage() {

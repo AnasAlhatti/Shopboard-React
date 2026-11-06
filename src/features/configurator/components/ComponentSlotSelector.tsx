@@ -1,9 +1,6 @@
 import { Check, Cpu, HardDrive, Layers } from 'lucide-react';
-import type { Product } from '../../../types/product';
-import {
-  MEMORY_STORAGE_TIERS,
-  type MemoryStorageTier,
-} from '../data/tiers';
+import type { Product } from '../../../shared/types/product';
+import { MEMORY_STORAGE_TIERS, type MemoryStorageTier } from '../data/tiers';
 
 export { MEMORY_STORAGE_TIERS, type MemoryStorageTier };
 
@@ -36,9 +33,12 @@ export function ComponentSlotSelector({
           <span className="slot-step-badge">01</span>
           <div>
             <h3 id="cpu-slot-title" className="slot-section__title">
-              <Cpu size={18} aria-hidden="true" /> Select Desktop Processor (CPU)
+              <Cpu size={18} aria-hidden="true" /> Select Desktop Processor
+              (CPU)
             </h3>
-            <p className="slot-section__subtitle">Powers multi-thread compilation, physics, and frame delivery.</p>
+            <p className="slot-section__subtitle">
+              Powers multi-thread compilation, physics, and frame delivery.
+            </p>
           </div>
         </div>
 
@@ -59,12 +59,21 @@ export function ComponentSlotSelector({
                 <div className="slot-option-info">
                   <div className="slot-option-name-row">
                     <h4>{cpu.name}</h4>
-                    {isSelected && <Check size={16} className="slot-check-icon" aria-hidden="true" />}
+                    {isSelected && (
+                      <Check
+                        size={16}
+                        className="slot-check-icon"
+                        aria-hidden="true"
+                      />
+                    )}
                   </div>
                   <p className="slot-option-specs">
-                    {cpu.specs.cores}C / {cpu.specs.threads}T · {cpu.specs.boostClock} · {cpu.specs.tdp}W
+                    {cpu.specs.cores}C / {cpu.specs.threads}T ·{' '}
+                    {cpu.specs.boostClock} · {cpu.specs.tdp}W
                   </p>
-                  <span className="slot-option-price">${cpu.price.toLocaleString()}</span>
+                  <span className="slot-option-price">
+                    ${cpu.price.toLocaleString()}
+                  </span>
                 </div>
               </button>
             );
@@ -78,9 +87,12 @@ export function ComponentSlotSelector({
           <span className="slot-step-badge">02</span>
           <div>
             <h3 id="gpu-slot-title" className="slot-section__title">
-              <Layers size={18} aria-hidden="true" /> Select Graphics Engine (GPU)
+              <Layers size={18} aria-hidden="true" /> Select Graphics Engine
+              (GPU)
             </h3>
-            <p className="slot-section__subtitle">Drives high-resolution 4K rasterization and real-time ray tracing.</p>
+            <p className="slot-section__subtitle">
+              Drives high-resolution 4K rasterization and real-time ray tracing.
+            </p>
           </div>
         </div>
 
@@ -101,12 +113,21 @@ export function ComponentSlotSelector({
                 <div className="slot-option-info">
                   <div className="slot-option-name-row">
                     <h4>{gpu.name}</h4>
-                    {isSelected && <Check size={16} className="slot-check-icon" aria-hidden="true" />}
+                    {isSelected && (
+                      <Check
+                        size={16}
+                        className="slot-check-icon"
+                        aria-hidden="true"
+                      />
+                    )}
                   </div>
                   <p className="slot-option-specs">
-                    {gpu.specs.vram} · {gpu.specs.tflops?.toFixed(1)} TFLOPs · {gpu.specs.tdp}W
+                    {gpu.specs.vram} · {gpu.specs.tflops?.toFixed(1)} TFLOPs ·{' '}
+                    {gpu.specs.tdp}W
                   </p>
-                  <span className="slot-option-price">${gpu.price.toLocaleString()}</span>
+                  <span className="slot-option-price">
+                    ${gpu.price.toLocaleString()}
+                  </span>
                 </div>
               </button>
             );
@@ -120,9 +141,12 @@ export function ComponentSlotSelector({
           <span className="slot-step-badge">03</span>
           <div>
             <h3 id="memory-slot-title" className="slot-section__title">
-              <HardDrive size={18} aria-hidden="true" /> Select Memory & Storage Package
+              <HardDrive size={18} aria-hidden="true" /> Select Memory & Storage
+              Package
             </h3>
-            <p className="slot-section__subtitle">High-bandwidth DDR5 memory combined with Gen5 NVMe storage.</p>
+            <p className="slot-section__subtitle">
+              High-bandwidth DDR5 memory combined with Gen5 NVMe storage.
+            </p>
           </div>
         </div>
 
@@ -140,7 +164,13 @@ export function ComponentSlotSelector({
                 <div className="slot-option-info">
                   <div className="slot-option-name-row">
                     <h4>{tier.name}</h4>
-                    {isSelected && <Check size={16} className="slot-check-icon" aria-hidden="true" />}
+                    {isSelected && (
+                      <Check
+                        size={16}
+                        className="slot-check-icon"
+                        aria-hidden="true"
+                      />
+                    )}
                   </div>
                   <p className="slot-option-specs">{tier.specs}</p>
                   <div className="slot-option-tier-footer">

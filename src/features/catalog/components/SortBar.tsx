@@ -39,7 +39,8 @@ export function SortBar({
   return (
     <div className="catalog-sortbar">
       <p className="catalog-sortbar__count">
-        <strong>{itemCount}</strong> {itemCount === 1 ? 'silicon product' : 'silicon products'} available
+        <strong>{itemCount}</strong>{' '}
+        {itemCount === 1 ? 'silicon product' : 'silicon products'} available
       </p>
 
       <div className="catalog-sortbar__controls">
@@ -67,7 +68,11 @@ export function SortBar({
           </select>
         </div>
 
-        <div className="view-mode-toggle" role="group" aria-label="Layout view mode">
+        <div
+          className="view-mode-toggle"
+          role="group"
+          aria-label="Layout view mode"
+        >
           <button
             type="button"
             className={`view-mode-btn${viewMode === 'grid' ? ' is-active' : ''}`}

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Menu, Scale, ShoppingBag, X } from 'lucide-react';
 import { Link, NavLink } from 'react-router-dom';
-import { useCart } from '../../hooks/useCart';
-import { useCompare } from '../../hooks/useCompare';
+import { useCart } from '../../features/cart/hooks/useCart';
+import { useCompare } from '../../features/compare/hooks/useCompare';
 
 interface HeaderProps {
   onOpenCart: () => void;

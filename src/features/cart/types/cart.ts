@@ -1,4 +1,4 @@
-import type { Product } from './product';
+import type { Product } from '../../../shared/types/product';
 
 export interface BundledRig {
   id: string;

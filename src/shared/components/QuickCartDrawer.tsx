@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import type { KeyboardEvent } from 'react';
 import { X } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useCart } from '../../hooks/useCart';
+import { useCart } from '../../features/cart/hooks/useCart';
 
 interface QuickCartDrawerProps {
   isOpen: boolean;

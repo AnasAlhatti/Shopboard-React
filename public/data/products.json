@@ -6,7 +6,7 @@
     "series": "Vortex",
     "tagline": "Flagship Multi-Thread",
     "price": 649,
-    "image": "/assets/CPU_heat_spreader_glowing_traces_eb58e993.jpg",
+    "image": "/assets/cpu-heat-spreader-glowing-traces-eb58e993.jpg",
     "specs": {
       "cores": "16",
       "threads": "32",
@@ -33,7 +33,7 @@
     "series": "Vortex",
     "tagline": "Ultimate Gaming",
     "price": 479,
-    "image": "/assets/Sleek_minimal_CPU_processor_0f31f51b.jpg",
+    "image": "/assets/minimal-cpu-processor-0f31f51b.jpg",
     "specs": {
       "cores": "8",
       "threads": "16",
@@ -60,7 +60,7 @@
     "series": "Vortex",
     "tagline": "High-Performance Compute",
     "price": 359,
-    "image": "/assets/CPU_processor_with_glowing_traces_b43fba0f.jpg",
+    "image": "/assets/cpu-processor-glowing-traces-b43fba0f.jpg",
     "specs": {
       "cores": "8",
       "threads": "16",
@@ -87,7 +87,7 @@
     "series": "Vortex",
     "tagline": "Mainstream Precision",
     "price": 279,
-    "image": "/assets/CPU_heat_spreader_glowing_traces_eb58e993.jpg",
+    "image": "/assets/cpu-heat-spreader-glowing-traces-eb58e993.jpg",
     "specs": {
       "cores": "6",
       "threads": "12",
@@ -114,7 +114,7 @@
     "series": "Zenith",
     "tagline": "Flagship 4K Ultra & AI",
     "price": 999,
-    "image": "/assets/Sleek_minimalist_GPU_design_with…_f3b58b35.jpg",
+    "image": "/assets/minimalist-gpu-design-f3b58b35.jpg",
     "specs": {
       "boostClock": "2.8 GHz",
       "vram": "24GB GDDR6",
@@ -142,7 +142,7 @@
     "series": "Zenith",
     "tagline": "Triple-Fan High-Refresh",
     "price": 649,
-    "image": "/assets/GPU_design_with_fans_0d40afa8.jpg",
+    "image": "/assets/gpu-design-with-fans-0d40afa8.jpg",
     "specs": {
       "boostClock": "2.6 GHz",
       "vram": "16GB GDDR6",
@@ -170,7 +170,7 @@
     "series": "Zenith",
     "tagline": "Performance 1440p",
     "price": 499,
-    "image": "/assets/Sleek_minimalist_GPU_design_with…_f3b58b35.jpg",
+    "image": "/assets/minimalist-gpu-design-f3b58b35.jpg",
     "specs": {
       "boostClock": "2.5 GHz",
       "vram": "12GB GDDR6",
@@ -198,7 +198,7 @@
     "series": "Zenith",
     "tagline": "Esports High-Velocity",
     "price": 329,
-    "image": "/assets/GPU_design_with_fans_0d40afa8.jpg",
+    "image": "/assets/gpu-design-with-fans-0d40afa8.jpg",
     "specs": {
       "boostClock": "2.4 GHz",
       "vram": "10GB GDDR6",

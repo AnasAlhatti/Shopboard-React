@@ -1,7 +1,7 @@
 import { Plus, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useCart } from '../../../hooks/useCart';
-import type { Product } from '../../../types/product';
+import { useCart } from '../../cart/hooks/useCart';
+import type { Product } from '../../../shared/types/product';
 
 interface CompareTableProps {
   items: Product[];
@@ -47,7 +47,11 @@ export function CompareTable({
                 Hardware Model
               </th>
               {items.map((item) => (
-                <th key={item.id} scope="col" className="compare-matrix__item-col">
+                <th
+                  key={item.id}
+                  scope="col"
+                  className="compare-matrix__item-col"
+                >
                   <div className="compare-chip-header">
                     <button
                       type="button"
@@ -61,11 +65,15 @@ export function CompareTable({
                     <div className="compare-chip-media">
                       <img src={item.image} alt={item.name} />
                     </div>
-                    <span className="compare-chip-series">{item.series} Series</span>
+                    <span className="compare-chip-series">
+                      {item.series} Series
+                    </span>
                     <h3 className="compare-chip-name">
                       <Link to={`/product/${item.id}`}>{item.name}</Link>
                     </h3>
-                    <p className="compare-chip-price">${item.price.toLocaleString()}</p>
+                    <p className="compare-chip-price">
+                      ${item.price.toLocaleString()}
+                    </p>
                     <button
                       type="button"
                       className="button button--primary button--sm"
@@ -77,7 +85,10 @@ export function CompareTable({
                 </th>
               ))}
               {items.length < 4 && (
-                <th scope="col" className="compare-matrix__item-col compare-matrix__item-col--empty">
+                <th
+                  scope="col"
+                  className="compare-matrix__item-col compare-matrix__item-col--empty"
+                >
                   <div className="compare-add-slot">
                     <p className="eyebrow">Slot {items.length + 1} of 4</p>
                     <button
@@ -94,7 +105,10 @@ export function CompareTable({
           </thead>
           <tbody>
             <tr className="matrix-section-row">
-              <th colSpan={items.length + (items.length < 4 ? 2 : 1)} scope="colgroup">
+              <th
+                colSpan={items.length + (items.length < 4 ? 2 : 1)}
+                scope="colgroup"
+              >
                 Silicon Microarchitecture
               </th>
             </tr>
@@ -116,7 +130,9 @@ export function CompareTable({
                       </td>
                     );
                   })}
-                  {items.length < 4 && <td className="matrix-data matrix-data--empty" />}
+                  {items.length < 4 && (
+                    <td className="matrix-data matrix-data--empty" />
+                  )}
                 </tr>
                 <tr>
                   <th scope="row">Concurrent Threads</th>
@@ -134,7 +150,9 @@ export function CompareTable({
                       </td>
                     );
                   })}
-                  {items.length < 4 && <td className="matrix-data matrix-data--empty" />}
+                  {items.length < 4 && (
+                    <td className="matrix-data matrix-data--empty" />
+                  )}
                 </tr>
                 <tr>
                   <th scope="row">Boost Clock</th>
@@ -142,7 +160,8 @@ export function CompareTable({
                     const isWinner =
                       highlightWinners &&
                       items.length > 1 &&
-                      parseFloat(item.specs.boostClock || '0') === maxBoostClock;
+                      parseFloat(item.specs.boostClock || '0') ===
+                        maxBoostClock;
                     return (
                       <td
                         key={item.id}
@@ -152,7 +171,9 @@ export function CompareTable({
                       </td>
                     );
                   })}
-                  {items.length < 4 && <td className="matrix-data matrix-data--empty" />}
+                  {items.length < 4 && (
+                    <td className="matrix-data matrix-data--empty" />
+                  )}
                 </tr>
                 <tr>
                   <th scope="row">Unified Cache</th>
@@ -161,7 +182,9 @@ export function CompareTable({
                       {item.specs.cache}
                     </td>
                   ))}
-                  {items.length < 4 && <td className="matrix-data matrix-data--empty" />}
+                  {items.length < 4 && (
+                    <td className="matrix-data matrix-data--empty" />
+                  )}
                 </tr>
               </>
             ) : (
@@ -182,7 +205,9 @@ export function CompareTable({
                       </td>
                     );
                   })}
-                  {items.length < 4 && <td className="matrix-data matrix-data--empty" />}
+                  {items.length < 4 && (
+                    <td className="matrix-data matrix-data--empty" />
+                  )}
                 </tr>
                 <tr>
                   <th scope="row">Compute Engine (FP32)</th>
@@ -200,7 +225,9 @@ export function CompareTable({
                       </td>
                     );
                   })}
-                  {items.length < 4 && <td className="matrix-data matrix-data--empty" />}
+                  {items.length < 4 && (
+                    <td className="matrix-data matrix-data--empty" />
+                  )}
                 </tr>
                 <tr>
                   <th scope="row">Memory Bus Width</th>
@@ -209,7 +236,9 @@ export function CompareTable({
                       {item.specs.busWidth ?? '384-Bit'}
                     </td>
                   ))}
-                  {items.length < 4 && <td className="matrix-data matrix-data--empty" />}
+                  {items.length < 4 && (
+                    <td className="matrix-data matrix-data--empty" />
+                  )}
                 </tr>
                 <tr>
                   <th scope="row">Engine Clock</th>
@@ -217,7 +246,8 @@ export function CompareTable({
                     const isWinner =
                       highlightWinners &&
                       items.length > 1 &&
-                      parseFloat(item.specs.boostClock || '0') === maxBoostClock;
+                      parseFloat(item.specs.boostClock || '0') ===
+                        maxBoostClock;
                     return (
                       <td
                         key={item.id}
@@ -227,13 +257,18 @@ export function CompareTable({
                       </td>
                     );
                   })}
-                  {items.length < 4 && <td className="matrix-data matrix-data--empty" />}
+                  {items.length < 4 && (
+                    <td className="matrix-data matrix-data--empty" />
+                  )}
                 </tr>
               </>
             )}
 
             <tr className="matrix-section-row">
-              <th colSpan={items.length + (items.length < 4 ? 2 : 1)} scope="colgroup">
+              <th
+                colSpan={items.length + (items.length < 4 ? 2 : 1)}
+                scope="colgroup"
+              >
                 Power & Thermal Specifications
               </th>
             </tr>
@@ -253,7 +288,9 @@ export function CompareTable({
                   </td>
                 );
               })}
-              {items.length < 4 && <td className="matrix-data matrix-data--empty" />}
+              {items.length < 4 && (
+                <td className="matrix-data matrix-data--empty" />
+              )}
             </tr>
             <tr>
               <th scope="row">Efficiency Rating</th>
@@ -271,7 +308,9 @@ export function CompareTable({
                   </td>
                 );
               })}
-              {items.length < 4 && <td className="matrix-data matrix-data--empty" />}
+              {items.length < 4 && (
+                <td className="matrix-data matrix-data--empty" />
+              )}
             </tr>
           </tbody>
         </table>

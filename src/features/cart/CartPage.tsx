@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ArrowLeft, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useCart } from '../../hooks/useCart';
+import { useCart } from './hooks/useCart';
 import { CartItemRow } from './components/CartItemRow';
 import { CheckoutModal } from './components/CheckoutModal';
 import { OrderSummary } from './components/OrderSummary';
@@ -41,11 +41,16 @@ export function CartPage() {
     return (
       <main className="cart-page page-width">
         <div className="cart-empty" role="status">
-          <ShoppingBag size={48} className="empty-cart-icon" aria-hidden="true" />
+          <ShoppingBag
+            size={48}
+            className="empty-cart-icon"
+            aria-hidden="true"
+          />
           <p className="eyebrow">Cart Status</p>
           <h1>Silicon Shopping Cart Empty</h1>
           <p>
-            You have not added any desktop processors, graphics engines, or custom assembled battlestations yet.
+            You have not added any desktop processors, graphics engines, or
+            custom assembled battlestations yet.
           </p>
           <Link to="/catalog" className="button button--primary">
             <ArrowLeft size={16} aria-hidden="true" /> Explore Silicon Catalog
@@ -60,11 +65,16 @@ export function CartPage() {
       <header className="cart-header">
         <p className="eyebrow">Hardware Allocation</p>
         <h1>Silicon Shopping Cart</h1>
-        <p>Review your selected components and custom assembled configurations.</p>
+        <p>
+          Review your selected components and custom assembled configurations.
+        </p>
       </header>
 
       <div className="cart-layout">
-        <section className="cart-items-list" aria-label="Items in shopping cart">
+        <section
+          className="cart-items-list"
+          aria-label="Items in shopping cart"
+        >
           {items.map((item) => (
             <CartItemRow
               key={item.id}
