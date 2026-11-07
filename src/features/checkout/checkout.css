@@ -1,0 +1,63 @@
+.checkout-page {
+  padding-block: 3rem 5rem;
+}
+.checkout-page h1 {
+  font-size: clamp(2rem, 5vw, 3.4rem);
+}
+.checkout-layout {
+  display: grid;
+  gap: 2rem;
+  margin-top: 2rem;
+  align-items: start;
+}
+.checkout-form fieldset {
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+  margin: 0;
+  padding: 1.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+.checkout-form legend {
+  padding-inline: 0.5rem;
+  font-weight: 600;
+}
+.checkout-form p {
+  font-size: 0.8rem;
+}
+.checkout-summary {
+  padding: 1.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+.checkout-summary ul {
+  padding: 0;
+  list-style: none;
+}
+.checkout-summary li,
+.checkout-summary dl > div,
+.checkout-confirmation dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-block: 1rem;
+  font-size: 0.85rem;
+}
+.checkout-summary dd,
+.checkout-confirmation dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.checkout-summary dt {
+  color: var(--color-muted);
+}
+.checkout-confirmation {
+  max-width: 42rem;
+}
+@media (min-width: 800px) {
+  .checkout-layout {
+    grid-template-columns: 1.2fr 1fr;
+  }
+}

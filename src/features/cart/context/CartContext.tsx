@@ -8,6 +8,7 @@ import {
 import type { ReactNode } from 'react';
 import type { BundledRig, CartContextValue, CartItem } from '../types/cart';
 import { isProduct, type Product } from '../../../shared/types/product';
+import { notify } from '../../../shared/notifications';
 
 const STORAGE_KEY = 'aethel-cart';
 
@@ -25,14 +26,28 @@ function isBundledRig(value: unknown): value is BundledRig {
     typeof value.ramTier === 'string' &&
     typeof value.storageTier === 'string' &&
     typeof value.totalPrice === 'number' &&
-    typeof value.totalTdp === 'number'
+    Number.isFinite(value.totalPrice) &&
+    value.totalPrice >= 0 &&
+    typeof value.totalTdp === 'number' &&
+    Number.isFinite(value.totalTdp) &&
+    value.totalTdp >= 0
   );
 }
 
 function isCartItem(value: unknown): value is CartItem {
   if (!isRecord(value) || typeof value.id !== 'string') return false;
-  if (typeof value.quantity !== 'number' || value.quantity < 1) return false;
-  if (typeof value.unitPrice !== 'number' || value.unitPrice < 0) return false;
+  if (
+    typeof value.quantity !== 'number' ||
+    !Number.isSafeInteger(value.quantity) ||
+    value.quantity < 1
+  )
+    return false;
+  if (
+    typeof value.unitPrice !== 'number' ||
+    !Number.isFinite(value.unitPrice) ||
+    value.unitPrice < 0
+  )
+    return false;
 
   return value.type === 'standalone'
     ? isProduct(value.product)
@@ -73,12 +88,21 @@ export const CartContext = createContext<CartContextValue | undefined>(
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(readStoredItems);
+  const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
+  const applyPromo = useCallback((code: string) => {
+    if (code.trim().toUpperCase() !== 'SILICON10') return false;
+    setAppliedPromo('SILICON10');
+    return true;
+  }, []);
 
   useEffect(() => {
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     } catch {
-      // Storage can be disabled or full; the in-memory cart remains usable.
+      notify.error(
+        'Your cart is available for this visit, but browser storage could not save it.',
+        { id: 'cart-storage' },
+      );
     }
   }, [items]);
 
@@ -102,10 +126,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addRigToCart = useCallback((rig: BundledRig) => {
+    const id = makeCartId();
     setItems((current) => [
       ...current,
       {
-        id: makeCartId(),
+        id,
         type: 'rig',
         rig,
         quantity: 1,
@@ -164,7 +189,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
-  const clearCart = useCallback(() => setItems([]), []);
+  const clearCart = useCallback(() => {
+    setItems([]);
+    setAppliedPromo(null);
+  }, []);
 
   const value = useMemo<CartContextValue>(() => {
     const subtotal = items.reduce(
@@ -175,6 +203,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     return {
       items,
+      appliedPromo,
+      applyPromo,
       addToCart,
       addRigToCart,
       unbundleRig,
@@ -186,6 +216,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     };
   }, [
     items,
+    appliedPromo,
+    applyPromo,
     addToCart,
     addRigToCart,
     unbundleRig,

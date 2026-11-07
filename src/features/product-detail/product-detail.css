@@ -244,15 +244,6 @@
   }
 }
 
-.added-confirmation {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  color: #34c759;
-  font-weight: 600;
-}
-
 /* Specs & Benchmarks Split */
 .product-detail-deepdive {
   display: flex;

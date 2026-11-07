@@ -10,30 +10,17 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCompare } from './hooks/useCompare';
-import { useProducts } from '../catalog/hooks/useProducts';
 import { BenchmarkBarChart } from './components/BenchmarkBarChart';
 import { CompareTable } from './components/CompareTable';
-import { ProductPickerModal } from './components/ProductPickerModal';
+import { CompareProductPicker } from './components/CompareProductPicker';
+import { AsyncBoundary } from '../../shared/components/AsyncBoundary';
 import './compare.css';
 
 export function ComparePage() {
-  const {
-    comparedItems,
-    category,
-    removeFromCompare,
-    clearCompare,
-    toggleCompare,
-  } = useCompare();
-  const { products } = useProducts();
+  const { comparedItems, category, removeFromCompare, clearCompare } =
+    useCompare();
   const [pickerOpen, setPickerOpen] = useState(false);
   const [highlightWinners, setHighlightWinners] = useState(true);
-
-  // Available products of the same category that aren't yet in comparison
-  const availableToAdd = products.filter(
-    (p) =>
-      (!category || p.category === category) &&
-      !comparedItems.some((item) => item.id === p.id),
-  );
 
   if (comparedItems.length === 0) {
     return (
@@ -118,14 +105,10 @@ export function ComparePage() {
 
       <BenchmarkBarChart items={comparedItems} />
 
-      {category && category !== 'storage' && (
-        <ProductPickerModal
-          isOpen={pickerOpen}
-          onClose={() => setPickerOpen(false)}
-          availableProducts={availableToAdd}
-          onSelect={toggleCompare}
-          category={category}
-        />
+      {pickerOpen && (
+        <AsyncBoundary>
+          <CompareProductPicker onClose={() => setPickerOpen(false)} />
+        </AsyncBoundary>
       )}
     </main>
   );

@@ -1,9 +1,8 @@
-import { useState } from 'react';
 import { ArrowLeft, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from './hooks/useCart';
 import { CartItemRow } from './components/CartItemRow';
-import { CheckoutModal } from './components/CheckoutModal';
+import { calculateOrderTotals } from './utils/orderTotals';
 import { OrderSummary } from './components/OrderSummary';
 import './cart.css';
 
@@ -15,27 +14,11 @@ export function CartPage() {
     unbundleRig,
     clearCart,
     subtotal,
+    appliedPromo,
+    applyPromo,
   } = useCart();
 
-  const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
-  const [checkoutOpen, setCheckoutOpen] = useState(false);
-
-  const discountAmount = appliedPromo === 'SILICON10' ? subtotal * 0.1 : 0;
-  const finalTotal = Math.max(0, subtotal - discountAmount) * 1.07;
-
-  const handleApplyPromo = (code: string) => {
-    if (code.toUpperCase() === 'SILICON10') {
-      setAppliedPromo('SILICON10');
-      return true;
-    }
-    return false;
-  };
-
-  const handleConfirmOrder = () => {
-    setCheckoutOpen(false);
-    clearCart();
-    setAppliedPromo(null);
-  };
+  const { discountAmount } = calculateOrderTotals(subtotal, appliedPromo);
 
   if (items.length === 0) {
     return (
@@ -89,19 +72,11 @@ export function CartPage() {
         <OrderSummary
           subtotal={subtotal}
           onClearCart={clearCart}
-          onCheckout={() => setCheckoutOpen(true)}
           discountAmount={discountAmount}
           appliedPromo={appliedPromo}
-          onApplyPromo={handleApplyPromo}
+          onApplyPromo={applyPromo}
         />
       </div>
-
-      <CheckoutModal
-        isOpen={checkoutOpen}
-        onClose={() => setCheckoutOpen(false)}
-        onConfirm={handleConfirmOrder}
-        total={finalTotal}
-      />
     </main>
   );
 }

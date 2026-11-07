@@ -366,16 +366,6 @@
   color: var(--color-text-dim);
 }
 
-.order-security-assurance {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.75rem;
-  color: var(--color-text-dim);
-  border-top: 1px solid var(--color-border);
-  padding-top: var(--space-md);
-}
-
 /* Empty Cart */
 .cart-empty {
   text-align: center;
@@ -395,92 +385,4 @@
   color: var(--color-text-dim);
   max-width: 50ch;
   margin: 0 auto var(--space-lg);
-}
-
-/* Checkout Modal */
-.checkout-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(10px);
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-lg);
-}
-
-.checkout-modal {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  width: 100%;
-  max-width: 520px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
-}
-
-.checkout-modal__header {
-  padding: 0.75rem 1rem 0;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.checkout-close-btn {
-  background: transparent;
-  border: none;
-  color: var(--color-text-dim);
-  cursor: pointer;
-  padding: 0.3rem;
-}
-
-.checkout-modal__body {
-  padding: var(--space-md) var(--space-xl) var(--space-xl);
-  text-align: center;
-}
-
-.checkout-success-icon {
-  color: #34c759;
-  margin-bottom: var(--space-sm);
-}
-
-.checkout-modal__body h2 {
-  font-size: 1.6rem;
-  font-weight: 800;
-  margin: 0.2rem 0 0.4rem;
-}
-
-.checkout-desc {
-  font-size: 0.88rem;
-  color: var(--color-text-dim);
-  margin-bottom: var(--space-lg);
-}
-
-.checkout-receipt-box {
-  margin: 0 0 var(--space-xl);
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-md);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  text-align: left;
-}
-
-.receipt-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.82rem;
-}
-
-.receipt-label {
-  color: var(--color-text-dim);
-  font-weight: normal;
-}
-
-.receipt-val {
-  margin: 0;
-  color: var(--color-text);
-  font-weight: 700;
 }

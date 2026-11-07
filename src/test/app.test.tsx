@@ -5,8 +5,9 @@ import {
   render,
   renderHook,
   screen,
+  waitFor,
 } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Contexts & Hooks
@@ -39,6 +40,10 @@ import { SiliconSpotlight } from '../features/home/components/SiliconSpotlight';
 import { ProductDetailPage } from '../features/product-detail/ProductDetailPage';
 import { Header } from '../shared/components/Header';
 import { getSiliconDashboard } from '../features/home/data/siliconArchitecture';
+import { CheckoutForm } from '../features/checkout/components/CheckoutForm';
+import { CheckoutPage } from '../features/checkout/CheckoutPage';
+import { createLazyPage } from '../shared/components/createLazyPage';
+import App from '../App';
 
 // Shared Mock Fixtures
 const sampleCpu: Product = {
@@ -170,6 +175,177 @@ describe('silicon architecture data', () => {
 // =============================================================================
 // 1. PRODUCT SERVICE TESTS
 // =============================================================================
+describe('checkout and route integration', () => {
+  const values = {
+    name: 'Ada Lovelace',
+    email: 'ada@example.com',
+    address: '12 Computing Lane',
+    city: 'Istanbul',
+    postalCode: '34000',
+  };
+  function fillCheckout() {
+    for (const [label, value] of [
+      ['Full name', values.name],
+      ['Email address', values.email],
+      ['Street address', values.address],
+      ['City', values.city],
+      ['Postal code', values.postalCode],
+    ]) {
+      fireEvent.change(screen.getByLabelText(label), { target: { value } });
+    }
+  }
+  function seedCart() {
+    window.localStorage.setItem(
+      'aethel-cart',
+      JSON.stringify([
+        {
+          id: `product-${sampleCpu.id}`,
+          type: 'standalone',
+          product: sampleCpu,
+          unitPrice: sampleCpu.price,
+          quantity: 2,
+        },
+      ]),
+    );
+  }
+  beforeEach(() => window.localStorage.clear());
+  afterEach(() => {
+    window.localStorage.clear();
+    window.history.replaceState(null, '', '/');
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it('validates on submit, associates field errors, and focuses the first error', async () => {
+    const onSubmit = vi.fn();
+    render(<CheckoutForm onSubmit={onSubmit} disabled={false} />);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Full name'), {
+      target: { value: 'A' },
+    });
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Place order' }));
+    expect(
+      await screen.findByText('Enter your full name.'),
+    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByLabelText('Full name')).toHaveFocus(),
+    );
+    expect(screen.getByLabelText('Email address')).toHaveAttribute(
+      'aria-invalid',
+      'true',
+    );
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('disables submission while pending and preserves values after failure', async () => {
+    let rejectOrder: (error: Error) => void = () => {};
+    const onSubmit = vi.fn(
+      () =>
+        new Promise<void>((_resolve, reject) => {
+          rejectOrder = reject;
+        }),
+    );
+    render(<CheckoutForm onSubmit={onSubmit} disabled={false} />);
+    fillCheckout();
+    fireEvent.click(screen.getByRole('button', { name: 'Place order' }));
+    expect(
+      await screen.findByRole('button', { name: /placing order/i }),
+    ).toBeDisabled();
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    await act(async () =>
+      rejectOrder(new Error('Order service unavailable. Try again.')),
+    );
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Order service unavailable. Try again.',
+    );
+    expect(screen.getByLabelText('Email address')).toHaveValue(values.email);
+    expect(screen.getByRole('button', { name: 'Place order' })).toBeEnabled();
+  });
+
+  it('blocks empty-cart checkout', () => {
+    render(
+      <MemoryRouter>
+        <CartProvider>
+          <CheckoutPage />
+        </CartProvider>
+      </MemoryRouter>,
+    );
+    expect(
+      screen.getByRole('heading', { name: 'Your cart is empty' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Place order' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('keeps the same cart and promo across routes and clears it after validated checkout', async () => {
+    seedCart();
+    window.history.replaceState(null, '', '/cart');
+    render(<App />);
+    await screen.findByRole('heading', { name: /silicon shopping cart/i });
+    fireEvent.change(screen.getByLabelText('Promo Code'), {
+      target: { value: 'silicon10' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /apply promo/i }));
+    expect(screen.getByText(/10% promo applied/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('link', { name: /proceed to checkout/i }));
+    await screen.findByRole('heading', {
+      name: 'Contact and delivery details',
+    });
+    expect(screen.getByText('Promo discount')).toBeInTheDocument();
+    fillCheckout();
+    fireEvent.click(screen.getByRole('button', { name: 'Place order' }));
+    expect(
+      await screen.findByRole('heading', { name: 'Order confirmed' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Thank you, Ada Lovelace/)).toBeInTheDocument();
+    expect(
+      JSON.parse(window.localStorage.getItem('aethel-cart') ?? 'null'),
+    ).toEqual([]);
+  });
+
+  it('renders a real 404 inside the shared layout without fetching products', async () => {
+    const fetch = vi.fn();
+    vi.stubGlobal('fetch', fetch);
+    window.history.replaceState(null, '', '/missing-route');
+    render(<App />);
+    expect(
+      await screen.findByRole('heading', { name: /this page doesn’t exist/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('banner')).toBeInTheDocument();
+    expect(screen.getByRole('contentinfo')).toBeInTheDocument();
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('retries a rejected page import', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const load = vi
+      .fn<() => Promise<{ default: () => ReactNode }>>()
+      .mockRejectedValueOnce(new Error('Chunk failed'))
+      .mockResolvedValueOnce({ default: () => <h1>Recovered page</h1> });
+    const Page = createLazyPage(load);
+    render(<Page />);
+    fireEvent.click(await screen.findByRole('button', { name: 'Try again' }));
+    expect(
+      await screen.findByRole('heading', { name: 'Recovered page' }),
+    ).toBeInTheDocument();
+    expect(load).toHaveBeenCalledTimes(2);
+  });
+
+  it('preserves HTTP failures and forwards the cancellation signal', async () => {
+    const signal = new AbortController().signal;
+    const fetch = vi.fn().mockResolvedValue({ ok: false, status: 503 });
+    vi.stubGlobal('fetch', fetch);
+    await expect(fetchProducts({ signal })).rejects.toMatchObject({
+      status: 503,
+    });
+    expect(fetch).toHaveBeenCalledWith('/api/products', { signal });
+    fetch.mockResolvedValueOnce({ ok: false, status: 404 });
+    await expect(fetchProductById('missing')).resolves.toBeNull();
+  });
+});
+
 describe('productService', () => {
   const serviceProducts: Product[] = Array.from({ length: 8 }, (_, index) => {
     const isCpu = index < 4;
@@ -185,10 +361,11 @@ describe('productService', () => {
   beforeEach(() => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({
+      vi.fn().mockImplementation(async (url: string) => ({
         ok: true,
-        json: async () => serviceProducts,
-      }),
+        json: async () =>
+          url.endsWith('/products') ? serviceProducts : serviceProducts[0],
+      })),
     );
   });
 
@@ -337,6 +514,17 @@ describe('CompareContext', () => {
       wrapper: compareWrapper,
     });
     expect(corrupted.result.current.comparedItems).toEqual([]);
+  });
+
+  it('keeps category locking correct when additions are batched', () => {
+    const { result } = renderHook(() => useCompare(), {
+      wrapper: compareWrapper,
+    });
+    act(() => {
+      result.current.toggleCompare(sampleCpu);
+      result.current.toggleCompare(sampleGpu);
+    });
+    expect(result.current.comparedItems).toEqual([sampleCpu]);
   });
 });
 
@@ -633,6 +821,62 @@ describe('CatalogPage', () => {
     const cardsDesc = screen.getAllByRole('heading', { level: 3 });
     expect(cardsDesc[0]).toHaveTextContent('Aethel Zenith 9900 XTX');
   });
+
+  it('restores filters from history without overwriting them with component state', async () => {
+    function HistoryControls() {
+      const navigate = useNavigate();
+      return <button onClick={() => navigate(-1)}>Previous filters</button>;
+    }
+    render(
+      <MemoryRouter
+        initialEntries={['/catalog?category=cpu', '/catalog?category=gpu']}
+      >
+        <CartProvider>
+          <CompareProvider>
+            <HistoryControls />
+            <CatalogPage />
+          </CompareProvider>
+        </CartProvider>
+      </MemoryRouter>,
+    );
+    await screen.findByText('Aethel Zenith 9900 XTX');
+    expect(screen.queryByText('Aethel Vortex 9950X')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Previous filters' }));
+    expect(await screen.findByText('Aethel Vortex 9950X')).toBeInTheDocument();
+    expect(
+      screen.queryByText('Aethel Zenith 9900 XTX'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows a no-match message for filters that exclude all products', async () => {
+    const view = render(<CatalogPage />, { wrapper: CatalogWrapper });
+    await screen.findByText('Aethel Vortex 9950X');
+    fireEvent.change(screen.getByLabelText(/search silicon/i), {
+      target: { value: 'not-a-real-chip' },
+    });
+    expect(
+      screen.getByRole('heading', {
+        name: 'No matching processors or graphics cards',
+      }),
+    ).toBeInTheDocument();
+    view.unmount();
+  });
+
+  it('shows an inventory-empty message when the API returns no products', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({ ok: true, json: async () => [] }),
+    );
+    render(<CatalogPage />, { wrapper: CatalogWrapper });
+    expect(
+      await screen.findByRole('heading', {
+        name: 'No silicon products available',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText('No matching processors or graphics cards'),
+    ).not.toBeInTheDocument();
+  });
 });
 
 // =============================================================================
@@ -661,7 +905,11 @@ describe('ProductDetailPage', () => {
   beforeEach(() => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({ ok: true, json: async () => [sampleCpu] }),
+      vi.fn().mockImplementation(async (url: string) => ({
+        ok: !url.endsWith('/unknown-chip'),
+        status: url.endsWith('/unknown-chip') ? 404 : 200,
+        json: async () => sampleCpu,
+      })),
     );
   });
 
@@ -700,8 +948,13 @@ describe('ProductDetailPage', () => {
     fireEvent.click(addButton);
 
     expect(
-      screen.getByText(/added 2 unit\(s\) of aethel vortex 9950x to cart/i),
-    ).toBeInTheDocument();
+      JSON.parse(window.localStorage.getItem('aethel-cart') ?? '[]'),
+    ).toEqual([
+      expect.objectContaining({
+        quantity: 2,
+        product: expect.objectContaining({ id: sampleCpu.id }),
+      }),
+    ]);
   });
 
   it('shows graceful missing state for unknown product id', async () => {
@@ -831,6 +1084,8 @@ describe('ConfiguratorPage', () => {
 
     const mockCartValue: CartContextValue = {
       items: [],
+      appliedPromo: null,
+      applyPromo: () => false,
       addToCart,
       addRigToCart,
       unbundleRig,
@@ -987,6 +1242,8 @@ describe('CartPage', () => {
 
     const mockCartValue: CartContextValue = {
       items: initialItems,
+      appliedPromo: null,
+      applyPromo: () => true,
       addToCart,
       addRigToCart,
       unbundleRig,
@@ -1063,30 +1320,11 @@ describe('CartPage', () => {
     expect(unbundleRig).toHaveBeenCalledWith('rig-item-1');
   });
 
-  it('applies promo code SILICON10 and enables checkout', () => {
+  it('links to the checkout route without clearing the cart', () => {
     const { clearCart } = renderCartPage([mockStandaloneItem]);
-
-    const promoInput = screen.getByLabelText(/promo code/i);
-    fireEvent.change(promoInput, { target: { value: 'SILICON10' } });
-
-    const applyBtn = screen.getByRole('button', { name: /apply promo/i });
-    fireEvent.click(applyBtn);
-
-    expect(screen.getByText(/10% promo applied/i)).toBeInTheDocument();
-
-    const checkoutBtn = screen.getByRole('button', {
-      name: /proceed to checkout/i,
-    });
-    fireEvent.click(checkoutBtn);
-
     expect(
-      screen.getByRole('heading', { level: 2, name: /order confirmed/i }),
-    ).toBeInTheDocument();
-
-    const closeBtn = screen.getByRole('button', {
-      name: /complete & clear cart/i,
-    });
-    fireEvent.click(closeBtn);
-    expect(clearCart).toHaveBeenCalledTimes(1);
+      screen.getByRole('link', { name: /proceed to checkout/i }),
+    ).toHaveAttribute('href', '/checkout');
+    expect(clearCart).not.toHaveBeenCalled();
   });
 });

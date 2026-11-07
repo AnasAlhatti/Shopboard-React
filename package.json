@@ -15,10 +15,19 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "@hookform/resolvers": "^7.0.3",
+    "@tanstack/react-query": "^5.107.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "lucide-react": "^1.69.0",
+    "radix-ui": "^1.8.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "react-router-dom": "^7.18.5"
+    "react-error-boundary": "^6.1.6",
+    "react-hook-form": "^7.91.0",
+    "react-router-dom": "^7.18.5",
+    "sonner": "^2.0.8",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.2",
@@ -43,10 +52,11 @@
     "vitest": "^5.1.0"
   },
   "lint-staged": {
-    "*.{ts,tsx,css,json}": [
+    "*.{ts,tsx}": [
       "prettier --write",
       "eslint --fix"
     ],
+    "*.{css,json,md}": "prettier --write",
     "*.test.{ts,tsx}": "vitest run"
   }
 }

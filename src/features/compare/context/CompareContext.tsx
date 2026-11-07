@@ -8,6 +8,7 @@ import {
 import type { ReactNode } from 'react';
 import type { CompareContextValue } from '../types/compare';
 import { isProduct, type Product } from '../../../shared/types/product';
+import { notify } from '../../../shared/notifications';
 
 const STORAGE_KEY = 'aethel-compare';
 
@@ -21,7 +22,9 @@ function readStoredProducts(): Product[] {
     const parsed: unknown = JSON.parse(stored);
     if (!Array.isArray(parsed) || !parsed.every(isProduct)) return [];
     const category = parsed[0]?.category;
-    return parsed.every((product) => product.category === category)
+    return parsed.length <= 4 &&
+      new Set(parsed.map((product) => product.id)).size === parsed.length &&
+      parsed.every((product) => product.category === category)
       ? parsed
       : [];
   } catch {
@@ -42,7 +45,10 @@ export function CompareProvider({ children }: { children: ReactNode }) {
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(comparedItems));
     } catch {
-      // Keep comparisons available in memory if browser storage is unavailable.
+      notify.error(
+        'Comparisons are available for this visit, but browser storage could not save them.',
+        { id: 'compare-storage' },
+      );
     }
   }, [comparedItems]);
 
@@ -59,7 +65,10 @@ export function CompareProvider({ children }: { children: ReactNode }) {
       setComparedItems((current) =>
         current.some((item) => item.id === product.id)
           ? current.filter((item) => item.id !== product.id)
-          : [...current, product],
+          : current.length >= 4 ||
+              (current[0] && current[0].category !== product.category)
+            ? current
+            : [...current, product],
       );
     },
     [category, comparedItems],

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useEffectEvent, useRef } from 'react';
 import type { KeyboardEvent } from 'react';
 import { X } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -19,23 +19,21 @@ export function QuickCartDrawer({ isOpen, onClose }: QuickCartDrawerProps) {
   const { items, subtotal } = useCart();
   const dialogRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const closeRef = useRef(onClose);
-
-  useEffect(() => {
-    closeRef.current = onClose;
-  }, [onClose]);
+  const close = useEffectEvent(onClose);
 
   useEffect(() => {
     if (!isOpen) return;
 
+    const previousFocus = document.activeElement;
     closeButtonRef.current?.focus();
     const closeOnEscape = (event: globalThis.KeyboardEvent) => {
-      if (event.key === 'Escape') closeRef.current();
+      if (event.key === 'Escape') close();
     };
     window.addEventListener('keydown', closeOnEscape);
 
     return () => {
       window.removeEventListener('keydown', closeOnEscape);
+      if (previousFocus instanceof HTMLElement) previousFocus.focus();
     };
   }, [isOpen]);
 

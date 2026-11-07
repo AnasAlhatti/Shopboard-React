@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../../cart/hooks/useCart';
 import { useCompare } from '../../compare/hooks/useCompare';
 import type { Product } from '../../../shared/types/product';
+import { notify } from '../../../shared/notifications';
 
 interface ProductCardProps {
   product: Product;
@@ -123,7 +124,10 @@ export function ProductCard({ product }: ProductCardProps) {
           <button
             type="button"
             className="button button--primary button--sm"
-            onClick={() => addToCart(product, 1)}
+            onClick={() => {
+              addToCart(product, 1);
+              notify.success(`Added ${product.name} to cart.`);
+            }}
             aria-label={`Add ${product.name} to cart`}
           >
             <Plus size={15} aria-hidden="true" />

@@ -22,6 +22,8 @@ export interface CartItem {
 
 export interface CartContextValue {
   items: CartItem[];
+  appliedPromo: string | null;
+  applyPromo: (code: string) => boolean;
   addToCart: (product: Product, quantity?: number) => void;
   addRigToCart: (rig: BundledRig) => void;
   unbundleRig: (cartItemId: string) => void;

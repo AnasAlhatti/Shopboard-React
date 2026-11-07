@@ -1,6 +1,5 @@
 import {
   AlertTriangle,
-  CheckCircle,
   PackagePlus,
   ShoppingBag,
   Sparkles,
@@ -15,8 +14,6 @@ interface PowerSynergyMeterProps {
   totalPrice: number;
   onAddAssembledRig: () => void;
   onAddIndividualComponents: () => void;
-  justAddedBundle: boolean;
-  justAddedIndividual: boolean;
 }
 
 export function PowerSynergyMeter({
@@ -26,8 +23,6 @@ export function PowerSynergyMeter({
   totalPrice,
   onAddAssembledRig,
   onAddIndividualComponents,
-  justAddedBundle,
-  justAddedIndividual,
 }: PowerSynergyMeterProps) {
   // Power safety zone calculation (max target bar scale 1000W)
   const powerPercentage = Math.min(100, (totalTdp / 900) * 100);
@@ -132,20 +127,6 @@ export function PowerSynergyMeter({
             <span>Add Components Individually</span>
           </button>
         </div>
-
-        {justAddedBundle && (
-          <div className="cart-feedback-pill" role="status">
-            <CheckCircle size={15} aria-hidden="true" />
-            <span>Custom Rig added to cart as bundled build!</span>
-          </div>
-        )}
-
-        {justAddedIndividual && (
-          <div className="cart-feedback-pill" role="status">
-            <CheckCircle size={15} aria-hidden="true" />
-            <span>Components (CPU, GPU & Storage) added to cart!</span>
-          </div>
-        )}
       </div>
     </div>
   );

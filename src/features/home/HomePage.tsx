@@ -1,32 +1,31 @@
 import { ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useProducts } from '../catalog/hooks/useProducts';
-import { ArchitectureStory } from './components/ArchitectureStory';
+import { AsyncBoundary } from '../../shared/components/AsyncBoundary';
+import { LoadingState } from '../../shared/components/LoadingState';
+import { LoadError } from '../../shared/components/LoadError';
+import { HomeProducts } from './components/HomeProducts';
 import { HeroShowcase } from './components/HeroShowcase';
-import { SiliconSpotlight } from './components/SiliconSpotlight';
 import './home.css';
 
 export function HomePage() {
-  const { products, loading, error, retry } = useProducts();
-  const cpu = products.find((product) => product.id === 'vortex-9950x');
-  const gpu = products.find((product) => product.id === 'zenith-9900xtx');
-
   return (
     <main className="home-page">
-      <HeroShowcase cpu={cpu} gpu={gpu} loading={loading} />
-      {error && (
-        <div className="home-page__error page-width" role="status">
-          <p>
-            Product specifications are unavailable. You can still explore the
-            range.
-          </p>
-          <button type="button" className="home-text-link" onClick={retry}>
-            Try again <ArrowUpRight size={15} aria-hidden="true" />
-          </button>
-        </div>
-      )}
-      <ArchitectureStory cpu={cpu} />
-      <SiliconSpotlight cpu={cpu} gpu={gpu} loading={loading} />
+      <AsyncBoundary
+        fallback={
+          <>
+            <HeroShowcase loading />
+            <LoadingState label="Loading product specifications." />
+          </>
+        }
+        errorFallback={(props) => (
+          <>
+            <HeroShowcase loading={false} />
+            <LoadError {...props} />
+          </>
+        )}
+      >
+        <HomeProducts />
+      </AsyncBoundary>
       <section
         className="home-build page-width"
         aria-labelledby="home-build-title"

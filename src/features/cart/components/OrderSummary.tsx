@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { ArrowRight, Check, Shield, Tag, Trash2 } from 'lucide-react';
+import { ArrowRight, Check, Tag, Trash2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { calculateOrderTotals } from '../utils/orderTotals';
 
 interface OrderSummaryProps {
   subtotal: number;
   onClearCart: () => void;
-  onCheckout: () => void;
   discountAmount: number;
   appliedPromo: string | null;
   onApplyPromo: (code: string) => boolean;
@@ -13,7 +14,6 @@ interface OrderSummaryProps {
 export function OrderSummary({
   subtotal,
   onClearCart,
-  onCheckout,
   discountAmount,
   appliedPromo,
   onApplyPromo,
@@ -34,9 +34,7 @@ export function OrderSummary({
     }
   };
 
-  const discountedSubtotal = Math.max(0, subtotal - discountAmount);
-  const tax = discountedSubtotal * 0.07;
-  const total = discountedSubtotal + tax;
+  const { tax, total } = calculateOrderTotals(subtotal, appliedPromo);
 
   return (
     <aside className="order-summary-card" aria-labelledby="order-summary-title">
@@ -101,7 +99,7 @@ export function OrderSummary({
             Invalid promo code. Use code SILICON10 for 10% off.
           </p>
         )}
-        {appliedPromo && (
+        {appliedPromo !== null && (
           <p className="promo-success-msg" role="status">
             <Check size={14} aria-hidden="true" /> 10% promo applied
             successfully!
@@ -111,14 +109,10 @@ export function OrderSummary({
 
       {/* Action Buttons */}
       <div className="order-summary-actions">
-        <button
-          type="button"
-          className="button button--primary button--full"
-          onClick={onCheckout}
-        >
+        <Link to="/checkout" className="button button--primary button--full">
           <span>Proceed to Checkout</span>
           <ArrowRight size={16} aria-hidden="true" />
-        </button>
+        </Link>
 
         <button
           type="button"
@@ -128,11 +122,6 @@ export function OrderSummary({
           <Trash2 size={14} aria-hidden="true" />
           <span>Clear Shopping Cart</span>
         </button>
-      </div>
-
-      <div className="order-security-assurance">
-        <Shield size={16} aria-hidden="true" />
-        <span>Hardware encrypted order & guaranteed silicon integrity.</span>
       </div>
     </aside>
   );
