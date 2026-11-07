@@ -1,67 +1,92 @@
-import { ArrowDownRight, ArrowUpRight, Cpu, Gauge } from 'lucide-react';
+import { ArrowDown, ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
-interface HeroShowcaseProps {
-  boostClock: string;
-  tflops: number;
-  loading: boolean;
-}
+import type { Product } from '../../../shared/types/product';
 
 export function HeroShowcase({
-  boostClock,
-  tflops,
+  cpu,
+  gpu,
   loading,
-}: HeroShowcaseProps) {
+}: {
+  cpu?: Product;
+  gpu?: Product;
+  loading: boolean;
+}) {
+  let coreSummary: string | undefined;
+  if (cpu?.specs.cores && cpu.specs.threads) {
+    coreSummary = `${cpu.specs.cores} cores / ${cpu.specs.threads} threads`;
+  }
+
+  const specifications = [
+    { label: 'Vortex 9950X', value: coreSummary },
+    { label: 'Maximum boost clock', value: cpu?.specs.boostClock },
+    { label: 'Zenith 9900 XTX memory', value: gpu?.specs.vram },
+  ];
+  const statusText = loading
+    ? 'Loading specifications'
+    : 'Specifications unavailable';
+
   return (
     <section className="home-hero" aria-labelledby="home-title">
-      <div className="home-hero__image-wrap" aria-hidden="true">
-        <img
-          className="home-hero__image"
-          src="/assets/gpu-and-cpu-processors-1f861609.jpg"
-          alt=""
-        />
-      </div>
-      <div className="home-hero__content page-width">
-        <p className="home-hero__kicker">
-          <span /> Next-gen 3nm architecture
-        </p>
-        <h1 id="home-title">Forged for extreme compute.</h1>
-        <p className="home-hero__description">
-          Silicon engineered to turn ambitious ideas into real-time performance.
-        </p>
-        <div className="home-hero__actions">
-          <Link className="button button--primary" to="/catalog">
-            Explore silicon <ArrowUpRight size={17} aria-hidden="true" />
-          </Link>
-          <Link className="button button--quiet" to="/configurator">
-            Build a custom rig <ArrowDownRight size={17} aria-hidden="true" />
-          </Link>
+      <div className="home-hero__intro page-width">
+        <div>
+          <p className="home-label">Aethel Silicon / Desktop hardware</p>
+          <h1 id="home-title">
+            Vortex processors.
+            <br />
+            <span>Zenith graphics.</span>
+          </h1>
         </div>
-
-        <dl className="home-hero__stats" aria-label="Flagship performance">
-          <div className="performance-stat">
-            <dt>
-              <Cpu size={15} aria-hidden="true" /> Max boost clock
-            </dt>
-            <dd>{loading ? 'Loading' : boostClock}</dd>
+        <div className="home-hero__aside">
+          <p>
+            For the games you play.
+            <br />
+            And the work you put into them.
+          </p>
+          <div className="home-hero__links">
+            <Link className="home-text-link" to="/catalog">
+              Explore products <ArrowUpRight size={16} aria-hidden="true" />
+            </Link>
+            <a className="home-quiet-link" href="#home-products">
+              Meet the range <ArrowDown size={14} aria-hidden="true" />
+            </a>
           </div>
-          <div className="performance-stat">
-            <dt>
-              <Gauge size={15} aria-hidden="true" /> Peak graphics compute
-            </dt>
-            <dd>{loading ? 'Loading' : `${tflops.toFixed(1)} TFLOPs`}</dd>
-          </div>
-          <div className="performance-stat performance-stat--status">
-            <dt>Architecture</dt>
+        </div>
+      </div>
+      <figure className="home-hero__photograph page-width">
+        <img
+          src="/assets/aethel-silicon-studio.jpg"
+          alt="Silver Vortex processor beside a graphite triple-fan Zenith graphics card"
+          width="1376"
+          height="768"
+          fetchPriority="high"
+        />
+        <figcaption>
+          <span>Vortex 9950X & Zenith 9900 XTX</span>
+          <span>Processors & graphics</span>
+        </figcaption>
+      </figure>
+      <dl
+        className="home-hero__specs page-width"
+        aria-label="Flagship specifications"
+        aria-busy={loading}
+      >
+        {specifications.map((specification) => (
+          <div key={specification.label}>
+            <dt>{specification.label}</dt>
             <dd>
-              3 nm <span>FinFET</span>
+              {loading ? statusText : (specification.value ?? statusText)}
             </dd>
           </div>
-        </dl>
-      </div>
-      <span className="home-hero__index" aria-hidden="true">
-        01 / AETHEL SYSTEMS
-      </span>
+        ))}
+        <div>
+          <dt>The full range</dt>
+          <dd>
+            <Link className="home-quiet-link" to="/compare">
+              Compare hardware <ArrowUpRight size={14} aria-hidden="true" />
+            </Link>
+          </dd>
+        </div>
+      </dl>
     </section>
   );
 }

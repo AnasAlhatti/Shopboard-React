@@ -35,8 +35,10 @@ import { CatalogPage } from '../features/catalog/CatalogPage';
 import { ComparePage } from '../features/compare/ComparePage';
 import { ConfiguratorPage } from '../features/configurator/ConfiguratorPage';
 import { HomePage } from '../features/home/HomePage';
+import { SiliconSpotlight } from '../features/home/components/SiliconSpotlight';
 import { ProductDetailPage } from '../features/product-detail/ProductDetailPage';
 import { Header } from '../shared/components/Header';
+import { getSiliconDashboard } from '../features/home/data/siliconArchitecture';
 
 // Shared Mock Fixtures
 const sampleCpu: Product = {
@@ -114,6 +116,56 @@ const sampleGpu: Product = {
 };
 
 const mockCatalogProducts: Product[] = [sampleCpu, sampleCpu2, sampleGpu];
+
+describe('silicon architecture data', () => {
+  it('does not provide invented figures when product data is unavailable', () => {
+    expect(getSiliconDashboard(undefined, 'gpu')).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ label: 'Compute', value: 'Not specified' }),
+        expect.objectContaining({ label: 'Memory', value: 'Not specified' }),
+        expect.objectContaining({
+          label: 'Board power',
+          value: 'Not specified',
+        }),
+      ]),
+    );
+  });
+
+  it('uses available product specifications for dashboard metrics', () => {
+    expect(getSiliconDashboard(sampleGpu, 'gpu')).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ label: 'Compute', value: '88.4 TFLOPs' }),
+        expect.objectContaining({ label: 'Memory', value: '24GB GDDR6' }),
+        expect.objectContaining({ label: 'Board power', value: '355 W' }),
+      ]),
+    );
+  });
+
+  it('does not invent missing specifications for a catalogue product', () => {
+    const incompleteGpu: Product = {
+      ...sampleGpu,
+      specs: { boostClock: '2.8 GHz', tdp: 355 },
+    };
+    expect(getSiliconDashboard(incompleteGpu, 'gpu')).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ label: 'Compute', value: 'Not specified' }),
+        expect.objectContaining({ label: 'Memory', value: 'Not specified' }),
+      ]),
+    );
+    const incompleteCpu: Product = {
+      ...sampleCpu,
+      specs: { boostClock: '5.9 GHz', tdp: 170 },
+    };
+    expect(getSiliconDashboard(incompleteCpu, 'cpu')).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: 'Cores / threads',
+          value: 'Not specified',
+        }),
+      ]),
+    );
+  });
+});
 
 // =============================================================================
 // 1. PRODUCT SERVICE TESTS
@@ -372,7 +424,7 @@ describe('HomePage', () => {
     vi.unstubAllGlobals();
   });
 
-  it('shows flagship metrics and three interactive teardown hotspots', async () => {
+  it('shows editorial photography, flagship data, and working product destinations', async () => {
     render(
       <MemoryRouter>
         <HomePage />
@@ -380,31 +432,134 @@ describe('HomePage', () => {
     );
 
     expect(
-      screen.getByRole('heading', { name: 'Forged for extreme compute.' }),
+      screen.getByRole('heading', {
+        level: 1,
+        name: /Vortex processors.*Zenith graphics/,
+      }),
     ).toBeInTheDocument();
-    expect(await screen.findByText('5.9 GHz')).toBeInTheDocument();
+    expect(
+      await screen.findByText('16 cores / 32 threads'),
+    ).toBeInTheDocument();
     expect(await screen.findByText('88.4 TFLOPs')).toBeInTheDocument();
     expect(
-      screen.getByRole('link', { name: 'Explore silicon' }),
+      screen.getByRole('link', { name: 'Explore products' }),
     ).toHaveAttribute('href', '/catalog');
     expect(
       screen.getByRole('link', { name: 'Build a custom rig' }),
     ).toHaveAttribute('href', '/configurator');
+    expect(screen.getByRole('link', { name: 'View product' })).toHaveAttribute(
+      'href',
+      '/product/zenith-9900xtx',
+    );
+    expect(
+      screen.getByAltText(
+        'Silver Vortex processor beside a graphite triple-fan Zenith graphics card',
+      ),
+    ).toHaveAttribute('src', '/assets/aethel-silicon-studio.jpg');
+  });
 
-    const cachePin = screen.getByRole('button', {
-      name: '3D V-Stack Cache Layer',
-    });
-    expect(
-      screen.getByRole('button', { name: '3nm Compute Cluster' }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'Graphene Vapor Base' }),
-    ).toBeInTheDocument();
-    fireEvent.click(cachePin);
+  it('switches specs and keyboard focus together using arrow and boundary keys', () => {
+    render(
+      <MemoryRouter>
+        <SiliconSpotlight cpu={sampleCpu} gpu={sampleGpu} />
+      </MemoryRouter>,
+    );
+    const cpu = screen.getByRole('tab', { name: 'Vortex processors' });
+    const gpu = screen.getByRole('tab', { name: 'Zenith graphics' });
+    expect(screen.getByText('24GB GDDR6')).toBeInTheDocument();
+    fireEvent.keyDown(gpu, { key: 'ArrowLeft' });
+    expect(cpu).toHaveFocus();
+    expect(cpu).toHaveAttribute('aria-selected', 'true');
+    expect(gpu).toHaveAttribute('tabindex', '-1');
+    expect(screen.getByText('16 / 32')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'View product' })).toHaveAttribute(
+      'href',
+      '/product/vortex-9950x',
+    );
+    expect(screen.getByRole('tabpanel')).toHaveAttribute(
+      'aria-labelledby',
+      cpu.id,
+    );
+    fireEvent.keyDown(gpu, { key: 'Home' });
+    expect(cpu).toHaveFocus();
+    expect(screen.getByText('16 / 32')).toBeInTheDocument();
+    fireEvent.keyDown(cpu, { key: 'End' });
+    expect(gpu).toHaveFocus();
+  });
 
+  it('keeps the product family navigation available when specs are unavailable', () => {
+    render(
+      <MemoryRouter>
+        <SiliconSpotlight />
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.queryByText('24 GB GDDR7')).not.toBeInTheDocument();
     expect(
-      screen.getByText(/stacked cache keeps critical game data/i),
+      screen.getByRole('link', { name: 'All graphics cards' }),
+    ).toHaveAttribute('href', '/catalog?category=gpu');
+  });
+
+  it('shows a loading status while the initial product request is pending', () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => new Promise(() => {})),
+    );
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Loading product specifications.',
+    );
+    expect(
+      screen.queryByText('Product specifications are currently unavailable.'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('changes the product status from loading to unavailable after a request completes without data', () => {
+    const { rerender } = render(
+      <MemoryRouter>
+        <SiliconSpotlight loading />
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Loading product specifications.',
+    );
+    rerender(
+      <MemoryRouter>
+        <SiliconSpotlight loading={false} />
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Product specifications are currently unavailable.',
+    );
+  });
+
+  it('retries product loading after a failed request', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockRejectedValueOnce(new Error('Network unavailable'))
+        .mockResolvedValue({
+          ok: true,
+          json: async () => [sampleCpu, sampleGpu],
+        }),
+    );
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>,
+    );
+    fireEvent.click(await screen.findByRole('button', { name: 'Try again' }));
+    expect(
+      await screen.findByText('16 cores / 32 threads'),
     ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Try again' }),
+    ).not.toBeInTheDocument();
   });
 });
 

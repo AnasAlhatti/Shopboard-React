@@ -221,6 +221,21 @@
   margin-top: var(--space-3xl);
 }
 
+.benchmark-chart-section .section-heading {
+  max-width: 52rem;
+  margin-bottom: 2rem;
+}
+
+.benchmark-chart-section .section-heading h2 {
+  margin-bottom: 0.8rem;
+  font-size: clamp(2rem, 6vw, 3.7rem);
+}
+
+.benchmark-chart-section .section-heading > p:last-child {
+  max-width: 34rem;
+  margin-bottom: 0;
+}
+
 .benchmark-charts-list {
   display: flex;
   flex-direction: column;

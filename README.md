@@ -24,10 +24,11 @@ Aethel Silicon is an AMD-inspired, dark hardware storefront and architecture sho
 ## Application Routes & Features
 
 1. **Ecosystem & Flagship Reveal (`/`)**
-   - High-contrast obsidian hero featuring the unified CPU + GPU silicon render.
-   - Live architectural stat tickers (5.9 GHz clock, 88.4 TFLOPs FP32).
-   - Interactive scroll-linked exploded hardware teardown with 3 clickable hotspot pins detailing the 3D V-Stack cache, 3nm compute die, and graphene vapor chamber.
-   - Architectural tabbed spotlights comparing Vortex CPU and Zenith GPU engines.
+   - Photography-led editorial home page with paired Vortex CPU / Zenith GPU studio shots and a processor package close-up.
+   - Catalogue-backed specifications, pricing, and direct product-detail links; explicit unavailable states with a loading retry.
+   - CPU/GPU product-family tabs with arrow-key navigation, family-filtered catalogue links, and a brief image transition.
+   - Responsive images preserve their proportions; the hero image loads eagerly and supporting images load lazily. Entrance and image transitions respect reduced-motion preferences.
+   - A compact closing section links to the custom rig builder. No video, WebGL, or external animation library is required.
 
 2. **Silicon Storefront Catalog (`/catalog`)**
    - Full hardware matrix consuming asynchronous data from `/data/products.json`.
@@ -130,14 +131,14 @@ App (src/App.tsx) [Props: {}] [State: none]
 │               │   │   ├── Props: {}
 │               │   │   ├── State Owned: products, loading, error, retry (via useProducts)
 │               │   │   ├── HeroShowcase (src/features/home/components/HeroShowcase.tsx)
-│               │   │   │   ├── Props: { boostClock: string, tflops: number, loading: boolean }
+│               │   │   │   ├── Props: { cpu?: Product, gpu?: Product, loading: boolean }
 │               │   │   │   └── State Owned: none
-│               │   │   ├── ExplodedTeardown (src/features/home/components/ExplodedTeardown.tsx)
-│               │   │   │   ├── Props: {}
-│               │   │   │   └── State Owned: activeId: string ('vstack' | 'compute' | 'vapor')
+│               │   │   ├── ArchitectureStory (src/features/home/components/ArchitectureStory.tsx)
+│               │   │   │   ├── Props: { cpu?: Product }
+│               │   │   │   └── State Owned: none
 │               │   │   └── SiliconSpotlight (src/features/home/components/SiliconSpotlight.tsx)
-│               │   │       ├── Props: {}
-│               │   │       └── State Owned: activeKey: 'cpu' | 'gpu'
+│               │   │       ├── Props: { cpu?: Product, gpu?: Product, loading?: boolean }
+│               │   │       └── State Owned: active: 'cpu' | 'gpu' (default: 'gpu')
 │               │   │
 │               │   ├── Route path="/catalog" ── CatalogPage (src/features/catalog/CatalogPage.tsx)
 │               │   │   ├── Props: {}

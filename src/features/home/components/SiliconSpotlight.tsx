@@ -1,94 +1,164 @@
-import { useState } from 'react';
+import { useState, type KeyboardEvent } from 'react';
+import { ArrowUpRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import type { Product } from '../../../shared/types/product';
+import {
+  getSiliconDashboard,
+  type SiliconKind,
+} from '../data/siliconArchitecture';
 
-interface SpotlightItem {
-  readonly tab: string;
-  readonly eyebrow: string;
-  readonly title: string;
-  readonly description: string;
-  readonly image: string;
-  readonly alt: string;
-  readonly accent: string;
-}
-
-const SPOTLIGHT_KEYS: readonly ('cpu' | 'gpu')[] = ['cpu', 'gpu'];
-
-const spotlights: Record<'cpu' | 'gpu', SpotlightItem> = {
+const siliconKinds: readonly SiliconKind[] = ['cpu', 'gpu'];
+const spotlightContent = {
   cpu: {
-    tab: 'Vortex compute engine',
-    eyebrow: 'Vortex CPU architecture',
-    title: 'Parallel power. Precise control.',
+    tab: 'Vortex processors',
+    name: 'Vortex 9950X',
+    label: 'Desktop processors',
     description:
-      'High-frequency cores and generous on-chip cache adapt to demanding creative workloads and low-latency play.',
-    image: '/assets/cpu-heat-spreader-glowing-traces-eb58e993.jpg',
-    alt: 'Processor heat spreader with glowing circuit traces',
-    accent: 'crimson',
+      'More cores for the work that needs them. Vortex brings high-frequency compute to rendering, compiling, and the desktop tasks in between.',
+    image: '/assets/vortex-heat-spreader-detail.jpg',
+    alt: 'Vortex processor package and surrounding circuit traces',
+    width: 1200,
+    height: 896,
   },
   gpu: {
-    tab: 'Zenith graphics engine',
-    eyebrow: 'Zenith GPU architecture',
-    title: 'More frames. More worlds.',
+    tab: 'Zenith graphics',
+    name: 'Zenith 9900 XTX',
+    label: 'Graphics cards',
     description:
-      'A wide graphics pipeline brings high-throughput compute, immersive ray tracing, and expansive memory to every frame.',
-    image: '/assets/gpu-design-with-fans-0d40afa8.jpg',
-    alt: 'Aethel graphics card with triple cooling fans',
-    accent: 'amber',
+      'A triple-fan design and high-capacity graphics memory for detailed scenes, demanding games, and creative projects.',
+    image: '/assets/zenith-gpu-studio.jpg',
+    alt: 'Full front view of the graphite triple-fan Zenith graphics card',
+    width: 896,
+    height: 1200,
   },
 };
 
-type SpotlightKey = 'cpu' | 'gpu';
+export function SiliconSpotlight({
+  cpu,
+  gpu,
+  loading = false,
+}: {
+  cpu?: Product;
+  gpu?: Product;
+  loading?: boolean;
+}) {
+  const [active, setActive] = useState<SiliconKind>('gpu');
+  const product = active === 'cpu' ? cpu : gpu;
+  const content = spotlightContent[active];
+  const metrics = getSiliconDashboard(product, active);
 
-export function SiliconSpotlight() {
-  const [activeKey, setActiveKey] = useState<SpotlightKey>('cpu');
-  const active = spotlights[activeKey];
+  function handleTabKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
+    let next: SiliconKind;
+    switch (event.key) {
+      case 'Home':
+        next = 'cpu';
+        break;
+      case 'End':
+        next = 'gpu';
+        break;
+      case 'ArrowLeft':
+      case 'ArrowRight':
+        next = active === 'cpu' ? 'gpu' : 'cpu';
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
+    setActive(next);
+    document.getElementById(`spotlight-tab-${next}`)?.focus();
+  }
 
   return (
     <section
-      className="spotlight-section page-width"
+      id="home-products"
+      className="home-products page-width"
       aria-labelledby="spotlight-title"
     >
-      <div className="section-heading section-heading--split">
+      <div className="home-products__heading">
         <div>
-          <p className="eyebrow">Choose your edge</p>
-          <h2 id="spotlight-title">Two engines. One ecosystem.</h2>
+          <p className="home-label">The range</p>
+          <h2 id="spotlight-title">Choose your hardware.</h2>
         </div>
         <div
-          className="spotlight-tabs"
+          className="home-product-tabs"
           role="tablist"
-          aria-label="Silicon architecture"
+          aria-label="Product family"
         >
-          {SPOTLIGHT_KEYS.map((key) => (
+          {siliconKinds.map((kind) => (
             <button
-              id={`spotlight-tab-${key}`}
-              className={`spotlight-tab${activeKey === key ? ' is-active' : ''}`}
-              key={key}
+              key={kind}
+              id={`spotlight-tab-${kind}`}
               type="button"
               role="tab"
-              aria-selected={activeKey === key}
               aria-controls="spotlight-panel"
-              onClick={() => setActiveKey(key)}
+              aria-selected={active === kind}
+              tabIndex={active === kind ? 0 : -1}
+              onClick={() => setActive(kind)}
+              onKeyDown={handleTabKeyDown}
             >
-              {spotlights[key].tab}
+              {spotlightContent[kind].tab}
             </button>
           ))}
         </div>
       </div>
-
       <article
         id="spotlight-panel"
-        className={`spotlight-panel spotlight-panel--${active.accent}`}
+        className="home-product-panel"
         role="tabpanel"
-        aria-labelledby={`spotlight-tab-${activeKey}`}
+        aria-labelledby={`spotlight-tab-${active}`}
       >
-        <div className="spotlight-panel__copy">
-          <p className="eyebrow">{active.eyebrow}</p>
-          <h3>{active.title}</h3>
-          <p>{active.description}</p>
-          <span className="spotlight-panel__index">
-            AETHEL SILICON / {activeKey.toUpperCase()}
-          </span>
+        <div
+          className={`home-product-panel__photo home-product-panel__photo--${active}`}
+        >
+          <img
+            key={active}
+            src={content.image}
+            alt={content.alt}
+            width={content.width}
+            height={content.height}
+            loading="lazy"
+          />
         </div>
-        <div className="spotlight-panel__image-wrap">
-          <img src={active.image} alt={active.alt} loading="lazy" />
+        <div className="home-product-panel__copy">
+          <p className="home-label">{content.label}</p>
+          <h3>
+            {product ? product.name.replace(/^Aethel\s+/, '') : content.name}
+          </h3>
+          <p>{content.description}</p>
+          {product ? (
+            <>
+              <dl className="home-product-specs">
+                {metrics.map((metric) => (
+                  <div key={metric.label}>
+                    <dt>{metric.label}</dt>
+                    <dd>{metric.value}</dd>
+                  </div>
+                ))}
+              </dl>
+              <div className="home-product-panel__purchase">
+                <span>
+                  {new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    maximumFractionDigits: 0,
+                  }).format(product.price)}
+                </span>
+                <Link className="home-text-link" to={`/product/${product.id}`}>
+                  View product <ArrowUpRight size={16} aria-hidden="true" />
+                </Link>
+              </div>
+            </>
+          ) : (
+            <p className="home-product-panel__unavailable" role="status">
+              {loading
+                ? 'Loading product specifications.'
+                : 'Product specifications are currently unavailable.'}
+            </p>
+          )}
+          <Link className="home-quiet-link" to={`/catalog?category=${active}`}>
+            All {active === 'cpu' ? 'processors' : 'graphics cards'}{' '}
+            <ArrowUpRight size={14} aria-hidden="true" />
+          </Link>
         </div>
       </article>
     </section>
