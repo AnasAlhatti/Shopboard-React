@@ -90,7 +90,3 @@ Page imports and queries use Suspense fallbacks and retryable Error Boundaries. 
 Checkout uses one Zod schema, Controller fields, associated labels/errors, autocomplete, first-error focus, validation on submit, and disabled pending controls. Failures preserve values. Empty carts cannot submit; successful **local demo** checkout clears the cart and shows a receipt. No payment is collected, order sent to a server, or delivery details stored.
 
 Tests cover API failures/validation, shared state and persistence, catalog filters, details, home loading/retry, comparisons, configurator actions, form validation/focus/pending/failure/success, cross-route cart behavior, import retry, and 404.
-
-## Personal lesson submission
-
-Day 5 asks for `answers.md`, written without AI: where the cart lives and why; one retained effect and why; and what re-renders on Add to cart. Write these yourself after walking through the code. They are intentionally not generated here.
