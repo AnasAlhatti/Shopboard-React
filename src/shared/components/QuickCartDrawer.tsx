@@ -25,6 +25,8 @@ export function QuickCartDrawer({ isOpen, onClose }: QuickCartDrawerProps) {
     if (!isOpen) return;
 
     const previousFocus = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     closeButtonRef.current?.focus();
     const closeOnEscape = (event: globalThis.KeyboardEvent) => {
       if (event.key === 'Escape') close();
@@ -33,6 +35,7 @@ export function QuickCartDrawer({ isOpen, onClose }: QuickCartDrawerProps) {
 
     return () => {
       window.removeEventListener('keydown', closeOnEscape);
+      document.body.style.overflow = previousOverflow;
       if (previousFocus instanceof HTMLElement) previousFocus.focus();
     };
   }, [isOpen]);

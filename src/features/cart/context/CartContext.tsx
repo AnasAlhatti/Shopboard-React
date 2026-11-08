@@ -25,6 +25,9 @@ function isBundledRig(value: unknown): value is BundledRig {
     isProduct(value.gpu) &&
     typeof value.ramTier === 'string' &&
     typeof value.storageTier === 'string' &&
+    (value.memoryStorage === undefined ||
+      (isProduct(value.memoryStorage) &&
+        value.memoryStorage.category === 'storage')) &&
     typeof value.totalPrice === 'number' &&
     Number.isFinite(value.totalPrice) &&
     value.totalPrice >= 0 &&
@@ -144,12 +147,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const item = current.find(
         (candidate) => candidate.id === cartItemId && candidate.type === 'rig',
       );
-      if (!item?.rig) return current;
+      if (!item?.rig?.memoryStorage) return current;
 
       let remaining = current.filter(
         (candidate) => candidate.id !== cartItemId,
       );
-      for (const product of [item.rig.cpu, item.rig.gpu]) {
+      for (const product of [
+        item.rig.cpu,
+        item.rig.gpu,
+        item.rig.memoryStorage,
+      ]) {
         const existing = remaining.find(
           (candidate) =>
             candidate.type === 'standalone' &&

@@ -233,9 +233,11 @@
   transition: all var(--transition-fast);
 }
 
-.slot-option-card:hover {
-  border-color: rgba(255, 51, 51, 0.4);
-  transform: translateY(-2px);
+@media (hover: hover) and (pointer: fine) {
+  .slot-option-card:hover {
+    border-color: rgba(255, 51, 51, 0.4);
+    transform: translateY(-2px);
+  }
 }
 
 .slot-option-card.is-selected {

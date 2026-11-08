@@ -7,6 +7,7 @@ export interface BundledRig {
   gpu: Product;
   ramTier: string;
   storageTier: string;
+  memoryStorage?: Product;
   totalPrice: number;
   totalTdp: number;
 }

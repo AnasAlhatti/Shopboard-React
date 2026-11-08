@@ -63,11 +63,18 @@ export function CartItemRow({
               type="button"
               className="button button--quiet button--sm unbundle-btn"
               onClick={() => onUnbundle(item.id)}
+              disabled={!rig.memoryStorage}
               aria-label="Unbundle rig into individual components"
             >
               <Split size={14} aria-hidden="true" />
               <span>Unbundle Rig</span>
             </button>
+            {!rig.memoryStorage && (
+              <p>
+                This saved rig needs to be rebuilt in the configurator before
+                its memory/storage can be unbundled.
+              </p>
+            )}
           </div>
         </div>
 
@@ -133,12 +140,18 @@ export function CartItemRow({
             {product.series} Series // {product.category.toUpperCase()}
           </span>
           <h3 id={`item-title-${item.id}`} className="cart-item-name">
-            <Link to={`/product/${product.id}`}>{product.name}</Link>
+            {product.category === 'storage' ? (
+              product.name
+            ) : (
+              <Link to={`/product/${product.id}`}>{product.name}</Link>
+            )}
           </h3>
           <p className="cart-item-specs">
             {product.category === 'cpu'
               ? `${product.specs.cores}C / ${product.specs.threads}T · ${product.specs.boostClock} · ${product.specs.tdp}W`
-              : `${product.specs.vram} · ${product.specs.boostClock} · ${product.specs.tdp}W`}
+              : product.category === 'gpu'
+                ? `${product.specs.vram} · ${product.specs.boostClock} · ${product.specs.tdp}W`
+                : product.tagline}
           </p>
         </div>
 

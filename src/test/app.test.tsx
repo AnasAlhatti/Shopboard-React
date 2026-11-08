@@ -34,6 +34,7 @@ import type { Product } from '../shared/types/product';
 import { CartPage } from '../features/cart/CartPage';
 import { CatalogPage } from '../features/catalog/CatalogPage';
 import { ComparePage } from '../features/compare/ComparePage';
+import { ProductPickerModal } from '../features/compare/components/ProductPickerModal';
 import { ConfiguratorPage } from '../features/configurator/ConfiguratorPage';
 import { HomePage } from '../features/home/HomePage';
 import { SiliconSpotlight } from '../features/home/components/SiliconSpotlight';
@@ -121,6 +122,16 @@ const sampleGpu: Product = {
 };
 
 const mockCatalogProducts: Product[] = [sampleCpu, sampleCpu2, sampleGpu];
+
+const sampleMemory: Product = {
+  ...sampleCpu,
+  id: 'tier-memory',
+  category: 'storage',
+  name: 'Memory and storage package',
+  tagline: '32GB DDR5 + 1TB NVMe',
+  price: 180,
+  specs: { boostClock: '6000 MT/s', tdp: 35 },
+};
 
 describe('silicon architecture data', () => {
   it('does not provide invented figures when product data is unavailable', () => {
@@ -392,6 +403,19 @@ describe('productService', () => {
       category: 'cpu',
     });
   });
+
+  it('rejects malformed API data before components can consume it', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => [{ id: 'missing-required-fields' }],
+      }),
+    );
+    await expect(fetchProducts()).rejects.toThrow(
+      'Invalid products data format.',
+    );
+  });
 });
 
 // =============================================================================
@@ -430,6 +454,7 @@ describe('CartContext', () => {
         gpu: sampleGpu,
         ramTier: '32GB DDR5',
         storageTier: '2TB NVMe',
+        memoryStorage: sampleMemory,
         totalPrice: 1648,
         totalTdp: 525,
       }),
@@ -446,7 +471,10 @@ describe('CartContext', () => {
     const standaloneItems = result.current.items.filter(
       (item) => item.type === 'standalone',
     );
-    expect(standaloneItems).toHaveLength(2);
+    expect(standaloneItems).toHaveLength(3);
+    expect(
+      standaloneItems.find((item) => item.product?.category === 'storage'),
+    ).toMatchObject({ product: sampleMemory, quantity: 1, unitPrice: 180 });
     expect(
       standaloneItems.find((item) => item.product?.id === sampleCpu.id)
         ?.quantity,
@@ -469,6 +497,74 @@ describe('CartContext', () => {
     window.localStorage.setItem('aethel-cart', '{broken');
     const corrupted = renderHook(() => useCart(), { wrapper: cartWrapper });
     expect(corrupted.result.current.items).toEqual([]);
+  });
+
+  it('preserves older saved rigs instead of silently dropping package contents', () => {
+    const saved: CartItem = {
+      id: 'old-rig',
+      type: 'rig',
+      quantity: 1,
+      unitPrice: 2008,
+      rig: {
+        id: 'old-rig',
+        name: 'Older saved rig',
+        cpu: sampleCpu,
+        gpu: sampleGpu,
+        ramTier: 'Standard',
+        storageTier: '32GB + 1TB',
+        totalPrice: 2008,
+        totalTdp: 610,
+      },
+    };
+    window.localStorage.setItem('aethel-cart', JSON.stringify([saved]));
+    const { result } = renderHook(() => useCart(), { wrapper: cartWrapper });
+    act(() => result.current.unbundleRig('old-rig'));
+    expect(result.current.items).toEqual([saved]);
+  });
+
+  it('restores the full rig package and merges every component when unbundling multiple rigs', () => {
+    const first = renderHook(() => useCart(), { wrapper: cartWrapper });
+    act(() =>
+      first.result.current.addRigToCart({
+        id: 'complete-rig',
+        name: 'Complete rig',
+        cpu: sampleCpu,
+        gpu: sampleGpu,
+        memoryStorage: sampleMemory,
+        ramTier: 'Standard Pro',
+        storageTier: sampleMemory.tagline,
+        totalPrice: 2008,
+        totalTdp: 610,
+      }),
+    );
+    act(() =>
+      first.result.current.updateQuantity(first.result.current.items[0].id, 2),
+    );
+    first.unmount();
+    const restored = renderHook(() => useCart(), { wrapper: cartWrapper });
+    act(() => restored.result.current.addToCart(sampleMemory));
+    const rig = restored.result.current.items.find(
+      (item) => item.type === 'rig',
+    );
+    expect(rig?.rig?.memoryStorage).toEqual(sampleMemory);
+    if (!rig) throw new Error('Expected the saved rig');
+    act(() => restored.result.current.unbundleRig(rig.id));
+    expect(restored.result.current.items).toHaveLength(3);
+    expect(
+      restored.result.current.items.find(
+        (item) => item.product?.id === sampleMemory.id,
+      )?.quantity,
+    ).toBe(3);
+    expect(
+      restored.result.current.items.find(
+        (item) => item.product?.id === sampleCpu.id,
+      )?.quantity,
+    ).toBe(2);
+    expect(
+      restored.result.current.items.find(
+        (item) => item.product?.id === sampleGpu.id,
+      )?.quantity,
+    ).toBe(2);
   });
 });
 
@@ -882,6 +978,27 @@ describe('CatalogPage', () => {
 // =============================================================================
 // 7. PRODUCT DETAIL PAGE TESTS
 // =============================================================================
+describe('ProductPickerModal keyboard access', () => {
+  it('opens as a modal and handles the browser cancel event', () => {
+    const onClose = vi.fn();
+    render(
+      <ProductPickerModal
+        isOpen
+        onClose={onClose}
+        availableProducts={[sampleCpu]}
+        onSelect={vi.fn()}
+        category="cpu"
+      />,
+    );
+    const dialog = screen.getByRole('dialog', {
+      name: 'Select CPU to Compare',
+    });
+    expect(dialog).toHaveAttribute('open');
+    fireEvent(dialog, new Event('cancel', { cancelable: true }));
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe('ProductDetailPage', () => {
   function renderDetailWithRoute(initialPath: string) {
     function DetailWrapper({ children }: { children: ReactNode }) {
@@ -1208,6 +1325,7 @@ describe('CartPage', () => {
       gpu: sampleGpu,
       ramTier: 'Extreme Compute Tier',
       storageTier: '64GB DDR5 + 2TB Gen5 SSD',
+      memoryStorage: sampleMemory,
       totalPrice: 1648,
       totalTdp: 570,
     },
@@ -1326,5 +1444,25 @@ describe('CartPage', () => {
       screen.getByRole('link', { name: /proceed to checkout/i }),
     ).toHaveAttribute('href', '/checkout');
     expect(clearCart).not.toHaveBeenCalled();
+  });
+
+  it('shows memory specifications without an unavailable product-detail link', () => {
+    renderCartPage([
+      {
+        id: 'product-memory',
+        type: 'standalone',
+        product: sampleMemory,
+        quantity: 1,
+        unitPrice: sampleMemory.price,
+      },
+    ]);
+    expect(
+      screen.getByRole('heading', { name: sampleMemory.name }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(sampleMemory.tagline)).toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: sampleMemory.name }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/undefined/)).not.toBeInTheDocument();
   });
 });

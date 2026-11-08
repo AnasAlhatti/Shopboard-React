@@ -17,8 +17,10 @@
   transition: color var(--transition-fast);
 }
 
-.product-detail-breadcrumbs a:hover {
-  color: var(--color-accent);
+@media (hover: hover) and (pointer: fine) {
+  .product-detail-breadcrumbs a:hover {
+    color: var(--color-accent);
+  }
 }
 
 .product-detail-breadcrumbs .separator {
@@ -71,8 +73,10 @@
   transition: transform var(--transition-normal);
 }
 
-.product-gallery:hover .product-gallery__image {
-  transform: scale(1.05);
+@media (hover: hover) and (pointer: fine) {
+  .product-gallery:hover .product-gallery__image {
+    transform: scale(1.05);
+  }
 }
 
 .product-gallery__glow {

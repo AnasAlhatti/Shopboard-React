@@ -52,6 +52,25 @@ export function ConfiguratorWorkbench() {
   const totalPrice =
     cpuPrice + gpuPrice + selectedTier.price + chassisBasePrice;
 
+  const memoryStorage: Product = {
+    id: `tier-${selectedTier.id}`,
+    name: `Aethel ${selectedTier.name} (RAM & Gen5 NVMe)`,
+    category: 'storage',
+    series: 'Quantum',
+    tagline: selectedTier.specs,
+    price: selectedTier.price,
+    image: '/assets/pc-hardware-glass-case-a7ed0ff3.jpg',
+    specs: {
+      boostClock: `${/DDR5-(\d+)/.exec(selectedTier.specs)?.[1] ?? 'Unknown'} MT/s`,
+      tdp: selectedTier.tdp,
+    },
+    benchmarks: {
+      efficiencyScore: 9.8,
+    },
+    description: `High-bandwidth memory and Gen5 storage package: ${selectedTier.specs}`,
+    features: [selectedTier.specs, `${selectedTier.tdp}W TDP`],
+  };
+
   const handleAddAssembledRig = () => {
     if (!activeCpu || !activeGpu) return;
 
@@ -62,6 +81,7 @@ export function ConfiguratorWorkbench() {
       gpu: activeGpu,
       ramTier: selectedTier.name,
       storageTier: selectedTier.specs,
+      memoryStorage,
       totalPrice,
       totalTdp,
     };
@@ -75,25 +95,7 @@ export function ConfiguratorWorkbench() {
     addToCart(activeCpu, 1);
     addToCart(activeGpu, 1);
 
-    const storageProduct: Product = {
-      id: `tier-${selectedTier.id}`,
-      name: `Aethel ${selectedTier.name} (RAM & Gen5 NVMe)`,
-      category: 'storage',
-      series: 'Quantum',
-      tagline: selectedTier.specs,
-      price: selectedTier.price,
-      image: '/assets/pc-hardware-glass-case-a7ed0ff3.jpg',
-      specs: {
-        boostClock: '6400 MT/s',
-        tdp: selectedTier.tdp,
-      },
-      benchmarks: {
-        efficiencyScore: 9.8,
-      },
-      description: `High-bandwidth memory and Gen5 storage package: ${selectedTier.specs}`,
-      features: [selectedTier.specs, `${selectedTier.tdp}W TDP`],
-    };
-    addToCart(storageProduct, 1);
+    addToCart(memoryStorage, 1);
 
     notify.success('CPU, GPU, and memory/storage added to cart.');
   };

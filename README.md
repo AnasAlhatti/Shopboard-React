@@ -73,9 +73,13 @@ StrictMode
 
 Cart Context owns items and the session promo. Context fits this small app and exposes explicit actions without another client-state library. Items initialize from localStorage key `aethel-cart`; one effect synchronizes changes. Counts/totals are derived. Promo `SILICON10` gives 10% off across cart and checkout; refresh preserves items but the promo needs reapplying.
 
+Rigs save the selected memory/storage product alongside the CPU and GPU. Unbundling keeps all three selections and merges their quantities with matching cart items; the chassis/assembly charge is removed, matching the individual-components option. Older saved rigs without package metadata remain usable in the cart, but must be rebuilt in the configurator before unbundling so their package is never silently lost. Memory/storage packages show their specifications directly in the cart because they have no standalone catalog API endpoint.
+
 Comparison Context owns/persists selected products. TanStack Query owns server data; pages do not mirror it in state. Configurator selections store IDs and derive active objects. Form fields, quantity, dialogs, tabs, and receipt stay local.
 
 Effects synchronize storage and quick-cart focus/keyboard integration. Listeners are removed on cleanup. Query functions forward the cache's AbortSignal; shared requests can complete for later consumers. There are no loading timers or effects for calculated values.
+
+The comparison picker uses a native modal dialog for keyboard navigation and Escape dismissal, with focus returned to its trigger. Its effect synchronizes the dialog and background scroll lock with React's open state. Narrow-screen controls wrap instead of overflowing; touch devices receive 16px text inputs and hover effects are restricted to mouse-like pointers. Real-phone testing is still needed for software keyboards, safe areas, and touch behavior.
 
 ## API and deployment
 

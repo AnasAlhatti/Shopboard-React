@@ -138,7 +138,7 @@ export function FilterSidebar({
           type="range"
           min={65}
           max={400}
-          step={25}
+          step={5}
           value={maxTdp}
           onChange={(e) => onMaxTdpChange(Number(e.target.value))}
           className="filter-slider"

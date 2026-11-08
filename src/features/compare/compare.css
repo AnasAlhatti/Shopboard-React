@@ -119,10 +119,12 @@
   transition: all var(--transition-fast);
 }
 
-.compare-remove-btn:hover {
-  background: rgba(255, 51, 51, 0.15);
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+@media (hover: hover) and (pointer: fine) {
+  .compare-remove-btn:hover {
+    background: rgba(255, 51, 51, 0.15);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
 }
 
 .compare-chip-media {
@@ -158,8 +160,10 @@
   text-decoration: none;
 }
 
-.compare-chip-name a:hover {
-  color: var(--color-accent);
+@media (hover: hover) and (pointer: fine) {
+  .compare-chip-name a:hover {
+    color: var(--color-accent);
+  }
 }
 
 .compare-chip-price {
@@ -349,6 +353,13 @@
 .picker-modal-overlay {
   position: fixed;
   inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  color: inherit;
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(8px);
   z-index: 100;
@@ -364,7 +375,7 @@
   border-radius: var(--radius-xl);
   width: 100%;
   max-width: 600px;
-  max-height: 80vh;
+  max-height: 85dvh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -395,13 +406,15 @@
 .picker-modal__list {
   padding: var(--space-lg);
   overflow-y: auto;
+  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
 }
 
 .picker-product-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
   align-items: center;
   gap: var(--space-md);
   background: var(--color-bg);
@@ -426,7 +439,7 @@
 }
 
 .picker-product-info {
-  flex: 1;
+  min-width: 0;
 }
 
 .picker-product-info h4 {
@@ -446,15 +459,27 @@
 }
 
 .picker-product-action {
+  grid-column: 2;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: space-between;
   gap: 0.3rem;
 }
 
 .picker-product-price {
   font-size: 0.95rem;
   font-weight: 800;
+}
+
+@media (min-width: 600px) {
+  .picker-product-row {
+    grid-template-columns: 70px minmax(0, 1fr) auto;
+  }
+  .picker-product-action {
+    grid-column: auto;
+    flex-direction: column;
+    align-items: flex-end;
+  }
 }
 
 .picker-modal__empty {

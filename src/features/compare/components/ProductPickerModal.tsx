@@ -1,4 +1,5 @@
 import { Plus, X } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 import type { Product } from '../../../shared/types/product';
 
 interface ProductPickerModalProps {
@@ -16,14 +17,40 @@ export function ProductPickerModal({
   onSelect,
   category,
 }: ProductPickerModalProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!isOpen || !dialog) return;
+    const previousFocus = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    dialog.showModal();
+    document.body.style.overflow = 'hidden';
+    return () => {
+      dialog.close();
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus instanceof HTMLElement && previousFocus.isConnected) {
+        previousFocus.focus();
+      }
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <div
+    <dialog
+      ref={dialogRef}
       className="picker-modal-overlay"
       role="dialog"
       aria-modal="true"
       aria-labelledby="picker-title"
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
     >
       <div className="picker-modal">
         <header className="picker-modal__header">
@@ -83,6 +110,6 @@ export function ProductPickerModal({
           )}
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }
