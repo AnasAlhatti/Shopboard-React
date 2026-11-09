@@ -1,7 +1,7 @@
 import { Plus, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../cart/hooks/useCart';
-import type { Product } from '../../../shared/types/product';
+import type { Product } from '../../../shared/products/types/product';
 
 interface CompareTableProps {
   items: Product[];

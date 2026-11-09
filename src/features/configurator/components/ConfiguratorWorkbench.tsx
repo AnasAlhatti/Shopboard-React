@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useCart } from '../../cart/hooks/useCart';
-import { useProducts } from '../../catalog/hooks/useProducts';
+import { useProducts } from '../../../shared/products/hooks/useProducts';
 import type { BundledRig } from '../../cart/types/cart';
-import type { Product } from '../../../shared/types/product';
-import { notify } from '../../../shared/notifications';
+import type { Product } from '../../../shared/products/types/product';
+import { notify } from '../../../shared/notifications/notify';
 import { ComponentSlotSelector } from './ComponentSlotSelector';
 import { MEMORY_STORAGE_TIERS } from '../data/tiers';
 import { PowerSynergyMeter } from './PowerSynergyMeter';

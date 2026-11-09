@@ -1,5 +1,5 @@
 import { Activity, Flame, Zap } from 'lucide-react';
-import type { Product } from '../../../shared/types/product';
+import type { Product } from '../../../shared/products/types/product';
 
 interface MiniBenchmarkCardProps {
   product: Product;

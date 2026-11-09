@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useProducts } from '../hooks/useProducts';
+import { useProducts } from '../../../shared/products/hooks/useProducts';
 import { filterProducts } from '../utils/filterProducts';
 import { FilterSidebar } from './FilterSidebar';
 import { ProductGrid } from './ProductGrid';

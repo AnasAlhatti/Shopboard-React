@@ -23,7 +23,30 @@ module.exports = {
     'plugin:react-hooks/recommended',
   ],
   rules: {
+    '@typescript-eslint/no-empty-object-type': [
+      'error',
+      { allowInterfaces: 'with-single-extends' },
+    ],
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
   },
+  overrides: [
+    {
+      files: ['src/shared/**/*.{ts,tsx}'],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          {
+            patterns: [
+              {
+                group: ['**/features/**', '**/app/**'],
+                message:
+                  'Shared modules cannot depend on application layout or feature modules.',
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
 };

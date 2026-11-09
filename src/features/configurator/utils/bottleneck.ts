@@ -1,4 +1,4 @@
-import type { Product } from '../../../shared/types/product';
+import type { Product } from '../../../shared/products/types/product';
 
 export interface BottleneckDiagnosis {
   score: number;

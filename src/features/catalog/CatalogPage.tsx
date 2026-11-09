@@ -1,5 +1,5 @@
-import { AsyncBoundary } from '../../shared/components/AsyncBoundary';
-import { LoadingState } from '../../shared/components/LoadingState';
+import { AsyncBoundary } from '../../shared/async/AsyncBoundary';
+import { LoadingState } from '../../shared/async/LoadingState';
 import { CatalogBrowser } from './components/CatalogBrowser';
 import './catalog.css';
 

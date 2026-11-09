@@ -13,7 +13,7 @@ import { useCompare } from './hooks/useCompare';
 import { BenchmarkBarChart } from './components/BenchmarkBarChart';
 import { CompareTable } from './components/CompareTable';
 import { CompareProductPicker } from './components/CompareProductPicker';
-import { AsyncBoundary } from '../../shared/components/AsyncBoundary';
+import { AsyncBoundary } from '../../shared/async/AsyncBoundary';
 import './compare.css';
 
 export function ComparePage() {

@@ -1,5 +1,5 @@
 import { ShieldCheck } from 'lucide-react';
-import type { Product } from '../../../shared/types/product';
+import type { Product } from '../../../shared/products/types/product';
 
 interface RigVisualizerProps {
   selectedCpu: Product | null;

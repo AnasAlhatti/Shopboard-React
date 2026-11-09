@@ -1,5 +1,5 @@
 import { BarChart3, Trophy } from 'lucide-react';
-import type { Product } from '../../../shared/types/product';
+import type { Product } from '../../../shared/products/types/product';
 
 interface BenchmarkBarChartProps {
   items: Product[];

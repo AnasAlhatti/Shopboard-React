@@ -1,10 +1,11 @@
+import { getCartItemPrice } from '../cart/utils/cartOperations';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../cart/hooks/useCart';
 import { calculateOrderTotals } from '../cart/utils/orderTotals';
-import { notify } from '../../shared/notifications';
+import { notify } from '../../shared/notifications/notify';
 import { CheckoutForm } from './components/CheckoutForm';
-import type { CheckoutValues } from './data/checkoutSchema';
+import type { CheckoutValues } from './schemas/checkoutSchema';
 import './checkout.css';
 
 interface OrderReceipt {
@@ -90,7 +91,9 @@ export function CheckoutPage() {
                 <span>
                   {item.product?.name ?? item.rig?.name} × {item.quantity}
                 </span>
-                <strong>${(item.quantity * item.unitPrice).toFixed(2)}</strong>
+                <strong>
+                  ${(item.quantity * getCartItemPrice(item)).toFixed(2)}
+                </strong>
               </li>
             ))}
           </ul>

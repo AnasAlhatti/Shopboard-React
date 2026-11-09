@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
-import { AsyncBoundary } from '../../shared/components/AsyncBoundary';
-import { LoadingState } from '../../shared/components/LoadingState';
+import { AsyncBoundary } from '../../shared/async/AsyncBoundary';
+import { LoadingState } from '../../shared/async/LoadingState';
 import { ProductDetails } from './components/ProductDetails';
 import './product-detail.css';
 

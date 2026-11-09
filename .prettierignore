@@ -1,0 +1,7 @@
+# Keep installed upstream skills intact.
+.claude/skills/
+.agents/skills/
+
+# These files contain user-maintained Rules sections that must remain unchanged.
+AGENTS.md
+CLAUDE.md

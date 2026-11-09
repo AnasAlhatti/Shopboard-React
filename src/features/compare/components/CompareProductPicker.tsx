@@ -1,4 +1,4 @@
-import { useProducts } from '../../catalog/hooks/useProducts';
+import { useProducts } from '../../../shared/products/hooks/useProducts';
 import { useCompare } from '../hooks/useCompare';
 import { ProductPickerModal } from './ProductPickerModal';
 

@@ -2,8 +2,8 @@ import { Cpu, Gauge, Plus, Scale } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../cart/hooks/useCart';
 import { useCompare } from '../../compare/hooks/useCompare';
-import type { Product } from '../../../shared/types/product';
-import { notify } from '../../../shared/notifications';
+import type { Product } from '../../../shared/products/types/product';
+import { notify } from '../../../shared/notifications/notify';
 
 interface ProductCardProps {
   product: Product;

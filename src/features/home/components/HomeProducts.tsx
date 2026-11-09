@@ -1,4 +1,4 @@
-import { useProducts } from '../../catalog/hooks/useProducts';
+import { useProducts } from '../../../shared/products/hooks/useProducts';
 import { HeroShowcase } from './HeroShowcase';
 import { ArchitectureStory } from './ArchitectureStory';
 import { SiliconSpotlight } from './SiliconSpotlight';

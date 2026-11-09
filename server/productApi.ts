@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { isProduct } from '../src/shared/types/product.js';
+import { isProduct } from '../src/shared/products/types/product.js';
 
 // Used by Vite development and preview; a deployed host can provide the same API contract.
 export async function productApi(

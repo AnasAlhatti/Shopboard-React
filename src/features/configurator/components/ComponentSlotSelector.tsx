@@ -1,5 +1,5 @@
 import { Check, Cpu, HardDrive, Layers } from 'lucide-react';
-import type { Product } from '../../../shared/types/product';
+import type { Product } from '../../../shared/products/types/product';
 import { MEMORY_STORAGE_TIERS, type MemoryStorageTier } from '../data/tiers';
 
 export { MEMORY_STORAGE_TIERS, type MemoryStorageTier };

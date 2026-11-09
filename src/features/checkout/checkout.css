@@ -61,3 +61,6 @@
     grid-template-columns: 1.2fr 1fr;
   }
 }
+.checkout-form button[type='submit'] {
+  min-height: 2.8rem;
+}

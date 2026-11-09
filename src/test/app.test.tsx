@@ -1,3 +1,4 @@
+import { getCartItemPrice } from '../features/cart/utils/cartOperations';
 import type { ReactNode } from 'react';
 import {
   act,
@@ -26,9 +27,10 @@ import { useCompare } from '../features/compare/hooks/useCompare';
 import {
   fetchProductById,
   fetchProducts,
-} from '../features/catalog/services/productService';
+} from '../shared/products/api/productService';
 import type { CartContextValue, CartItem } from '../features/cart/types/cart';
-import type { Product } from '../shared/types/product';
+import type { Product } from '../shared/products/types/product';
+import type { CourseProduct } from '../shared/products/types/courseProduct';
 
 // Pages & Components
 import { CartPage } from '../features/cart/CartPage';
@@ -39,12 +41,19 @@ import { ConfiguratorPage } from '../features/configurator/ConfiguratorPage';
 import { HomePage } from '../features/home/HomePage';
 import { SiliconSpotlight } from '../features/home/components/SiliconSpotlight';
 import { ProductDetailPage } from '../features/product-detail/ProductDetailPage';
-import { Header } from '../shared/components/Header';
+import { Header } from '../app/layout/Header';
 import { getSiliconDashboard } from '../features/home/data/siliconArchitecture';
 import { CheckoutForm } from '../features/checkout/components/CheckoutForm';
 import { CheckoutPage } from '../features/checkout/CheckoutPage';
-import { createLazyPage } from '../shared/components/createLazyPage';
+import { createLazyPage } from '../app/routing/createLazyPage';
 import App from '../App';
+import { notify } from '../shared/notifications/notify';
+import {
+  courseProductsUrl,
+  fetchCourseProduct,
+  fetchCourseProducts,
+} from '../shared/products/api/courseProductService';
+import { UniqueItemsPage } from '../features/unique-items/UniqueItemsPage';
 
 // Shared Mock Fixtures
 const sampleCpu: Product = {
@@ -133,6 +142,224 @@ const sampleMemory: Product = {
   specs: { boostClock: '6000 MT/s', tdp: 35 },
 };
 
+describe('course API and shared cart', () => {
+  const apiProduct = {
+    id: 1,
+    title: 'Leather Tote Bag',
+    category_name: 'Bags',
+    price_cents: 8900,
+    in_stock: true,
+  };
+  const courseProduct: CourseProduct = {
+    source: 'course',
+    id: '1',
+    name: 'Leather Tote Bag',
+    category: 'Bags',
+    price: 89,
+    inStock: true,
+  };
+  beforeEach(() => {
+    window.localStorage.clear();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ items: [apiProduct], total: 1 }),
+      }),
+    );
+  });
+  afterEach(() => {
+    window.localStorage.clear();
+    window.history.replaceState(null, '', '/');
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    notify.dismiss();
+  });
+  it('maps the real API contract without hardware specifications or duplicated prices', async () => {
+    expect(await fetchCourseProducts()).toEqual([courseProduct]);
+    expect(fetch).toHaveBeenCalledWith(
+      'https://shopboard-api.vercel.app/api/products',
+      { signal: undefined },
+    );
+  });
+  it('builds the exact documented self-check endpoints and rejects unknown modes', () => {
+    expect(courseProductsUrl('delay/3000')).toBe(
+      'https://shopboard-api.vercel.app/delay/3000/api/products',
+    );
+    expect(courseProductsUrl('fail/500')).toBe(
+      'https://shopboard-api.vercel.app/fail/500/api/products',
+    );
+    expect(courseProductsUrl('empty')).toBe(
+      'https://shopboard-api.vercel.app/empty/api/products',
+    );
+    expect(() => courseProductsUrl('anything')).toThrow(
+      'Unsupported course API mode',
+    );
+  });
+  it('loads one course item by ID and handles malformed IDs and 404 responses', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify(apiProduct)),
+    );
+    expect(await fetchCourseProduct('1')).toEqual(courseProduct);
+    expect(fetch).toHaveBeenCalledWith(
+      'https://shopboard-api.vercel.app/api/products/1',
+      { signal: undefined },
+    );
+    expect(await fetchCourseProduct('../not-an-id')).toBeNull();
+    vi.mocked(fetch).mockResolvedValueOnce(new Response(null, { status: 404 }));
+    expect(await fetchCourseProduct('999')).toBeNull();
+  });
+  it('rejects invalid API cents rather than allowing an incorrect price into the cart', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          items: [{ ...apiProduct, price_cents: '8900' }],
+          total: 1,
+        }),
+      }),
+    );
+    await expect(fetchCourseProducts()).rejects.toThrow(
+      'Invalid unique items data format.',
+    );
+  });
+  it('keeps hardware and course items in the same persistent cart with one price source', () => {
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <CartProvider>{children}</CartProvider>
+    );
+    const cart = renderHook(() => useCart(), { wrapper });
+    act(() => {
+      cart.result.current.addToCart(sampleCpu);
+      cart.result.current.addToCart(courseProduct, 2);
+    });
+    expect(cart.result.current.subtotal).toBe(827);
+    expect(cart.result.current.itemCount).toBe(3);
+    expect(window.localStorage.getItem('aethel-cart')).not.toContain(
+      'unitPrice',
+    );
+    cart.unmount();
+    const restored = renderHook(() => useCart(), { wrapper });
+    expect(restored.result.current.items).toHaveLength(2);
+    expect(restored.result.current.subtotal).toBe(827);
+    act(() =>
+      restored.result.current.addToCart({ ...courseProduct, inStock: false }),
+    );
+    expect(restored.result.current.itemCount).toBe(3);
+  });
+  it('migrates older cart entries by dropping their redundant unitPrice', () => {
+    window.localStorage.setItem(
+      'aethel-cart',
+      JSON.stringify([
+        {
+          id: `product-${sampleCpu.id}`,
+          type: 'standalone',
+          product: sampleCpu,
+          quantity: 1,
+          unitPrice: 123,
+        },
+      ]),
+    );
+    const cart = renderHook(() => useCart(), {
+      wrapper: ({ children }) => <CartProvider>{children}</CartProvider>,
+    });
+    expect(cart.result.current.subtotal).toBe(sampleCpu.price);
+    expect(window.localStorage.getItem('aethel-cart')).not.toContain(
+      'unitPrice',
+    );
+  });
+  it('supports course search, out-of-stock products, and no-match feedback', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          items: [
+            apiProduct,
+            { ...apiProduct, id: 2, title: 'Sold-out bag', in_stock: false },
+          ],
+          total: 2,
+        }),
+      }),
+    );
+    render(
+      <MemoryRouter>
+        <CartProvider>
+          <UniqueItemsPage />
+        </CartProvider>
+      </MemoryRouter>,
+    );
+    await screen.findByRole('heading', { name: 'Leather Tote Bag' });
+    expect(
+      screen.getByRole('button', { name: 'Add Sold-out bag to cart' }),
+    ).toBeDisabled();
+    fireEvent.change(screen.getByLabelText('Search unique items'), {
+      target: { value: 'no matches' },
+    });
+    expect(
+      screen.getByRole('heading', { name: 'No matching unique items' }),
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Reset filters' }));
+    expect(
+      screen.getByRole('heading', { name: 'Leather Tote Bag' }),
+    ).toBeInTheDocument();
+  });
+  it('shows a retryable failure once, without an extra error toast', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const toast = vi.spyOn(notify, 'error');
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockRejectedValueOnce(new Error('Course API unavailable'))
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ items: [apiProduct], total: 1 }),
+        }),
+    );
+    render(
+      <MemoryRouter>
+        <CartProvider>
+          <UniqueItemsPage />
+        </CartProvider>
+      </MemoryRouter>,
+    );
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Course API unavailable',
+    );
+    expect(
+      screen.getByRole('heading', { name: 'Unique Items' }),
+    ).toBeInTheDocument();
+    expect(toast).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(
+      await screen.findByRole('heading', { name: 'Leather Tote Bag' }),
+    ).toBeInTheDocument();
+  });
+  it('renders the API empty state without losing the page header', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ items: [], total: 0 }),
+      }),
+    );
+    render(
+      <MemoryRouter>
+        <CartProvider>
+          <UniqueItemsPage />
+        </CartProvider>
+      </MemoryRouter>,
+    );
+    expect(
+      await screen.findByRole('heading', { name: 'No unique items available' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Unique Items' }),
+    ).toBeInTheDocument();
+  });
+});
+
 describe('silicon architecture data', () => {
   it('does not provide invented figures when product data is unavailable', () => {
     expect(getSiliconDashboard(undefined, 'gpu')).toEqual(
@@ -213,7 +440,7 @@ describe('checkout and route integration', () => {
           id: `product-${sampleCpu.id}`,
           type: 'standalone',
           product: sampleCpu,
-          unitPrice: sampleCpu.price,
+
           quantity: 2,
         },
       ]),
@@ -440,7 +667,6 @@ describe('CartContext', () => {
     act(() => result.current.addToCart(sampleCpu, 2));
     expect(result.current.items[0]).toMatchObject({
       quantity: 2,
-      unitPrice: 649,
     });
 
     act(() => result.current.updateQuantity(result.current.items[0].id, 3));
@@ -474,7 +700,7 @@ describe('CartContext', () => {
     expect(standaloneItems).toHaveLength(3);
     expect(
       standaloneItems.find((item) => item.product?.category === 'storage'),
-    ).toMatchObject({ product: sampleMemory, quantity: 1, unitPrice: 180 });
+    ).toMatchObject({ product: sampleMemory, quantity: 1 });
     expect(
       standaloneItems.find((item) => item.product?.id === sampleCpu.id)
         ?.quantity,
@@ -504,7 +730,7 @@ describe('CartContext', () => {
       id: 'old-rig',
       type: 'rig',
       quantity: 1,
-      unitPrice: 2008,
+
       rig: {
         id: 'old-rig',
         name: 'Older saved rig',
@@ -588,9 +814,7 @@ describe('CompareContext', () => {
     const { result, unmount } = renderHook(() => useCompare(), {
       wrapper: compareWrapper,
     });
-    const warning = vi
-      .spyOn(console, 'warn')
-      .mockImplementation(() => undefined);
+    const warning = vi.spyOn(notify, 'error');
 
     act(() => result.current.toggleCompare(sampleCpu));
     expect(result.current.category).toBe('cpu');
@@ -1317,7 +1541,7 @@ describe('CartPage', () => {
     id: 'rig-item-1',
     type: 'rig',
     quantity: 1,
-    unitPrice: 1648,
+
     rig: {
       id: 'rig-1',
       name: 'Aethel Custom Battlestation',
@@ -1336,7 +1560,6 @@ describe('CartPage', () => {
     type: 'standalone',
     product: sampleCpu,
     quantity: 2,
-    unitPrice: 649,
   };
 
   function renderCartPage(
@@ -1350,7 +1573,7 @@ describe('CartPage', () => {
     const clearCart = vi.fn();
 
     const subtotal = initialItems.reduce(
-      (acc, item) => acc + item.unitPrice * item.quantity,
+      (acc, item) => acc + getCartItemPrice(item) * item.quantity,
       0,
     );
     const itemCount = initialItems.reduce(
@@ -1453,7 +1676,6 @@ describe('CartPage', () => {
         type: 'standalone',
         product: sampleMemory,
         quantity: 1,
-        unitPrice: sampleMemory.price,
       },
     ]);
     expect(

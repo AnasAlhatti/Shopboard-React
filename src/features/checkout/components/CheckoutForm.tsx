@@ -1,11 +1,11 @@
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '../../../shared/components/ui/Button';
-import { Field } from '../../../shared/components/ui/Field';
-import { FieldLabel } from '../../../shared/components/ui/FieldLabel';
-import { FieldError } from '../../../shared/components/ui/FieldError';
-import { Input } from '../../../shared/components/ui/Input';
-import { checkoutSchema, type CheckoutValues } from '../data/checkoutSchema';
+import { Button } from '../../../shared/ui/Button';
+import { Field } from '../../../shared/ui/Field';
+import { FieldLabel } from '../../../shared/ui/FieldLabel';
+import { FieldError } from '../../../shared/ui/FieldError';
+import { Input } from '../../../shared/ui/Input';
+import { checkoutSchema, type CheckoutValues } from '../schemas/checkoutSchema';
 
 interface CheckoutFormProps {
   onSubmit: (values: CheckoutValues) => Promise<void>;

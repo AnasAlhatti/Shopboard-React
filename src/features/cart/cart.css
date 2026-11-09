@@ -395,3 +395,9 @@
   max-width: 50ch;
   margin: 0 auto var(--space-lg);
 }
+.cart-item-symbol {
+  display: grid;
+  min-height: 6rem;
+  place-items: center;
+  color: var(--color-muted);
+}

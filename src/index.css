@@ -1,4 +1,5 @@
 @import './shared/styles/design-tokens.css';
+@import './shared/styles/shadcn.css';
 
 .route-content {
   flex: 1;
@@ -18,14 +19,6 @@
   border-top-color: var(--color-crimson);
   border-radius: 50%;
 }
-.ui-field {
-  display: grid;
-  gap: 0.5rem;
-}
-.ui-field-label {
-  font-size: 0.85rem;
-  font-weight: 600;
-}
 .ui-input {
   width: 100%;
   min-height: 2.8rem;
@@ -43,34 +36,6 @@
 }
 .ui-input[aria-invalid='true'] {
   border-color: var(--color-crimson);
-}
-.ui-field-error {
-  color: var(--color-crimson);
-  font-size: 0.8rem;
-}
-.ui-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.8rem;
-  padding: 0.7rem 1rem;
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
-  font: inherit;
-  font-weight: 600;
-}
-.ui-button--primary {
-  background: var(--color-crimson);
-  color: white;
-}
-.ui-button--outline {
-  background: transparent;
-  border-color: var(--color-border);
-  color: var(--color-text);
-}
-.ui-button:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
 }
 @media (prefers-reduced-motion: no-preference) {
   .loading-indicator {

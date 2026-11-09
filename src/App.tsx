@@ -3,10 +3,20 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { CartProvider } from './features/cart/context/CartContext';
 import { CompareProvider } from './features/compare/context/CompareContext';
 import { queryClient } from './shared/api/queryClient';
-import { ApplicationLayout } from './shared/components/ApplicationLayout';
-import { createLazyPage } from './shared/components/createLazyPage';
+import { ApplicationLayout } from './app/layout/ApplicationLayout';
+import { createLazyPage } from './app/routing/createLazyPage';
 
 const pages = {
+  uniqueItems: createLazyPage(() =>
+    import('./features/unique-items/UniqueItemsPage').then((module) => ({
+      default: module.UniqueItemsPage,
+    })),
+  ),
+  uniqueItem: createLazyPage(() =>
+    import('./features/unique-items/UniqueItemDetailPage').then((module) => ({
+      default: module.UniqueItemDetailPage,
+    })),
+  ),
   home: createLazyPage(() =>
     import('./features/home/HomePage').then((module) => ({
       default: module.HomePage,
@@ -57,6 +67,8 @@ export default function App() {
           <CompareProvider>
             <Routes>
               <Route element={<ApplicationLayout />}>
+                <Route path="unique-items" element={<pages.uniqueItems />} />
+                <Route path="unique-items/:id" element={<pages.uniqueItem />} />
                 <Route index element={<pages.home />} />
                 <Route path="catalog" element={<pages.catalog />} />
                 <Route path="product/:id" element={<pages.product />} />

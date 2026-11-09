@@ -1,6 +1,6 @@
 import { Plus, X } from 'lucide-react';
 import { useEffect, useRef } from 'react';
-import type { Product } from '../../../shared/types/product';
+import type { Product } from '../../../shared/products/types/product';
 
 interface ProductPickerModalProps {
   isOpen: boolean;

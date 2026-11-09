@@ -7,8 +7,11 @@ import {
 } from 'react';
 import type { ReactNode } from 'react';
 import type { CompareContextValue } from '../types/compare';
-import { isProduct, type Product } from '../../../shared/types/product';
-import { notify } from '../../../shared/notifications';
+import {
+  isProduct,
+  type Product,
+} from '../../../shared/products/types/product';
+import { notify } from '../../../shared/notifications/notify';
 
 const STORAGE_KEY = 'aethel-compare';
 
@@ -56,8 +59,16 @@ export function CompareProvider({ children }: { children: ReactNode }) {
     (product: Product) => {
       const isSelected = comparedItems.some((item) => item.id === product.id);
       if (!isSelected && category && category !== product.category) {
-        console.warn(
-          `Compare mode is locked to ${category.toUpperCase()} products. Clear it to switch.`,
+        notify.error(
+          `Compare mode is locked to ${category.toUpperCase()} products. Clear the bench to switch categories.`,
+          { id: 'compare-rejection' },
+        );
+        return;
+      }
+      if (!isSelected && comparedItems.length >= 4) {
+        notify.error(
+          'The comparison bench holds four products. Remove one before adding another.',
+          { id: 'compare-rejection' },
         );
         return;
       }

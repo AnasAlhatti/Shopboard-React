@@ -1,6 +1,9 @@
+import { getCartItemPrice } from '../utils/cartOperations';
 import { Minus, Plus, Split, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { CartItem } from '../types/cart';
+import { isCourseProduct } from '../../../shared/products/types/courseProduct';
+import { CourseCartItemRow } from './CourseCartItemRow';
 
 interface CartItemRowProps {
   item: CartItem;
@@ -15,6 +18,17 @@ export function CartItemRow({
   onRemove,
   onUnbundle,
 }: CartItemRowProps) {
+  if (item.type === 'standalone' && isCourseProduct(item.product)) {
+    return (
+      <CourseCartItemRow
+        id={item.id}
+        product={item.product}
+        quantity={item.quantity}
+        onUpdateQuantity={onUpdateQuantity}
+        onRemove={onRemove}
+      />
+    );
+  }
   const isRig = item.type === 'rig' && item.rig;
   const isStandalone = item.type === 'standalone' && item.product;
 
@@ -104,7 +118,7 @@ export function CartItemRow({
 
           <div className="cart-item-totals">
             <span className="cart-item-price">
-              ${(item.unitPrice * item.quantity).toLocaleString()}
+              ${(getCartItemPrice(item) * item.quantity).toLocaleString()}
             </span>
             <button
               type="button"
@@ -120,7 +134,7 @@ export function CartItemRow({
     );
   }
 
-  if (isStandalone && item.product) {
+  if (isStandalone && item.product && !isCourseProduct(item.product)) {
     const { product } = item;
     return (
       <article
@@ -181,7 +195,7 @@ export function CartItemRow({
 
           <div className="cart-item-totals">
             <span className="cart-item-price">
-              ${(item.unitPrice * item.quantity).toLocaleString()}
+              ${(getCartItemPrice(item) * item.quantity).toLocaleString()}
             </span>
             <button
               type="button"

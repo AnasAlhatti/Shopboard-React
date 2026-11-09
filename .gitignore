@@ -14,6 +14,7 @@ dist-ssr
 *.tsbuildinfo
 .superpowers/
 docs/superpowers/
+.agents/skills/
 
 
 # Editor directories and files

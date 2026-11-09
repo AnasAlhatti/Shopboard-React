@@ -1,8 +1,8 @@
 import { ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { AsyncBoundary } from '../../shared/components/AsyncBoundary';
-import { LoadingState } from '../../shared/components/LoadingState';
-import { LoadError } from '../../shared/components/LoadError';
+import { AsyncBoundary } from '../../shared/async/AsyncBoundary';
+import { LoadingState } from '../../shared/async/LoadingState';
+import { LoadError } from '../../shared/async/LoadError';
 import { HomeProducts } from './components/HomeProducts';
 import { HeroShowcase } from './components/HeroShowcase';
 import './home.css';
