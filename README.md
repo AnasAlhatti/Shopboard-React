@@ -100,7 +100,8 @@ present in server HTML. Numeric IDs select the course adapter, while existing ha
 select hardware. Missing IDs call `notFound()`. Only the active collection is requested.
 
 One HTTP client checks status, validates unknown JSON, forwards cancellation, and uses no-store
-requests. Hardware defaults to the existing JSON inventory, read directly by the server.
+requests. Hardware defaults to the existing JSON inventory, imported into the server bundle so dynamic
+routes work on serverless hosts where `public/` is served only from the CDN.
 `HARDWARE_API_BASE_URL` optionally selects a compatible remote hardware API. Server pages never
 fetch their own application endpoints.
 
