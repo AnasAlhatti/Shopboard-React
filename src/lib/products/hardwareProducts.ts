@@ -1,7 +1,6 @@
-import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
 import { cache } from 'react';
 import 'server-only';
+import inventory from '../../../public/data/products.json';
 import { isProduct, type Product } from '../../shared/products/types/product';
 import { ApiError, getJson } from '../apiClient';
 
@@ -17,9 +16,9 @@ export const getHardwareProducts = cache(async (): Promise<Product[]> => {
       isProducts,
       'products',
     );
-  const data: unknown = JSON.parse(
-    await readFile(join(process.cwd(), 'public/data/products.json'), 'utf8'),
-  );
+  // Bundled at build time: Netlify serves public/ from the CDN, so the file
+  // is not on disk inside the server function that renders dynamic routes.
+  const data: unknown = inventory;
   if (!isProducts(data)) throw new Error('Invalid hardware product data.');
   return data;
 });
