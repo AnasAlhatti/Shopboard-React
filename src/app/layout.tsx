@@ -27,7 +27,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <AppProviders>
           <ApplicationLayout>{children}</ApplicationLayout>
         </AppProviders>
