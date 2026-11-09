@@ -1,6 +1,7 @@
+'use client';
 import { Suspense, type ReactNode } from 'react';
-import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
+import { useSWRConfig } from 'swr';
 import { LoadError } from './LoadError';
 import { LoadingState } from './LoadingState';
 
@@ -17,21 +18,20 @@ export function AsyncBoundary({
   onReset,
   errorFallback,
 }: AsyncBoundaryProps) {
+  const { cache, mutate } = useSWRConfig();
   return (
-    <QueryErrorResetBoundary>
-      {({ reset }) => (
-        <ErrorBoundary
-          onReset={() => {
-            reset();
-            onReset?.();
-          }}
-          fallbackRender={
-            errorFallback ?? ((props) => <LoadError {...props} />)
-          }
-        >
-          <Suspense fallback={fallback}>{children}</Suspense>
-        </ErrorBoundary>
-      )}
-    </QueryErrorResetBoundary>
+    <ErrorBoundary
+      onReset={() => {
+        for (const key of cache.keys()) {
+          const state = cache.get(key);
+          if (state?.error) cache.set(key, { ...state, error: undefined });
+        }
+        void mutate(() => true);
+        onReset?.();
+      }}
+      fallbackRender={errorFallback ?? ((props) => <LoadError {...props} />)}
+    >
+      <Suspense fallback={fallback}>{children}</Suspense>
+    </ErrorBoundary>
   );
 }

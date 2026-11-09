@@ -2,270 +2,168 @@
 
 ## Stack
 
-- **Core:** React 19, TypeScript (`strict: true`), Vite
-- **Routing:** React Router v7 (`react-router-dom`)
-- **Icons:** Lucide React (`lucide-react`)
-- **Styling:** Semantic HTML, Mobile-first CSS, zero `!important`, design tokens (`src/shared/styles/design-tokens.css`)
-- **Quality & Git Hooks:** ESLint, Prettier, Husky, lint-staged
-- **Testing:** Vitest, React Testing Library (`@testing-library/react`), jsdom
+React 19, strict TypeScript, Next.js 16 App Router, SWR, Tailwind CSS 4, Lucide,
+React Context, React Hook Form, Zod, local shadcn-derived UI primitives, and Sonner.
+Vitest, React Testing Library, and jsdom cover browser-independent behavior.
+Vite and its React plugin are test tooling only. ESLint, Prettier, Husky, and lint-staged remain.
 
-## Folder Structure & Where a New Feature Goes
+## Folder ownership
 
 ```text
 src/
-├── app/
-│   ├── layout/                # ApplicationLayout, Header, Footer
-│   └── routing/               # createLazyPage factory
-├── features/
-│   ├── cart/                  # components/, context/, hooks/, storage/, types/, utils/
-│   ├── catalog/               # components/, utils/, CatalogPage, catalog.css
-│   ├── checkout/              # components/, schemas/, CheckoutPage, checkout.css
-│   ├── compare/               # components/, context/, hooks/, types/
-│   ├── configurator/          # components/, data/, utils/
-│   ├── home/                  # components/, data/, HomePage, home.css
-│   ├── not-found/             # NotFoundPage
-│   ├── product-detail/        # components/, ProductDetailPage, product-detail.css
-│   └── unique-items/          # course collection/detail pages, components/, unique-items.css
+├── app/                 # Next routes, layouts, API handlers, boundaries, globals.css
+├── components/
+│   ├── layout/          # ApplicationLayout, Header, NavigationLink, Footer
+│   ├── providers/       # AppProviders, route-scoped ProductCache
+│   └── ui/              # Button, Input, Card, Badge, Modal, fields, theme/refresh controls
+├── features/            # cart, catalog, checkout, compare, configurator, home,
+│                        # not-found, product-detail, unique-items
+├── lib/                 # apiClient.ts, utils.ts (cn), products/ server adapters
 ├── shared/
-│   ├── api/                   # apiClient, queryClient
-│   ├── async/                 # AsyncBoundary, LoadError, LoadingState
-│   ├── notifications/         # Notifications host, notify action facade
-│   ├── products/              # api/, hooks/, types/ for hardware and course products
-│   ├── styles/                # design-tokens.css, isolated shadcn.css
-│   ├── ui/                    # official shadcn Button, Field, FieldLabel, FieldError, Input, Label
-│   └── utils/                 # cn
-├── test/                      # unified app.test.tsx and setup.ts
-├── App.tsx                    # shared providers and lazy routes
-├── main.tsx                   # DOM entry point
-└── index.css                  # shared styles and reset
+│   ├── async/           # client Suspense/error fallback infrastructure
+│   ├── hooks/           # useHydrated, useTheme
+│   ├── notifications/   # notification host and action facade
+│   └── products/        # browser API adapters, SWR hooks, contracts, product utilities
+└── test/                # unified behavior tests and Next navigation/SWR helpers
 ```
 
-### Where a New Feature Goes
+Keep route entry points thin. Feature-exclusive components, contexts, hooks, storage,
+schemas, data, and utilities stay in the relevant feature. `schemas/` holds validation;
+`data/` holds fixed datasets. Shared product contracts and browser loading live in
+`shared/products/`; server product adapters live in `lib/products/`. Only server modules
+may read files or server API environment variables. Shared infrastructure and UI primitives
+must not import features or app route modules; ESLint enforces this direction.
 
-When adding a new capability (e.g., `wishlist`, `reviews`, `account`):
+Register routes through Next folders and link with `next/link`. Server pages fetch initial
+data; client hooks use SWR with that initial cache. Use native history updates for local
+URL filters, and Next navigation for collection/page changes. App Router owns route splitting.
 
-1. **Feature Module (`src/features/<feature-name>/`):**
-   - Create `<Feature>Page.tsx` as the main route view.
-   - Create `<feature-name>.css` for feature-scoped styles (mobile-first, min-width, using tokens).
-   - Place feature-exclusive components inside `src/features/<feature-name>/components/`.
-   - Place feature state in `src/features/<feature-name>/context/<Feature>Context.tsx` with `localStorage` synchronization if needed.
-   - Place custom consumer hooks in `src/features/<feature-name>/hooks/use<Feature>.ts`.
-   - Place feature-specific types in `src/features/<feature-name>/types/<feature>.ts`.
-   - Place feature-exclusive services in `services/`, validation schemas in `schemas/`, and fixed datasets in `data/`. Cross-feature product loading belongs in `src/shared/products/`, using `getJson` from `src/shared/api/apiClient`.
-2. **Shared Infrastructure (`src/shared/`):**
-   - Only place code in `src/shared/` if it is genuinely shared across multiple features (e.g. `apiClient`, shared `Product` type, global shell components).
-3. **Routing & Navigation:**
-   - Register the route in `src/App.tsx`.
-   - Add navigation links or trigger buttons in `src/app/layout/Header.tsx` or feature cards.
-4. **Testing (`src/test/app.test.tsx`):**
-   - Add unit and integration tests to the unified test suite.
+## Naming
 
-## Naming Rules
-
-- **React components, pages, contexts, and providers:** PascalCase, e.g. `CartPage.tsx`, `CartContext.tsx`.
-- **Hooks:** `use` + PascalCase name in camelCase filename, e.g. `useCart.ts`, `useProducts.ts`.
-- **Non-component TypeScript modules (services, utilities, data, and type contracts):** lower camelCase, e.g. `productService.ts`, `apiClient.ts`, `bottleneck.ts`, `tiers.ts`, `product.ts`.
-- **Stylesheets:** kebab-case, e.g. `product-detail.css`, `design-tokens.css`.
-- **Static asset filenames:** lowercase kebab-case with descriptive names and normal extensions (e.g. `minimalist-gpu-design-f3b58b35.jpg`); avoid spaces, ellipses, and special punctuation.
+React components and Props interfaces use PascalCase. Next route filenames follow framework
+conventions (`page.tsx`, `layout.tsx`, `route.ts`, `loading.tsx`, `error.tsx`, `not-found.tsx`).
+Hooks use `use` plus camelCase; other TypeScript modules use lower camelCase.
+Assets use descriptive lowercase kebab-case. `globals.css` is the sole stylesheet.
 
 ## Commands
 
-- `npm run dev` starts the local Vite development server.
-- `npm run build` creates the production build.
-- `npm run lint` checks the code with ESLint.
-- `npm run typecheck` runs strict TypeScript checks.
-- `npm test` runs the browser-independent unit tests.
+- `npm run dev`: Next development server, normally http://localhost:3000.
+- `npm run build`: production compilation and type checks.
+- `npm run start`: serve an existing production build.
+- `npm run typecheck`: generate Next route types, then check TypeScript.
+- `npm run lint`, `npm test`, `npm run format:check`: quality checks.
 
-## Component Tree with Props
+## State and data boundaries
 
-This describes the current implementation. Shell composition lives in app/layout;
-feature-owned drawers and docks stay inside their features.
-`{}` means no public props; `?` means optional. Native HTML, icon components,
-and third-party implementation internals are omitted. Types refer to the
-existing TypeScript contracts.
+Cart and comparison Context providers are mounted once in AppProviders. Cart items and promo
+have one owner; quantities, totals, discounts, filtered products, and selected hardware are derived.
+SWR owns client product data. Initial data is loaded on the server and supplied through ProductCache;
+client revalidation must not duplicate the initial request. Fetch only the active collection.
+Storage uses the existing `aethel-cart` and `aethel-compare` keys. `useHydrated` supplies matching
+server/client snapshots; do not write browser storage before restoration. Never access browser
+APIs at server module scope. Use server-only guards for server adapters.
+
+Apply `.claude/skills/vercel-composition-patterns/` for component interfaces and
+`.claude/skills/vercel-react-best-practices/` for React/Next rendering and data loading.
+
+## UI conventions
+
+Use Tailwind utilities and semantic tokens from `src/app/globals.css`; this is the only
+application stylesheet. Colors, radii, fonts, shadows, and named animations belong in
+the theme. Use the spacing scale; dynamic measured percentages may use inline styles.
+Use `cn()` for conditional utilities and overrides; use `cva` for component variants.
+UI primitives have typed props and stay independent of cart, comparison, and other features.
+Reuse Button, Input, Card, Badge, and Modal rather than copying their base style strings.
+Keep visible keyboard focus, associated labels, mobile-first breakpoints, and reduced-motion support.
+Use the native-dialog Modal for modal interactions: it owns Escape handling, contained
+focus, focus restoration, and scroll locking. Feature modules own its contents and actions.
+
+## Component tree with props
 
 ```text
-StrictMode { children: ReactNode }
-└── App {}
-    └── BrowserRouter { children: ReactNode }
-        └── QueryClientProvider { client: QueryClient; children: ReactNode }
-            └── CartProvider { children: ReactNode }
-                └── CompareProvider { children: ReactNode }
-                    └── Routes / shared layout route
-                        └── ApplicationLayout {}
-                            ├── Header { onOpenCart: () => void }
-                            ├── Outlet {}
-                            │   └── LazyPage {} (one wrapper per route)
-                            │       └── AsyncBoundary { children; onReset: retryImport }
-                            │           └── PageContent {}
-                            │               └── One lazy route page:
-                            │                   ├── HomePage {} [/]
-                            │                   │   ├── AsyncBoundary { children; fallback; errorFallback }
-                            │                   │   │   └── HomeProducts {}
-                            │                   │   │       ├── HeroShowcase {
-                            │                   │   │       │     cpu?: Product; gpu?: Product;
-                            │                   │   │       │     loading: boolean
-                            │                   │   │       │   }
-                            │                   │   │       ├── ArchitectureStory { cpu?: Product }
-                            │                   │   │       └── SiliconSpotlight {
-                            │                   │   │             cpu?: Product; gpu?: Product;
-                            │                   │   │             loading?: boolean
-                            │                   │   │           }
-                            │                   │   └── Builder section (inline HTML and Link)
-                            │                   ├── CatalogPage {} [/catalog]
-                            │                   │   └── AsyncBoundary { children; fallback }
-                            │                   │       └── CatalogBrowser {}
-                            │                   │           ├── FilterSidebar {
-                            │                   │           │     searchQuery: string;
-                            │                   │           │     onSearchChange: (value: string) => void;
-                            │                   │           │     selectedCategory: 'all' | 'cpu' | 'gpu';
-                            │                   │           │     onCategoryChange: (category: 'all' | 'cpu' | 'gpu') => void;
-                            │                   │           │     maxPrice: number;
-                            │                   │           │     onMaxPriceChange: (value: number) => void;
-                            │                   │           │     maxTdp: number;
-                            │                   │           │     onMaxTdpChange: (value: number) => void;
-                            │                   │           │     minCores: number;
-                            │                   │           │     onMinCoresChange: (value: number) => void;
-                            │                   │           │     minVram: number;
-                            │                   │           │     onMinVramChange: (value: number) => void;
-                            │                   │           │     onReset: () => void;
-                            │                   │           │     totalCount: number; filteredCount: number
-                            │                   │           │   }
-                            │                   │           └── Available products section
-                            │                   │               ├── SortBar {
-                            │                   │               │     sortOption: SortOption;
-                            │                   │               │     onSortChange: (sort: SortOption) => void;
-                            │                   │               │     viewMode: 'grid' | 'list';
-                            │                   │               │     onViewModeChange: (mode: 'grid' | 'list') => void;
-                            │                   │               │     itemCount: number
-                            │                   │               │   }
-                            │                   │               └── ProductGrid {
-                            │                   │                     products: Product[];
-                            │                   │                     viewMode: 'grid' | 'list';
-                            │                   │                     totalCount?: number
-                            │                   │                   }
-                            │                   │                   └── ProductCard { product: Product } (one per product)
-                            │                   ├── ProductDetailPage {} [/product/:id]
-                            │                   │   └── AsyncBoundary { children; fallback } (keyed by route id)
-                            │                   │       └── ProductDetails { id: string }
-                            │                   │           ├── ProductGallery { product: Product }
-                            │                   │           ├── ArchitectureSpecTable { product: Product }
-                            │                   │           └── MiniBenchmarkCard { product: Product }
-                            │                   ├── ComparePage {} [/compare]
-                            │                   │   ├── CompareTable {
-                            │                   │   │     items: Product[];
-                            │                   │   │     onRemove: (id: string) => void;
-                            │                   │   │     onOpenPicker: () => void;
-                            │                   │   │     highlightWinners?: boolean
-                            │                   │   │   }
-                            │                   │   ├── BenchmarkBarChart { items: Product[] }
-                            │                   │   └── AsyncBoundary { children } (when picker is open)
-                            │                   │       └── CompareProductPicker { onClose: () => void }
-                            │                   │           └── ProductPickerModal {
-                            │                   │                 isOpen: boolean; onClose: () => void;
-                            │                   │                 availableProducts: Product[];
-                            │                   │                 onSelect: (product: Product) => void;
-                            │                   │                 category: 'cpu' | 'gpu'
-                            │                   │               }
-                            │                   ├── ConfiguratorPage {} [/configurator]
-                            │                   │   └── AsyncBoundary { children; fallback }
-                            │                   │       └── ConfiguratorWorkbench {}
-                            │                   │           ├── RigVisualizer {
-                            │                   │           │     selectedCpu: Product | null;
-                            │                   │           │     selectedGpu: Product | null;
-                            │                   │           │     selectedRamTier: string;
-                            │                   │           │     totalTdp: number; totalPrice: number
-                            │                   │           │   }
-                            │                   │           ├── ComponentSlotSelector {
-                            │                   │           │     cpus: Product[]; gpus: Product[];
-                            │                   │           │     selectedCpu: Product | null;
-                            │                   │           │     onSelectCpu: (cpu: Product) => void;
-                            │                   │           │     selectedGpu: Product | null;
-                            │                   │           │     onSelectGpu: (gpu: Product) => void;
-                            │                   │           │     selectedTier: MemoryStorageTier;
-                            │                   │           │     onSelectTier: (tier: MemoryStorageTier) => void
-                            │                   │           │   }
-                            │                   │           └── PowerSynergyMeter {
-                            │                   │                 totalTdp: number; recommendedPsu: number;
-                            │                   │                 diagnosis: BottleneckDiagnosis;
-                            │                   │                 totalPrice: number;
-                            │                   │                 onAddAssembledRig: () => void;
-                            │                   │                 onAddIndividualComponents: () => void
-                            │                   │               }
-                            │                   ├── UniqueItemsPage {} [/unique-items]
-                            │                   │   └── AsyncBoundary { children; fallback }
-                            │                   │       └── UniqueItemsList {}
-                            │                   │           └── UniqueItemCard { product: CourseProduct }
-                            │                   │               └── UniqueItemSymbol { category: string }
-                            │                   ├── UniqueItemDetailPage {} [/unique-items/:id]
-                            │                   │   └── AsyncBoundary { children; fallback } (keyed by id)
-                            │                   │       └── UniqueItemDetails { id: string }
-                            │                   │           └── UniqueItemSymbol { category: string }
-                            │                   ├── CartPage {} [/cart]
-                            │                   │   ├── CartItemRow {
-                            │                   │   │     item: CartItem;
-                            │                   │   │     onUpdateQuantity: (id: string, qty: number) => void;
-                            │                   │   │     onRemove: (id: string) => void;
-                            │                   │   │     onUnbundle: (id: string) => void
-                            │                   │   │   } (one per cart item)
-                            │                   │   └── OrderSummary {
-                            │                   │         subtotal: number; discountAmount: number;
-                            │                   │         appliedPromo: string | null;
-                            │                   │         onApplyPromo: (code: string) => boolean;
-                            │                   │         onClearCart: () => void
-                            │                   │       }
-                            │                   ├── CheckoutPage {} [/checkout]
-                            │                   │   ├── CheckoutForm {
-                            │                   │   │     onSubmit: (values: CheckoutValues) => Promise<void>;
-                            │                   │   │     disabled: boolean
-                            │                   │   │   }
-                            │                   │   │   ├── Controller (one per schema field)
-                            │                   │   │   │   └── Field { native div props; data-invalid: boolean }
-                            │                   │   │   │       ├── FieldLabel { Radix Label.Root props }
-                            │                   │   │   │       ├── Input { native input props }
-                            │                   │   │   │       └── FieldError { native div props } (on field error)
-                            │                   │   │   ├── FieldError { native div props } (on submission error)
-                            │                   │   │   └── Button { native button props; variant?: default | destructive | outline | secondary | ghost | link; size?: ButtonProps["size"]; asChild?: boolean }
-                            │                   │   └── Order summary / empty state / receipt (inline HTML)
-                            │                   └── NotFoundPage {} [*]
-                            ├── Footer {}
-                            ├── CompareDock {}
-                            ├── QuickCartDrawer { isOpen: boolean; onClose: () => void }
-                            └── Notifications {}
-                                └── Toaster {
-                                      theme: 'dark'; richColors: true;
-                                      closeButton: true; position: 'bottom-right'
-                                    }
+RootLayout { children: ReactNode } [server]
+└── AppProviders { children: ReactNode } [client]
+    └── SWRConfig → CartProvider { children } → CompareProvider { children }
+        └── ApplicationLayout { children: ReactNode }
+            ├── Suspense → Header { onOpenCart: () => void }
+            │   ├── NavigationLink { Link props; className?: string | active callback; end?: boolean }
+            │   └── ThemeToggle {}
+            ├── Route content (server pages, nested loading/error/not-found boundaries)
+            │   ├── / → ProductCache { fallback: Record<string, unknown>; children }
+            │   │   └── HomePage {} → AsyncBoundary → HomeProducts {}
+            │   │       ├── HeroShowcase { cpu?: Product; gpu?: Product; loading: boolean }
+            │   │       ├── ArchitectureStory { cpu?: Product }
+            │   │       └── SiliconSpotlight { cpu?: Product; gpu?: Product; loading?: boolean }
+            │   ├── /products → CollectionTabs {} + ProductCache → selected collection
+            │   │   ├── CatalogPage {} → AsyncBoundary → CatalogBrowser {}
+            │   │   │   ├── FilterSidebar { searchQuery; onSearchChange; selectedCategory;
+            │   │   │   │   onCategoryChange; maxPrice; onMaxPriceChange; maxTdp;
+            │   │   │   │   onMaxTdpChange; minCores; onMinCoresChange; minVram;
+            │   │   │   │   onMinVramChange; onReset; totalCount; filteredCount }
+            │   │   │   ├── RefreshNotice { error: unknown; onRefresh: () => Promise<unknown> }
+            │   │   │   ├── SortBar { sortOption; onSortChange; viewMode; onViewModeChange; itemCount }
+            │   │   │   └── ProductGrid { products: Product[]; viewMode: 'grid' | 'list'; totalCount? }
+            │   │   │       └── ProductCard { product: Product; layout?: 'grid' | 'list' }
+            │   │   └── UniqueItemsPage {} → AsyncBoundary → UniqueItemsList {}
+            │   │       ├── RefreshNotice { error; onRefresh }
+            │   │       └── UniqueItemCard { product: CourseProduct }
+            │   │           └── UniqueItemSymbol { category: string }
+            │   ├── /products/[id] → server fetch and notFound() if missing
+            │   │   ├── ProductDetails { product: Product | null }
+            │   │   │   ├── ProductGallery { product: Product }
+            │   │   │   ├── ArchitectureSpecTable { product: Product }
+            │   │   │   └── MiniBenchmarkCard { product: Product }
+            │   │   └── UniqueItemDetails { product: CourseProduct | null }
+            │   │       └── UniqueItemSymbol { category: string }
+            │   ├── /compare → ComparePage {}
+            │   │   ├── CompareTable { items: Product[]; onRemove; onOpenPicker; highlightWinners? }
+            │   │   ├── BenchmarkBarChart { items: Product[] }
+            │   │   └── AsyncBoundary → CompareProductPicker { onClose: () => void }
+            │   │       └── ProductPickerModal { isOpen; onClose; availableProducts: Product[];
+            │   │           onSelect: (product: Product) => void; category: 'cpu' | 'gpu'; children?: ReactNode }
+            │   │           └── Modal { open; onClose; title; size: 'lg'; children }
+            │   ├── /configurator → ProductCache → ConfiguratorPage {} → AsyncBoundary
+            │   │   └── ConfiguratorWorkbench {}
+            │   │       ├── RigVisualizer { selectedCpu; selectedGpu; selectedRamTier; totalTdp; totalPrice }
+            │   │       ├── ComponentSlotSelector { cpus; gpus; selectedCpu; onSelectCpu;
+            │   │       │   selectedGpu; onSelectGpu; selectedTier; onSelectTier }
+            │   │       └── PowerSynergyMeter { totalTdp; recommendedPsu; diagnosis;
+            │   │           totalPrice; onAddAssembledRig; onAddIndividualComponents }
+            │   ├── /cart → CartPage {}
+            │   │   ├── CartItemRow { item: CartItem; onUpdateQuantity; onRemove; onUnbundle }
+            │   │   │   └── CourseCartItemRow { id; product: CourseProduct; quantity;
+            │   │   │       onUpdateQuantity: (id: string, quantity: number) => void; onRemove }
+            │   │   └── OrderSummary { subtotal; discountAmount; appliedPromo;
+            │   │       onApplyPromo: (code: string) => boolean; onClearCart }
+            │   ├── /checkout → CheckoutPage {}
+            │   │   └── CheckoutForm { onSubmit: (values: CheckoutValues) => Promise<void>; disabled }
+            │   │       └── Controller → Field → FieldLabel + Input + FieldError; Button
+            │   └── not-found → NotFoundPage {}
+            ├── Footer {}
+            ├── CompareDock {}
+            ├── QuickCartDrawer { isOpen: boolean; onClose: () => void }
+            │   └── Modal { open; onClose; title; placement: 'drawer'; children }
+            └── Notifications {} → Toaster { theme: 'dark' | 'light'; richColors; closeButton }
 ```
 
-Shared async contracts used throughout the tree:
+Callback props beginning with `on` are actions; numeric totals and filtered lists are derived.
+`Product` is the hardware contract; `CourseProduct` is the course API contract;
+`CartProduct = Product | CourseProduct`. Optional and native control props are defined in each typed Props interface.
 
-- `AsyncBoundary`: `children: ReactNode`, `fallback?: ReactNode`,
-  `onReset?: () => void`, `errorFallback?: (props: FallbackProps) => ReactNode`.
-  It renders QueryErrorResetBoundary, ErrorBoundary, and Suspense.
-- `LoadingState`: `{ label?: string }`; used for page and data loading.
-- `LoadError`: `FallbackProps` from react-error-boundary
-  (`error` and `resetErrorBoundary` are consumed).
-- Home loading/error fallbacks reuse HeroShowcase with LoadingState or LoadError.
-  Other data sections use LoadingState and the default LoadError.
-- `createLazyPage(load: () => Promise<{ default: ComponentType }>)` is a
-  module-scope factory, not a component accepting a `load` prop. It returns
-  the prop-free LazyPage wrapper shown above.
+Shared UI contracts:
 
-Course cart rows use CourseCartItemRow { id: string; product: CourseProduct;
-quantity: number; onUpdateQuantity: (id: string, quantity: number) => void;
-onRemove: (id: string) => void }. UniqueItemsList owns URL search/category;
-UniqueItemDetails owns quantity. CartProduct is Product | CourseProduct.
+- `Button`: native button props, `variant?: 'primary' | 'secondary' | 'ghost'`,
+  `size?: 'sm' | 'md' | 'lg'`, `asChild?: boolean`.
+- `Input`: native input props, including React 19 `ref`.
+- `Card`: native div props and `as?: ElementType` for semantic surfaces.
+- `Badge`: native span props and `variant?: 'neutral' | 'available' | 'unavailable'`.
+- `Modal`: `open: boolean`, `onClose: () => void`, `title: string`, `children: ReactNode`,
+  optional `size: 'sm' | 'md' | 'lg'`, `placement: 'center' | 'drawer'`, `className`, `closeLabel`.
+- `Field`: native div props and optional vertical/horizontal/responsive orientation.
+  `FieldLabel` uses Radix label props; `FieldError` accepts native div props and optional errors.
+- `AsyncBoundary`: children, optional fallback, onReset, and errorFallback.
+  `LoadingState` accepts an optional label; `LoadError` consumes FallbackProps.
 
-State ownership: CartProvider owns cart items and promo; CompareProvider owns
-comparison selection; QueryClient owns fetched product data. ApplicationLayout
-owns quick-cart visibility; Header owns mobile-menu visibility. Catalog filters
-belong to the URL, while view mode stays in CatalogBrowser. ProductDetails owns
-quantity; SiliconSpotlight owns the active family; ComparePage owns picker and
-highlight visibility. ConfiguratorWorkbench owns selected IDs; CheckoutForm
-owns form state through React Hook Form; CheckoutPage owns the demo receipt.
-Components receive context actions directly where needed. Totals, counts,
-filtered products, active product objects, and diagnostics are derived.
 ## Rules
 
 1. Semantic HTML first

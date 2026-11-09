@@ -1,115 +1,83 @@
-import { Plus, X } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+'use client';
+import type { ReactNode } from 'react';
+import { Plus } from 'lucide-react';
+import { Button } from '../../../components/ui/Button';
+import { Modal } from '../../../components/ui/Modal';
 import type { Product } from '../../../shared/products/types/product';
-
-interface ProductPickerModalProps {
+export interface ProductPickerModalProps {
+  children?: ReactNode;
   isOpen: boolean;
   onClose: () => void;
   availableProducts: Product[];
   onSelect: (product: Product) => void;
   category: 'cpu' | 'gpu';
 }
-
 export function ProductPickerModal({
+  children,
   isOpen,
   onClose,
   availableProducts,
   onSelect,
   category,
 }: ProductPickerModalProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!isOpen || !dialog) return;
-    const previousFocus = document.activeElement;
-    const previousOverflow = document.body.style.overflow;
-    dialog.showModal();
-    document.body.style.overflow = 'hidden';
-    return () => {
-      dialog.close();
-      document.body.style.overflow = previousOverflow;
-      if (previousFocus instanceof HTMLElement && previousFocus.isConnected) {
-        previousFocus.focus();
-      }
-    };
-  }, [isOpen]);
-
-  if (!isOpen) return null;
-
   return (
-    <dialog
-      ref={dialogRef}
-      className="picker-modal-overlay"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="picker-title"
-      onCancel={(event) => {
-        event.preventDefault();
-        onClose();
-      }}
-      onClick={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
+    <Modal
+      open={isOpen}
+      onClose={onClose}
+      title={`Select ${category.toUpperCase()} to Compare`}
+      size="lg"
+      closeLabel="Close silicon picker"
     >
-      <div className="picker-modal">
-        <header className="picker-modal__header">
-          <div>
-            <p className="eyebrow">Silicon Slots (Max 4)</p>
-            <h2 id="picker-title">
-              Select {category.toUpperCase()} to Compare
-            </h2>
-          </div>
-          <button
-            type="button"
-            className="picker-close-btn"
-            onClick={onClose}
-            aria-label="Close silicon picker"
-          >
-            <X size={18} aria-hidden="true" />
-          </button>
-        </header>
-
-        <div className="picker-modal__list">
-          {availableProducts.length === 0 ? (
-            <p className="picker-modal__empty">
-              All available {category.toUpperCase()}s are already in comparison.
-            </p>
-          ) : (
-            availableProducts.map((product) => (
-              <div key={product.id} className="picker-product-row">
-                <div className="picker-product-media">
-                  <img src={product.image} alt={product.name} />
-                </div>
-                <div className="picker-product-info">
-                  <h4>{product.name}</h4>
-                  <p>{product.tagline}</p>
-                  <span className="picker-product-specs">
-                    {category === 'cpu'
-                      ? `${product.specs.cores}C / ${product.specs.threads}T · ${product.specs.boostClock} · ${product.specs.tdp}W`
-                      : `${product.specs.vram} · ${product.specs.tflops?.toFixed(1)} TFLOPs · ${product.specs.tdp}W`}
-                  </span>
-                </div>
-                <div className="picker-product-action">
-                  <span className="picker-product-price">
-                    ${product.price.toLocaleString()}
-                  </span>
-                  <button
-                    type="button"
-                    className="button button--primary button--sm"
-                    onClick={() => {
-                      onSelect(product);
-                      onClose();
-                    }}
-                  >
-                    <Plus size={14} aria-hidden="true" /> Add
-                  </button>
-                </div>
+      {children}
+      <div className="p-6 overflow-y-auto overscroll-contain flex flex-col gap-4">
+        {availableProducts.length === 0 ? (
+          <p className="text-center text-muted p-8">
+            All available {category.toUpperCase()}s are already in comparison.
+          </p>
+        ) : (
+          availableProducts.map((product) => (
+            <div
+              key={product.id}
+              className="grid grid-cols-1 items-center gap-4 bg-background border border-border rounded-md py-3 px-4 sm:grid-cols-actions"
+            >
+              <div className="w-18 h-12 rounded-xl overflow-hidden bg-surface shrink-0">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
               </div>
-            ))
-          )}
-        </div>
+              <div className="min-w-0">
+                <h4 className="text-base mt-0 mr-0 mb-0.5 ml-0">
+                  {product.name}
+                </h4>
+                <p className="text-xs text-muted m-0">{product.tagline}</p>
+                <span className="text-xs text-primary">
+                  {category === 'cpu'
+                    ? `${product.specs.cores}C / ${product.specs.threads}T · ${product.specs.boostClock} · ${product.specs.tdp}W`
+                    : `${product.specs.vram} · ${product.specs.tflops?.toFixed(1)} TFLOPs · ${product.specs.tdp}W`}
+                </span>
+              </div>
+              <div className="col-start-2 flex items-center justify-between gap-1 sm:col-auto sm:flex-col sm:items-end">
+                <span className="text-base font-extrabold">
+                  ${product.price.toLocaleString()}
+                </span>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    onSelect(product);
+                    onClose();
+                  }}
+                  size="sm"
+                  variant="primary"
+                >
+                  <Plus size={14} aria-hidden="true" /> Add
+                </Button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
-    </dialog>
+    </Modal>
   );
 }

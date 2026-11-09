@@ -1,3 +1,5 @@
+'use client';
+import type { ReactNode } from 'react';
 import {
   createContext,
   useCallback,
@@ -5,13 +7,13 @@ import {
   useMemo,
   useState,
 } from 'react';
-import type { ReactNode } from 'react';
-import type { CompareContextValue } from '../types/compare';
+import { useHydrated } from '../../../shared/hooks/useHydrated';
+import { notify } from '../../../shared/notifications/notify';
 import {
   isProduct,
   type Product,
 } from '../../../shared/products/types/product';
-import { notify } from '../../../shared/notifications/notify';
+import type { CompareContextValue } from '../types/compare';
 
 const STORAGE_KEY = 'aethel-compare';
 
@@ -39,12 +41,17 @@ export const CompareContext = createContext<CompareContextValue | undefined>(
   undefined,
 );
 
-export function CompareProvider({ children }: { children: ReactNode }) {
+export interface CompareProviderProps {
+  children: ReactNode;
+}
+export function CompareProvider({ children }: CompareProviderProps) {
   const [comparedItems, setComparedItems] =
     useState<Product[]>(readStoredProducts);
+  const restored = useHydrated();
   const category = comparedItems[0]?.category ?? null;
 
   useEffect(() => {
+    if (!restored) return;
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(comparedItems));
     } catch {
@@ -53,10 +60,11 @@ export function CompareProvider({ children }: { children: ReactNode }) {
         { id: 'compare-storage' },
       );
     }
-  }, [comparedItems]);
+  }, [comparedItems, restored]);
 
   const toggleCompare = useCallback(
     (product: Product) => {
+      if (!restored) return;
       const isSelected = comparedItems.some((item) => item.id === product.id);
       if (!isSelected && category && category !== product.category) {
         notify.error(
@@ -73,16 +81,20 @@ export function CompareProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      setComparedItems((current) =>
-        current.some((item) => item.id === product.id)
-          ? current.filter((item) => item.id !== product.id)
-          : current.length >= 4 ||
-              (current[0] && current[0].category !== product.category)
-            ? current
-            : [...current, product],
-      );
+      setComparedItems((current) => {
+        if (current.some((item) => item.id === product.id)) {
+          return current.filter((item) => item.id !== product.id);
+        }
+        if (
+          current.length >= 4 ||
+          (current.length > 0 && current[0].category !== product.category)
+        ) {
+          return current;
+        }
+        return [...current, product];
+      });
     },
-    [category, comparedItems],
+    [category, comparedItems, restored],
   );
 
   const removeFromCompare = useCallback(
@@ -100,8 +112,8 @@ export function CompareProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<CompareContextValue>(
     () => ({
-      comparedItems,
-      category,
+      comparedItems: restored ? comparedItems : [],
+      category: restored ? category : null,
       toggleCompare,
       removeFromCompare,
       clearCompare,
@@ -109,6 +121,7 @@ export function CompareProvider({ children }: { children: ReactNode }) {
     }),
     [
       comparedItems,
+      restored,
       category,
       toggleCompare,
       removeFromCompare,

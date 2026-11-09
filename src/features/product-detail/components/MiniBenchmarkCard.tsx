@@ -10,29 +10,34 @@ export function MiniBenchmarkCard({ product }: MiniBenchmarkCardProps) {
 
   return (
     <section
-      className="mini-benchmark-card"
+      className="bg-surface border border-border rounded-lg p-6 h-fit"
       aria-labelledby="benchmark-preview-heading"
     >
-      <div className="mini-benchmark-card__header">
-        <Activity size={18} className="benchmark-icon" aria-hidden="true" />
-        <h3 id="benchmark-preview-heading">Performance Validation</h3>
+      <div className="flex items-center gap-2 mb-4">
+        <Activity size={18} className="text-primary" aria-hidden="true" />
+        <h3 id="benchmark-preview-heading" className="text-lg font-bold m-0">
+          Performance Validation
+        </h3>
       </div>
 
-      <div className="benchmark-metrics-grid">
+      <div className="flex flex-col gap-4">
         {isCpu ? (
           <>
-            <div className="benchmark-metric">
-              <span className="benchmark-metric__label">
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-muted">
                 Cinebench R24 Multi-Core
               </span>
-              <strong className="benchmark-metric__value">
+              <strong className="text-base font-extrabold text-foreground tabular-nums">
                 {product.benchmarks.cinebenchMulti?.toLocaleString() ??
                   '28,400'}{' '}
                 pts
               </strong>
-              <div className="metric-bar" aria-hidden="true">
+              <div
+                className="h-1.5 bg-background rounded-xl overflow-hidden mt-1"
+                aria-hidden="true"
+              >
                 <div
-                  className="metric-bar__fill"
+                  className="h-full bg-surface rounded-xl"
                   style={{
                     width: `${Math.min(100, ((product.benchmarks.cinebenchMulti ?? 25000) / 45000) * 100)}%`,
                   }}
@@ -40,16 +45,17 @@ export function MiniBenchmarkCard({ product }: MiniBenchmarkCardProps) {
               </div>
             </div>
 
-            <div className="benchmark-metric">
-              <span className="benchmark-metric__label">
-                Blender 3D Render Time
-              </span>
-              <strong className="benchmark-metric__value">
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-muted">Blender 3D Render Time</span>
+              <strong className="text-base font-extrabold text-foreground tabular-nums">
                 {product.benchmarks.blenderRenderSec ?? '92'}s (Lower is faster)
               </strong>
-              <div className="metric-bar" aria-hidden="true">
+              <div
+                className="h-1.5 bg-background rounded-xl overflow-hidden mt-1"
+                aria-hidden="true"
+              >
                 <div
-                  className="metric-bar__fill metric-bar__fill--amber"
+                  className="h-full rounded-xl bg-surface"
                   style={{
                     width: `${Math.min(100, (120 / (product.benchmarks.blenderRenderSec ?? 92)) * 60)}%`,
                   }}
@@ -59,16 +65,19 @@ export function MiniBenchmarkCard({ product }: MiniBenchmarkCardProps) {
           </>
         ) : (
           <>
-            <div className="benchmark-metric">
-              <span className="benchmark-metric__label">
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-muted">
                 Cyberpunk 2077 (4K Ultra Ray Tracing)
               </span>
-              <strong className="benchmark-metric__value">
+              <strong className="text-base font-extrabold text-foreground tabular-nums">
                 {product.benchmarks.cyberpunk4k ?? '85'} FPS
               </strong>
-              <div className="metric-bar" aria-hidden="true">
+              <div
+                className="h-1.5 bg-background rounded-xl overflow-hidden mt-1"
+                aria-hidden="true"
+              >
                 <div
-                  className="metric-bar__fill"
+                  className="h-full bg-surface rounded-xl"
                   style={{
                     width: `${Math.min(100, ((product.benchmarks.cyberpunk4k ?? 75) / 120) * 100)}%`,
                   }}
@@ -76,16 +85,19 @@ export function MiniBenchmarkCard({ product }: MiniBenchmarkCardProps) {
               </div>
             </div>
 
-            <div className="benchmark-metric">
-              <span className="benchmark-metric__label">
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-muted">
                 Black Myth: Wukong (1440p Ultra)
               </span>
-              <strong className="benchmark-metric__value">
+              <strong className="text-base font-extrabold text-foreground tabular-nums">
                 {product.benchmarks.blackMyth1440p ?? '112'} FPS
               </strong>
-              <div className="metric-bar" aria-hidden="true">
+              <div
+                className="h-1.5 bg-background rounded-xl overflow-hidden mt-1"
+                aria-hidden="true"
+              >
                 <div
-                  className="metric-bar__fill metric-bar__fill--amber"
+                  className="h-full rounded-xl bg-surface"
                   style={{
                     width: `${Math.min(100, ((product.benchmarks.blackMyth1440p ?? 90) / 140) * 100)}%`,
                   }}
@@ -95,16 +107,16 @@ export function MiniBenchmarkCard({ product }: MiniBenchmarkCardProps) {
           </>
         )}
 
-        <div className="benchmark-metric">
-          <span className="benchmark-metric__label">
+        <div className="flex flex-col gap-1">
+          <span className="text-xs text-muted">
             Efficiency Index (Perf / Watt)
           </span>
-          <div className="efficiency-badge">
+          <div className="flex items-center gap-2 bg-background border border-border rounded-sm py-1.5 px-2.5 text-sm text-primary">
             <Zap size={14} aria-hidden="true" />
             <strong>
               {product.benchmarks.efficiencyScore.toFixed(1)} / 10.0
             </strong>
-            <span className="efficiency-note">
+            <span className="ml-auto text-xs text-muted flex items-center gap-1">
               <Flame size={12} aria-hidden="true" /> Sustained Cool Operation
             </span>
           </div>

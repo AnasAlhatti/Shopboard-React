@@ -4,14 +4,14 @@ export interface UniqueItemSymbolProps {
   category: string;
 }
 export function UniqueItemSymbol({ category }: UniqueItemSymbolProps) {
-  const Icon =
-    category === 'Shoes'
-      ? Footprints
-      : category === 'Accessories'
-        ? Glasses
-        : ShoppingBag;
+  let Icon = ShoppingBag;
+  if (category === 'Shoes') Icon = Footprints;
+  else if (category === 'Accessories') Icon = Glasses;
   return (
-    <div className="unique-item-symbol" aria-hidden="true">
+    <div
+      className="grid min-h-32 place-items-center text-muted bg-carbon rounded-md mb-6"
+      aria-hidden="true"
+    >
       <Icon size={56} strokeWidth={1.2} />
     </div>
   );

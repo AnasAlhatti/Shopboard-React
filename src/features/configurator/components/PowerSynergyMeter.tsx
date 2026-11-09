@@ -5,6 +5,8 @@ import {
   Sparkles,
   Zap,
 } from 'lucide-react';
+import { Button } from '../../../components/ui/Button';
+import { cn } from '../../../lib/utils';
 import type { BottleneckDiagnosis } from '../utils/bottleneck';
 
 interface PowerSynergyMeterProps {
@@ -29,62 +31,80 @@ export function PowerSynergyMeter({
 
   return (
     <div
-      className="power-synergy-meter"
+      className="bg-surface border border-border rounded-lg p-8"
       aria-labelledby="synergy-meter-heading"
     >
-      <div className="synergy-header">
-        <h3 id="synergy-meter-heading" className="synergy-title">
-          <Zap size={18} className="synergy-icon" aria-hidden="true" />
+      <div className="flex items-center justify-between mb-6 border-b border-border pb-2">
+        <h3
+          id="synergy-meter-heading"
+          className="flex items-center gap-2 text-xl font-extrabold m-0"
+        >
+          <Zap size={18} className="text-primary" aria-hidden="true" />
           Live Synergy & Power Diagnostics
         </h3>
         <span
-          className={`synergy-tag${diagnosis.isWarning ? ' synergy-tag--warning' : ''}`}
+          className={cn(
+            `text-xs uppercase text-muted font-bold${diagnosis.isWarning ? ' text-primary' : ''}`,
+          )}
         >
           {diagnosis.isWarning ? 'Bottleneck Notice' : 'Real-Time Validation'}
         </span>
       </div>
 
-      <div className="synergy-diagnostics-grid">
-        <div className="diagnostic-block">
-          <div className="diagnostic-header">
-            <span className="diagnostic-label">Estimated System Power</span>
-            <strong className="diagnostic-value">{totalTdp}W</strong>
+      <div className="grid grid-cols-1 gap-6 mb-8 lg:grid-cols-2">
+        <div className="bg-background border border-border rounded-lg p-4 flex flex-col">
+          <div className="flex items-baseline justify-between mb-1.5">
+            <span className="text-xs uppercase text-muted">
+              Estimated System Power
+            </span>
+            <strong className="text-lg font-extrabold tabular-nums">
+              {totalTdp}W
+            </strong>
           </div>
-          <div className="power-gauge-track" aria-hidden="true">
+          <div
+            className="h-2 bg-surface rounded-xl overflow-hidden mt-1.5 mr-0 mb-1.5 ml-0"
+            aria-hidden="true"
+          >
             <div
-              className="power-gauge-fill"
+              className="h-full bg-linear-to-r from-primary/70 to-primary rounded-xl transition-all duration-300 motion-reduce:transition-none"
               style={{ width: `${powerPercentage}%` }}
             />
           </div>
-          <div className="power-gauge-legend">
+          <div className="flex justify-between text-2xs text-muted">
             <span>Idle (80W)</span>
             <span>Target Sustained ({totalTdp}W)</span>
             <span>Limit (900W)</span>
           </div>
         </div>
 
-        <div className="diagnostic-block">
-          <div className="diagnostic-header">
-            <span className="diagnostic-label">Recommended PSU</span>
-            <strong className="diagnostic-value diagnostic-value--accent">
+        <div className="bg-background border border-border rounded-lg p-4 flex flex-col">
+          <div className="flex items-baseline justify-between mb-1.5">
+            <span className="text-xs uppercase text-muted">
+              Recommended PSU
+            </span>
+            <strong className="text-lg font-extrabold tabular-nums text-primary">
               {recommendedPsu}W 80+ Gold
             </strong>
           </div>
-          <p className="diagnostic-desc">
+          <p className="text-xs text-muted m-0 leading-normal">
             Provides ample transient spike headroom for sustained all-core
             rendering and peak gaming clocks.
           </p>
         </div>
 
-        <div className="diagnostic-block">
-          <div className="diagnostic-header">
-            <span className="diagnostic-label">Bottleneck Balance Index</span>
+        <div className="bg-background border border-border rounded-lg p-4 flex flex-col">
+          <div className="flex items-baseline justify-between mb-1.5">
+            <span className="text-xs uppercase text-muted">
+              Bottleneck Balance Index
+            </span>
             <strong
-              className={`diagnostic-value ${
-                diagnosis.isWarning
-                  ? 'diagnostic-value--warning'
-                  : 'diagnostic-value--emerald'
-              }`}
+              className={cn(
+                `text-lg font-extrabold tabular-nums ${
+                  diagnosis.isWarning
+                    ? 'text-primary flex items-center gap-1.5'
+                    : 'text-muted flex items-center gap-1.5'
+                }`,
+              )}
             >
               {diagnosis.isWarning ? (
                 <AlertTriangle size={14} aria-hidden="true" />
@@ -94,38 +114,42 @@ export function PowerSynergyMeter({
               {diagnosis.score}% {diagnosis.label}
             </strong>
           </div>
-          <p className="diagnostic-desc">{diagnosis.description}</p>
+          <p className="text-xs text-muted m-0 leading-normal">
+            {diagnosis.description}
+          </p>
         </div>
       </div>
 
-      <div className="configurator-price-dock">
-        <div className="configurator-price-info">
-          <span className="configurator-price-label">
+      <div className="border-t border-border pt-6 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col">
+          <span className="text-xs uppercase text-muted">
             Configured Total (Includes Assembly)
           </span>
-          <strong className="configurator-price-val">
+          <strong className="text-3xl font-extrabold text-foreground tabular-nums">
             ${totalPrice.toLocaleString()}
           </strong>
         </div>
 
-        <div className="configurator-actions-group">
-          <button
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <Button
+            variant="primary"
             type="button"
-            className="button button--primary"
             onClick={onAddAssembledRig}
+            size="lg"
           >
             <PackagePlus size={16} aria-hidden="true" />
             <span>Add as Assembled Custom Rig</span>
-          </button>
+          </Button>
 
-          <button
+          <Button
+            variant="secondary"
             type="button"
-            className="button button--quiet"
             onClick={onAddIndividualComponents}
+            size="lg"
           >
             <ShoppingBag size={16} aria-hidden="true" />
             <span>Add Components Individually</span>
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -1,17 +1,19 @@
+'use client';
 import { useState } from 'react';
-import { useCart } from '../../cart/hooks/useCart';
-import { useProducts } from '../../../shared/products/hooks/useProducts';
-import type { BundledRig } from '../../cart/types/cart';
-import type { Product } from '../../../shared/products/types/product';
 import { notify } from '../../../shared/notifications/notify';
-import { ComponentSlotSelector } from './ComponentSlotSelector';
+import { RefreshNotice } from '../../../components/ui/RefreshNotice';
+import { useProducts } from '../../../shared/products/hooks/useProducts';
+import type { Product } from '../../../shared/products/types/product';
+import { useCart } from '../../cart/hooks/useCart';
+import type { BundledRig } from '../../cart/types/cart';
 import { MEMORY_STORAGE_TIERS } from '../data/tiers';
+import { calculateSynergy } from '../utils/bottleneck';
+import { ComponentSlotSelector } from './ComponentSlotSelector';
 import { PowerSynergyMeter } from './PowerSynergyMeter';
 import { RigVisualizer } from './RigVisualizer';
-import { calculateSynergy } from '../utils/bottleneck';
 
 export function ConfiguratorWorkbench() {
-  const { products } = useProducts();
+  const { products, error, refresh } = useProducts();
   const { addRigToCart, addToCart } = useCart();
 
   const cpus = products.filter((p) => p.category === 'cpu');
@@ -102,7 +104,7 @@ export function ConfiguratorWorkbench() {
 
   if (!activeCpu || !activeGpu)
     return (
-      <div className="async-state" role="status">
+      <div className="p-8 text-muted" role="status">
         <h1>No compatible hardware available</h1>
         <p>
           The configurator needs at least one processor and one graphics card.
@@ -111,18 +113,23 @@ export function ConfiguratorWorkbench() {
     );
 
   return (
-    <main className="configurator-page page-width">
-      <header className="configurator-header">
-        <p className="eyebrow">Precision System Engineering</p>
-        <h1>Custom Rig Engine</h1>
-        <p>
+    <main className="pt-8 pb-16 w-shell max-w-page mx-auto">
+      {Boolean(error) && <RefreshNotice error={error} onRefresh={refresh} />}
+      <header className="mb-12">
+        <p className="mb-3 text-xs font-extrabold tracking-widest uppercase text-muted max-w-prose">
+          Precision System Engineering
+        </p>
+        <h1 className="text-3xl lg:text-5xl font-extrabold tracking-tight mt-1 mr-0 mb-0 ml-0">
+          Custom Rig Engine
+        </h1>
+        <p className="text-muted max-w-prose">
           Configure an extreme workstation or gaming battlestation. Monitor
           real-time TDP power dissipation, verify PSU headroom, and validate
           zero compute bottleneck.
         </p>
       </header>
 
-      <div className="configurator-layout">
+      <div className="flex flex-col gap-12">
         <RigVisualizer
           selectedCpu={activeCpu}
           selectedGpu={activeGpu}

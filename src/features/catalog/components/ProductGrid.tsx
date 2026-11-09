@@ -1,3 +1,4 @@
+import { cn } from '../../../lib/utils';
 import type { Product } from '../../../shared/products/types/product';
 import { ProductCard } from './ProductCard';
 
@@ -15,14 +16,19 @@ export function ProductGrid({
   if (products.length === 0) {
     const isNoMatch = totalCount > 0;
     return (
-      <div className="catalog-empty" role="status">
-        <p className="eyebrow">{isNoMatch ? 'No Match' : 'Catalog Empty'}</p>
-        <h3>
+      <div
+        className="text-center py-16 px-6 bg-surface border border-border rounded-lg"
+        role="status"
+      >
+        <p className="mb-3 text-xs font-extrabold tracking-widest uppercase text-muted">
+          {isNoMatch ? 'No Match' : 'Catalog Empty'}
+        </p>
+        <h3 className="text-2xl my-1 mx-0">
           {isNoMatch
             ? 'No matching processors or graphics cards'
             : 'No silicon products available'}
         </h3>
-        <p>
+        <p className="text-muted">
           {isNoMatch
             ? 'Try clearing your active filters or searching for another model or architecture.'
             : 'Hardware inventory is currently unavailable.'}
@@ -32,9 +38,16 @@ export function ProductGrid({
   }
 
   return (
-    <div className={`product-grid product-grid--${viewMode}`}>
+    <div
+      className={cn(
+        'grid gap-6',
+        viewMode === 'grid'
+          ? 'grid-cols-1 md:grid-cols-2 2xl:grid-cols-3'
+          : 'grid-cols-1',
+      )}
+    >
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard key={product.id} product={product} layout={viewMode} />
       ))}
     </div>
   );

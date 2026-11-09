@@ -1,4 +1,6 @@
 import { LayoutGrid, List } from 'lucide-react';
+import { Button } from '../../../components/ui/Button';
+import { cn } from '../../../lib/utils';
 
 import { isSortOption, type SortOption } from '../types/catalogFilters';
 
@@ -18,15 +20,15 @@ export function SortBar({
   itemCount,
 }: SortBarProps) {
   return (
-    <div className="catalog-sortbar">
-      <p className="catalog-sortbar__count">
-        <strong>{itemCount}</strong>{' '}
+    <div className="flex flex-col gap-2 bg-surface border border-border rounded-md py-2.5 px-4 mb-6 md:flex-row md:items-center md:justify-between">
+      <p className="text-sm text-muted m-0">
+        <strong className="text-foreground">{itemCount}</strong>{' '}
         {itemCount === 1 ? 'silicon product' : 'silicon products'} available
       </p>
 
-      <div className="catalog-sortbar__controls">
-        <div className="sort-select-wrap">
-          <label htmlFor="catalog-sort" className="sort-select-label">
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="flex min-w-0 items-center gap-2">
+          <label htmlFor="catalog-sort" className="shrink-0 text-xs text-muted">
             Sort by
           </label>
           <select
@@ -37,7 +39,7 @@ export function SortBar({
                 onSortChange(e.target.value);
               }
             }}
-            className="sort-select"
+            className="w-full min-w-0 bg-background border border-border rounded-sm text-foreground py-1.5 px-2.5 text-sm outline-none"
           >
             <option value="featured">Default (Featured)</option>
             <option value="price-asc">Price: Low to High</option>
@@ -50,28 +52,34 @@ export function SortBar({
         </div>
 
         <div
-          className="view-mode-toggle"
+          className="flex shrink-0 border border-border rounded-sm overflow-hidden"
           role="group"
           aria-label="Layout view mode"
         >
-          <button
+          <Button
+            variant="ghost"
             type="button"
-            className={`view-mode-btn${viewMode === 'grid' ? ' is-active' : ''}`}
+            className={cn(
+              `bg-transparent border-0 text-muted py-1.5 px-2 cursor-pointer flex items-center${viewMode === 'grid' ? ' bg-raised text-primary' : ''}`,
+            )}
             onClick={() => onViewModeChange('grid')}
             aria-label="Grid layout"
             aria-pressed={viewMode === 'grid'}
           >
             <LayoutGrid size={16} aria-hidden="true" />
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
             type="button"
-            className={`view-mode-btn${viewMode === 'list' ? ' is-active' : ''}`}
+            className={cn(
+              `bg-transparent border-0 text-muted py-1.5 px-2 cursor-pointer flex items-center${viewMode === 'list' ? ' bg-raised text-primary' : ''}`,
+            )}
             onClick={() => onViewModeChange('list')}
             aria-label="List layout"
             aria-pressed={viewMode === 'list'}
           >
             <List size={16} aria-hidden="true" />
-          </button>
+          </Button>
         </div>
       </div>
     </div>

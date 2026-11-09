@@ -1,14 +1,16 @@
-import { Link } from 'react-router-dom';
-
+import Link from 'next/link';
+import { Button } from '../../components/ui/Button';
 export function NotFoundPage() {
   return (
-    <main className="route-placeholder page-width">
-      <p className="eyebrow">404 / Page not found</p>
-      <h1>This page doesn’t exist.</h1>
-      <p>Check the address or return to the product catalogue.</p>
-      <Link className="button button--primary" to="/catalog">
-        Browse products
-      </Link>
+    <main className="mx-auto w-shell max-w-page py-24">
+      <p className="text-sm font-semibold uppercase tracking-widest text-primary">
+        404
+      </p>
+      <h1 className="text-4xl">Page not found</h1>
+      <p>This page or product does not exist.</p>
+      <Button asChild>
+        <Link href="/products">Back to products</Link>
+      </Button>
     </main>
   );
 }

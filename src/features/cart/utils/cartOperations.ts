@@ -1,5 +1,5 @@
-import type { CartItem, CartProduct } from '../types/cart';
 import { isCourseProduct } from '../../../shared/products/types/courseProduct';
+import type { CartItem, CartProduct } from '../types/cart';
 export function getCartItemPrice(item: CartItem): number {
   return item.type === 'standalone' ? item.product.price : item.rig.totalPrice;
 }

@@ -1,3 +1,4 @@
+'use client';
 import {
   createContext,
   useCallback,
@@ -6,13 +7,15 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { useHydrated } from '../../../shared/hooks/useHydrated';
+import { notify } from '../../../shared/notifications/notify';
+import { readCart, writeCart } from '../storage/cartStorage';
 import type {
   BundledRig,
   CartContextValue,
   CartItem,
   CartProduct,
 } from '../types/cart';
-import { readCart, writeCart } from '../storage/cartStorage';
 import {
   addProduct,
   getCartItemPrice,
@@ -20,7 +23,6 @@ import {
   setQuantity,
   unbundle,
 } from '../utils/cartOperations';
-import { notify } from '../../../shared/notifications/notify';
 export interface CartProviderProps {
   children: ReactNode;
 }
@@ -29,27 +31,39 @@ export const CartContext = createContext<CartContextValue | undefined>(
 );
 export function CartProvider({ children }: CartProviderProps) {
   const [items, setItems] = useState<CartItem[]>(readCart);
+  const restored = useHydrated();
   const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
   useEffect(() => {
-    if (!writeCart(items))
+    if (restored && !writeCart(items))
       notify.error(
         'Your cart is available for this visit, but browser storage could not save it.',
         { id: 'cart-storage' },
       );
-  }, [items]);
+  }, [items, restored]);
   const applyPromo = useCallback((code: string) => {
     const resolved = promoCode(code);
     if (!resolved) return false;
     setAppliedPromo(resolved);
     return true;
   }, []);
-  const addToCart = useCallback((product: CartProduct, quantity = 1) => {
-    setItems((current) => addProduct(current, product, quantity));
-  }, []);
-  const addRigToCart = useCallback((rig: BundledRig) => {
-    const id = `rig-${crypto.randomUUID()}`;
-    setItems((current) => [...current, { id, type: 'rig', rig, quantity: 1 }]);
-  }, []);
+  const addToCart = useCallback(
+    (product: CartProduct, quantity = 1) => {
+      if (!restored) return;
+      setItems((current) => addProduct(current, product, quantity));
+    },
+    [restored],
+  );
+  const addRigToCart = useCallback(
+    (rig: BundledRig) => {
+      if (!restored) return;
+      const id = `rig-${crypto.randomUUID()}`;
+      setItems((current) => [
+        ...current,
+        { id, type: 'rig', rig, quantity: 1 },
+      ]);
+    },
+    [restored],
+  );
   const unbundleRig = useCallback(
     (id: string) => setItems((current) => unbundle(current, id)),
     [],
@@ -70,7 +84,8 @@ export function CartProvider({ children }: CartProviderProps) {
   }, []);
   const value = useMemo<CartContextValue>(
     () => ({
-      items,
+      items: restored ? items : [],
+      restored,
       appliedPromo,
       applyPromo,
       addToCart,
@@ -79,14 +94,19 @@ export function CartProvider({ children }: CartProviderProps) {
       removeFromCart,
       updateQuantity,
       clearCart,
-      subtotal: items.reduce(
-        (sum, item) => sum + getCartItemPrice(item) * item.quantity,
-        0,
-      ),
-      itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
+      subtotal: !restored
+        ? 0
+        : items.reduce(
+            (sum, item) => sum + getCartItemPrice(item) * item.quantity,
+            0,
+          ),
+      itemCount: !restored
+        ? 0
+        : items.reduce((sum, item) => sum + item.quantity, 0),
     }),
     [
       items,
+      restored,
       appliedPromo,
       applyPromo,
       addToCart,

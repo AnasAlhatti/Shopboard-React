@@ -1,5 +1,5 @@
-import { isProduct } from '../../../shared/products/types/product';
 import { isCourseProduct } from '../../../shared/products/types/courseProduct';
+import { isProduct } from '../../../shared/products/types/product';
 import type { BundledRig, CartItem } from '../types/cart';
 const STORAGE_KEY = 'aethel-cart';
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -38,6 +38,7 @@ function isItem(value: unknown): value is CartItem {
   );
 }
 export function readCart(): CartItem[] {
+  if (typeof window === 'undefined') return [];
   try {
     const value: unknown = JSON.parse(
       window.localStorage.getItem(STORAGE_KEY) ?? '[]',

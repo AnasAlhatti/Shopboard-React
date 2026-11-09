@@ -1,16 +1,22 @@
-import { useState } from 'react';
+'use client';
 import { ArrowLeft, Layers, Plus, Scale } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
+import { useState } from 'react';
+import { Button } from '../../../components/ui/Button';
+import { Input } from '../../../components/ui/Input';
+import { cn } from '../../../lib/utils';
+import { notify } from '../../../shared/notifications/notify';
 import { useCart } from '../../cart/hooks/useCart';
 import { useCompare } from '../../compare/hooks/useCompare';
-import { useProduct } from '../../../shared/products/hooks/useProduct';
-import { notify } from '../../../shared/notifications/notify';
 import { ArchitectureSpecTable } from './ArchitectureSpecTable';
 import { MiniBenchmarkCard } from './MiniBenchmarkCard';
 import { ProductGallery } from './ProductGallery';
 
-export function ProductDetails({ id }: { id: string }) {
-  const product = useProduct(id);
+import type { Product } from '../../../shared/products/types/product';
+export interface ProductDetailsProps {
+  product: Product | null;
+}
+export function ProductDetails({ product }: ProductDetailsProps) {
   const { addToCart } = useCart();
   const { toggleCompare, isInCompare, category } = useCompare();
 
@@ -31,79 +37,106 @@ export function ProductDetails({ id }: { id: string }) {
 
   if (!product) {
     return (
-      <main className="product-detail-page page-width">
-        <div className="product-not-found" role="alert">
-          <p className="eyebrow">404 Architecture Error</p>
-          <h1>Silicon Not Found</h1>
-          <p>
+      <main className="pt-8 pb-16 w-shell max-w-page mx-auto">
+        <div
+          className="text-center py-16 px-6 bg-surface border border-border rounded-lg my-12"
+          role="alert"
+        >
+          <p className="text-xs font-extrabold tracking-widest uppercase text-muted mb-6">
+            404 Architecture Error
+          </p>
+          <h1 className="text-3xl mb-2">Silicon Not Found</h1>
+          <p className="text-muted mb-6">
             The processor or graphics chip you requested does not exist in our
             silicon matrix.
           </p>
-          <Link to="/catalog" className="button button--primary">
-            <ArrowLeft size={16} aria-hidden="true" /> Return to Catalog
-          </Link>
+          <Button asChild variant="primary" size="lg">
+            <Link href="/products">
+              <ArrowLeft size={16} aria-hidden="true" /> Return to Catalog
+            </Link>
+          </Button>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="product-detail-page page-width">
-      <nav className="product-detail-breadcrumbs" aria-label="Breadcrumb">
-        <Link to="/catalog">Silicon Catalog</Link>
-        <span className="separator" aria-hidden="true">
+    <main className="pt-8 pb-16 w-shell max-w-page mx-auto">
+      <nav
+        className="flex items-center gap-1 text-xs text-muted mb-6"
+        aria-label="Breadcrumb"
+      >
+        <Link href="/products">Silicon Catalog</Link>
+        <span className="text-border" aria-hidden="true">
           /
         </span>
-        <span className="separator" aria-hidden="true">
+        <span className="text-border" aria-hidden="true">
           {product.series}
         </span>
-        <span className="separator" aria-hidden="true">
+        <span className="text-border" aria-hidden="true">
           /
         </span>
-        <span className="current" aria-current="page">
+        <span className="text-foreground font-semibold" aria-current="page">
           {product.name}
         </span>
       </nav>
 
       <section
-        className="product-detail-hero"
+        className="flex flex-col gap-12 mb-16 lg:grid lg:grid-cols-2 lg:gap-16"
         aria-labelledby="product-name-heading"
       >
         <ProductGallery product={product} />
 
-        <div className="product-info-panel">
-          <header className="product-info-header">
-            <p className="eyebrow">
+        <div className="flex flex-col gap-6">
+          <header>
+            <p className="text-primary text-xs font-extrabold tracking-widest uppercase mb-1">
               {product.series} Series // {product.category.toUpperCase()}
             </p>
-            <h1 id="product-name-heading">{product.name}</h1>
-            <p className="product-info-tagline">{product.tagline}</p>
+            <h1
+              id="product-name-heading"
+              className="text-4xl lg:text-5xl font-extrabold tracking-tight mt-0 mr-0 mb-1.5 ml-0"
+            >
+              {product.name}
+            </h1>
+            <p className="text-lg text-muted m-0">{product.tagline}</p>
           </header>
 
-          <div className="product-price-bar">
-            <span className="product-price-bar__label">MSRP Starting at</span>
-            <span className="product-price-bar__val">
+          <div className="flex items-baseline gap-2 bg-surface border border-border rounded-md py-4 px-6">
+            <span className="text-xs uppercase text-muted">
+              MSRP Starting at
+            </span>
+            <span className="text-4xl font-extrabold text-foreground tabular-nums">
               ${product.price.toLocaleString()}
             </span>
           </div>
 
           <p className="product-info-desc">{product.description}</p>
 
-          <div className="product-features-card">
-            <h3>Architectural Highlights</h3>
-            <ul className="product-features-list">
+          <div className="bg-surface border border-border rounded-lg p-6">
+            <h3 className="text-base font-bold uppercase tracking-wide text-muted mt-0 mr-0 mb-2 ml-0">
+              Architectural Highlights
+            </h3>
+            <ul className="list-none p-0 m-0 flex flex-col gap-2">
               {product.features.map((feature) => (
-                <li key={feature}>{feature}</li>
+                <li
+                  key={feature}
+                  className="flex items-baseline gap-2 text-sm text-foreground"
+                >
+                  {feature}
+                </li>
               ))}
             </ul>
           </div>
 
-          <div className="product-purchasing-controls">
-            <div className="qty-control-wrap">
-              <label htmlFor="product-qty" className="qty-control-label">
+          <div className="bg-surface border border-border rounded-lg p-6 flex flex-col gap-4">
+            <div className="flex items-center gap-4">
+              <label
+                htmlFor="product-qty"
+                className="text-sm font-semibold text-muted"
+              >
                 Quantity
               </label>
-              <input
+              <Input
                 id="product-qty"
                 type="number"
                 min={1}
@@ -117,23 +150,29 @@ export function ProductDetails({ id }: { id: string }) {
                     ),
                   )
                 }
-                className="qty-input"
+                className="w-18 bg-background border border-border rounded-sm text-foreground py-1.5 px-2.5 text-sm font-bold text-center"
               />
             </div>
 
-            <div className="product-cta-buttons">
-              <button
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button
+                variant="primary"
                 type="button"
-                className="button button--primary"
+                className="sm:flex-1"
                 onClick={handleAddToCart}
+                size="lg"
               >
                 <Plus size={16} aria-hidden="true" /> Add to Cart ($
                 {(product.price * quantity).toLocaleString()})
-              </button>
+              </Button>
 
-              <button
+              <Button
+                variant="secondary"
                 type="button"
-                className={`button button--quiet${isCompared ? ' is-active' : ''}`}
+                className={cn(
+                  `hover:text-foreground${isCompared ? ' border-primary bg-primary/15 text-primary' : ''}`,
+                  'sm:flex-1',
+                )}
                 disabled={Boolean(compareDisabled)}
                 onClick={() => toggleCompare(product)}
                 title={
@@ -141,23 +180,26 @@ export function ProductDetails({ id }: { id: string }) {
                     ? `Compare locked to ${category?.toUpperCase()}s`
                     : ''
                 }
+                size="lg"
               >
                 <Scale size={16} aria-hidden="true" />
                 <span>
                   {isCompared ? 'In Compare Bench' : 'Compare Silicon'}
                 </span>
-              </button>
+              </Button>
 
-              <Link to="/configurator" className="button button--quiet">
-                <Layers size={16} aria-hidden="true" />
-                <span>Custom Rig Builder</span>
-              </Link>
+              <Button asChild variant="secondary" size="lg">
+                <Link href="/configurator" className="sm:flex-1">
+                  <Layers size={16} aria-hidden="true" />
+                  <span>Custom Rig Builder</span>
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
       </section>
 
-      <div className="product-detail-deepdive">
+      <div className="flex flex-col gap-12 border-t border-border pt-12 lg:grid lg:grid-cols-2 lg:gap-12">
         <ArchitectureSpecTable product={product} />
         <MiniBenchmarkCard product={product} />
       </div>

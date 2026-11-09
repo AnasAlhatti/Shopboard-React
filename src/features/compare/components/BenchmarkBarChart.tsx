@@ -1,4 +1,5 @@
 import { BarChart3, Trophy } from 'lucide-react';
+import { cn } from '../../../lib/utils';
 import type { Product } from '../../../shared/products/types/product';
 
 interface BenchmarkBarChartProps {
@@ -67,20 +68,21 @@ export function BenchmarkBarChart({ items }: BenchmarkBarChartProps) {
       ];
 
   return (
-    <section
-      className="benchmark-chart-section"
-      aria-labelledby="benchmark-bars-heading"
-    >
-      <div className="section-heading">
-        <p className="eyebrow">Aethel Performance Lab</p>
-        <h2 id="benchmark-bars-heading">Head-to-Head Benchmark Bars</h2>
-        <p>
+    <section className="mt-16" aria-labelledby="benchmark-bars-heading">
+      <div className="max-w-96 mb-8">
+        <p className="mb-3 text-primary text-xs font-extrabold tracking-widest uppercase last:max-w-96 last:mb-0">
+          Aethel Performance Lab
+        </p>
+        <h2 id="benchmark-bars-heading" className="mb-3 text-3xl lg:text-6xl">
+          Head-to-Head Benchmark Bars
+        </h2>
+        <p className="last:max-w-96 last:mb-0">
           Comparative architectural benchmarks validated on standardized 3nm
           testbenches.
         </p>
       </div>
 
-      <div className="benchmark-charts-list">
+      <div className="flex flex-col gap-8 mt-8">
         {metrics.map((metric) => {
           const values = items.map((item) => metric.getValue(item));
           const bestValue = metric.higherIsBetter
@@ -88,19 +90,22 @@ export function BenchmarkBarChart({ items }: BenchmarkBarChartProps) {
             : Math.min(...values);
 
           return (
-            <div key={metric.title} className="benchmark-chart-card">
+            <div
+              key={metric.title}
+              className="bg-surface border border-border rounded-lg p-6"
+            >
               <div className="benchmark-chart-card__header">
                 <div>
-                  <h3 className="benchmark-chart-card__title">
+                  <h3 className="flex items-center gap-2 text-lg font-bold text-foreground m-0">
                     <BarChart3 size={16} aria-hidden="true" /> {metric.title}
                   </h3>
-                  <p className="benchmark-chart-card__subtitle">
+                  <p className="text-xs text-muted mt-1 mr-0 mb-0 ml-0">
                     {metric.subtitle}
                   </p>
                 </div>
               </div>
 
-              <div className="benchmark-bars-group">
+              <div className="flex flex-col gap-3 mt-6">
                 {items.map((item) => {
                   const val = metric.getValue(item);
                   const isLeader = val === bestValue;
@@ -111,30 +116,36 @@ export function BenchmarkBarChart({ items }: BenchmarkBarChartProps) {
                     : Math.max(15, (Math.min(...values) / val) * 100);
 
                   return (
-                    <div key={item.id} className="benchmark-bar-row">
-                      <div className="benchmark-bar-row__info">
-                        <span className="benchmark-bar-row__name">
+                    <div key={item.id} className="flex flex-col gap-1.5">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="font-semibold text-foreground flex items-center gap-2">
                           {item.name}
                         </span>
-                        {isLeader ? (
-                          <span className="leader-pill">
+                        {isLeader && (
+                          <span className="inline-flex items-center gap-1 text-2xs font-bold uppercase bg-surface text-primary border border-border rounded-xl py-0.5 px-1.5">
                             <Trophy size={11} aria-hidden="true" /> Leader
                           </span>
-                        ) : items.length > 1 ? (
-                          <span className="delta-pill">
+                        )}
+                        {!isLeader && items.length > 1 && (
+                          <span className="inline-flex items-center text-2xs font-bold text-muted bg-surface border border-border rounded-xl py-0.5 px-1.5">
                             {metric.higherIsBetter
                               ? `-${Math.round((1 - val / bestValue) * 100)}%`
                               : `+${Math.round(((val - bestValue) / bestValue) * 100)}% time`}
                           </span>
-                        ) : null}
-                        <strong className="benchmark-bar-row__val">
+                        )}
+                        <strong className="font-extrabold text-foreground tabular-nums">
                           {metric.formatValue(val)}
                         </strong>
                       </div>
 
-                      <div className="bar-track" aria-hidden="true">
+                      <div
+                        className="h-2 bg-background rounded-xl overflow-hidden"
+                        aria-hidden="true"
+                      >
                         <div
-                          className={`bar-fill${isLeader ? ' bar-fill--leader' : ''}`}
+                          className={cn(
+                            `h-full bg-border rounded-xl transition-all duration-300 motion-reduce:transition-none${isLeader ? ' bg-primary shadow-card' : ''}`,
+                          )}
                           style={{ width: `${percentage}%` }}
                         />
                       </div>

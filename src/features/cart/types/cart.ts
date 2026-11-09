@@ -1,5 +1,5 @@
-import type { Product } from '../../../shared/products/types/product';
 import type { CourseProduct } from '../../../shared/products/types/courseProduct';
+import type { Product } from '../../../shared/products/types/product';
 export type CartProduct = Product | CourseProduct;
 export interface BundledRig {
   id: string;
@@ -23,6 +23,7 @@ export type CartItem = CartLine &
   );
 export interface CartContextValue {
   items: CartItem[];
+  restored: boolean;
   appliedPromo: string | null;
   applyPromo: (code: string) => boolean;
   addToCart: (product: CartProduct, quantity?: number) => void;

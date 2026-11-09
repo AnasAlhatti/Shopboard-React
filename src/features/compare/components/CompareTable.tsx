@@ -1,7 +1,10 @@
+'use client';
 import { Plus, Trash2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useCart } from '../../cart/hooks/useCart';
+import Link from 'next/link';
+import { Button } from '../../../components/ui/Button';
+import { cn } from '../../../lib/utils';
 import type { Product } from '../../../shared/products/types/product';
+import { useCart } from '../../cart/hooks/useCart';
 
 interface CompareTableProps {
   items: Product[];
@@ -38,76 +41,90 @@ export function CompareTable({
   );
 
   return (
-    <div className="compare-table-container">
-      <div className="compare-table-scroller">
-        <table className="compare-matrix">
+    <div className="bg-surface border border-border rounded-lg overflow-hidden mb-16 shadow-card">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-96">
           <thead>
             <tr>
-              <th scope="col" className="compare-matrix__label-col">
+              <th
+                scope="col"
+                className="w-56 min-w-52 bg-surface text-xs font-semibold text-muted uppercase tracking-wide py-4 px-5 text-left border-b border-border"
+              >
                 Hardware Model
               </th>
               {items.map((item) => (
                 <th
                   key={item.id}
                   scope="col"
-                  className="compare-matrix__item-col"
+                  className="w-64 min-w-60 py-4 px-5 text-left border-b border-border"
                 >
-                  <div className="compare-chip-header">
-                    <button
+                  <div className="relative flex flex-col gap-1.5">
+                    <Button
+                      variant="ghost"
                       type="button"
-                      className="compare-remove-btn"
+                      className="absolute top-0 right-0 bg-transparent border border-border rounded-xl text-muted p-1 cursor-pointer transition duration-200 motion-reduce:transition-none hover:bg-surface hover:border-primary hover:text-primary"
                       onClick={() => onRemove(item.id)}
                       aria-label={`Remove ${item.name} from compare`}
                       title="Remove from compare"
                     >
                       <Trash2 size={14} aria-hidden="true" />
-                    </button>
-                    <div className="compare-chip-media">
-                      <img src={item.image} alt={item.name} />
+                    </Button>
+                    <div className="w-full aspect-video bg-surface rounded-md overflow-hidden mb-2">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
-                    <span className="compare-chip-series">
+                    <span className="text-xs font-bold text-primary uppercase">
                       {item.series} Series
                     </span>
-                    <h3 className="compare-chip-name">
-                      <Link to={`/product/${item.id}`}>{item.name}</Link>
+                    <h3 className="text-base font-extrabold m-0">
+                      <Link href={`/products/${item.id}`}>{item.name}</Link>
                     </h3>
-                    <p className="compare-chip-price">
+                    <p className="text-xl font-extrabold text-foreground mt-0 mr-0 mb-2 ml-0 tabular-nums">
                       ${item.price.toLocaleString()}
                     </p>
-                    <button
+                    <Button
+                      variant="primary"
                       type="button"
-                      className="button button--primary button--sm"
                       onClick={() => addToCart(item, 1)}
+                      size="sm"
                     >
                       <Plus size={14} aria-hidden="true" /> Add to Cart
-                    </button>
+                    </Button>
                   </div>
                 </th>
               ))}
               {items.length < 4 && (
                 <th
                   scope="col"
-                  className="compare-matrix__item-col compare-matrix__item-col--empty"
+                  className="w-64 min-w-60 bg-surface py-4 px-5 text-left border-b border-border"
                 >
-                  <div className="compare-add-slot">
-                    <p className="eyebrow">Slot {items.length + 1} of 4</p>
-                    <button
+                  <div className="h-full min-h-64 flex flex-col items-center justify-center border-2 border-border rounded-md p-6 text-center">
+                    <p className="mb-3 text-primary text-xs font-extrabold tracking-widest uppercase">
+                      Slot {items.length + 1} of 4
+                    </p>
+                    <Button
+                      variant="secondary"
                       type="button"
-                      className="button button--quiet button--full"
+                      className="w-full"
                       onClick={onOpenPicker}
+                      size="lg"
                     >
                       <Plus size={16} aria-hidden="true" /> Add Silicon
-                    </button>
+                    </Button>
                   </div>
                 </th>
               )}
             </tr>
           </thead>
           <tbody>
-            <tr className="matrix-section-row">
+            <tr>
               <th
                 colSpan={items.length + (items.length < 4 ? 2 : 1)}
                 scope="colgroup"
+                className="px-5 text-left border-b border-border bg-surface text-primary text-xs font-bold uppercase tracking-wide py-2.5"
               >
                 Silicon Microarchitecture
               </th>
@@ -115,7 +132,12 @@ export function CompareTable({
             {isCpu ? (
               <>
                 <tr>
-                  <th scope="row">Physical Cores</th>
+                  <th
+                    scope="row"
+                    className="py-4 px-5 text-left border-b border-border"
+                  >
+                    Physical Cores
+                  </th>
                   {items.map((item) => {
                     const isWinner =
                       highlightWinners &&
@@ -124,18 +146,26 @@ export function CompareTable({
                     return (
                       <td
                         key={item.id}
-                        className={`matrix-data${isWinner ? ' matrix-data--highlight matrix-data--winner' : ''}`}
+                        className={cn(
+                          `text-sm font-semibold text-foreground tabular-nums${isWinner ? ' text-primary font-extrabold text-primary font-extrabold bg-surface' : ''}`,
+                          'py-4 px-5 text-left border-b border-border',
+                        )}
                       >
                         {item.specs.cores} Cores
                       </td>
                     );
                   })}
                   {items.length < 4 && (
-                    <td className="matrix-data matrix-data--empty" />
+                    <td className="text-sm font-semibold text-foreground tabular-nums bg-surface py-4 px-5 text-left border-b border-border" />
                   )}
                 </tr>
                 <tr>
-                  <th scope="row">Concurrent Threads</th>
+                  <th
+                    scope="row"
+                    className="py-4 px-5 text-left border-b border-border"
+                  >
+                    Concurrent Threads
+                  </th>
                   {items.map((item) => {
                     const isWinner =
                       highlightWinners &&
@@ -144,18 +174,26 @@ export function CompareTable({
                     return (
                       <td
                         key={item.id}
-                        className={`matrix-data${isWinner ? ' matrix-data--highlight matrix-data--winner' : ''}`}
+                        className={cn(
+                          `text-sm font-semibold text-foreground tabular-nums${isWinner ? ' text-primary font-extrabold text-primary font-extrabold bg-surface' : ''}`,
+                          'py-4 px-5 text-left border-b border-border',
+                        )}
                       >
                         {item.specs.threads} Threads
                       </td>
                     );
                   })}
                   {items.length < 4 && (
-                    <td className="matrix-data matrix-data--empty" />
+                    <td className="text-sm font-semibold text-foreground tabular-nums bg-surface py-4 px-5 text-left border-b border-border" />
                   )}
                 </tr>
                 <tr>
-                  <th scope="row">Boost Clock</th>
+                  <th
+                    scope="row"
+                    className="py-4 px-5 text-left border-b border-border"
+                  >
+                    Boost Clock
+                  </th>
                   {items.map((item) => {
                     const isWinner =
                       highlightWinners &&
@@ -165,32 +203,48 @@ export function CompareTable({
                     return (
                       <td
                         key={item.id}
-                        className={`matrix-data${isWinner ? ' matrix-data--highlight matrix-data--winner' : ''}`}
+                        className={cn(
+                          `text-sm font-semibold text-foreground tabular-nums${isWinner ? ' text-primary font-extrabold text-primary font-extrabold bg-surface' : ''}`,
+                          'py-4 px-5 text-left border-b border-border',
+                        )}
                       >
                         {item.specs.boostClock}
                       </td>
                     );
                   })}
                   {items.length < 4 && (
-                    <td className="matrix-data matrix-data--empty" />
+                    <td className="text-sm font-semibold text-foreground tabular-nums bg-surface py-4 px-5 text-left border-b border-border" />
                   )}
                 </tr>
                 <tr>
-                  <th scope="row">Unified Cache</th>
+                  <th
+                    scope="row"
+                    className="py-4 px-5 text-left border-b border-border"
+                  >
+                    Unified Cache
+                  </th>
                   {items.map((item) => (
-                    <td key={item.id} className="matrix-data">
+                    <td
+                      key={item.id}
+                      className="text-sm font-semibold text-foreground tabular-nums py-4 px-5 text-left border-b border-border"
+                    >
                       {item.specs.cache}
                     </td>
                   ))}
                   {items.length < 4 && (
-                    <td className="matrix-data matrix-data--empty" />
+                    <td className="text-sm font-semibold text-foreground tabular-nums bg-surface py-4 px-5 text-left border-b border-border" />
                   )}
                 </tr>
               </>
             ) : (
               <>
                 <tr>
-                  <th scope="row">VRAM Capacity</th>
+                  <th
+                    scope="row"
+                    className="py-4 px-5 text-left border-b border-border"
+                  >
+                    VRAM Capacity
+                  </th>
                   {items.map((item) => {
                     const isWinner =
                       highlightWinners &&
@@ -199,18 +253,26 @@ export function CompareTable({
                     return (
                       <td
                         key={item.id}
-                        className={`matrix-data${isWinner ? ' matrix-data--highlight matrix-data--winner' : ''}`}
+                        className={cn(
+                          `text-sm font-semibold text-foreground tabular-nums${isWinner ? ' text-primary font-extrabold text-primary font-extrabold bg-surface' : ''}`,
+                          'py-4 px-5 text-left border-b border-border',
+                        )}
                       >
                         {item.specs.vram}
                       </td>
                     );
                   })}
                   {items.length < 4 && (
-                    <td className="matrix-data matrix-data--empty" />
+                    <td className="text-sm font-semibold text-foreground tabular-nums bg-surface py-4 px-5 text-left border-b border-border" />
                   )}
                 </tr>
                 <tr>
-                  <th scope="row">Compute Engine (FP32)</th>
+                  <th
+                    scope="row"
+                    className="py-4 px-5 text-left border-b border-border"
+                  >
+                    Compute Engine (FP32)
+                  </th>
                   {items.map((item) => {
                     const isWinner =
                       highlightWinners &&
@@ -219,29 +281,45 @@ export function CompareTable({
                     return (
                       <td
                         key={item.id}
-                        className={`matrix-data${isWinner ? ' matrix-data--highlight matrix-data--winner' : ''}`}
+                        className={cn(
+                          `text-sm font-semibold text-foreground tabular-nums${isWinner ? ' text-primary font-extrabold text-primary font-extrabold bg-surface' : ''}`,
+                          'py-4 px-5 text-left border-b border-border',
+                        )}
                       >
                         {item.specs.tflops?.toFixed(1)} TFLOPs
                       </td>
                     );
                   })}
                   {items.length < 4 && (
-                    <td className="matrix-data matrix-data--empty" />
+                    <td className="text-sm font-semibold text-foreground tabular-nums bg-surface py-4 px-5 text-left border-b border-border" />
                   )}
                 </tr>
                 <tr>
-                  <th scope="row">Memory Bus Width</th>
+                  <th
+                    scope="row"
+                    className="py-4 px-5 text-left border-b border-border"
+                  >
+                    Memory Bus Width
+                  </th>
                   {items.map((item) => (
-                    <td key={item.id} className="matrix-data">
+                    <td
+                      key={item.id}
+                      className="text-sm font-semibold text-foreground tabular-nums py-4 px-5 text-left border-b border-border"
+                    >
                       {item.specs.busWidth ?? '384-Bit'}
                     </td>
                   ))}
                   {items.length < 4 && (
-                    <td className="matrix-data matrix-data--empty" />
+                    <td className="text-sm font-semibold text-foreground tabular-nums bg-surface py-4 px-5 text-left border-b border-border" />
                   )}
                 </tr>
                 <tr>
-                  <th scope="row">Engine Clock</th>
+                  <th
+                    scope="row"
+                    className="py-4 px-5 text-left border-b border-border"
+                  >
+                    Engine Clock
+                  </th>
                   {items.map((item) => {
                     const isWinner =
                       highlightWinners &&
@@ -251,29 +329,38 @@ export function CompareTable({
                     return (
                       <td
                         key={item.id}
-                        className={`matrix-data${isWinner ? ' matrix-data--highlight matrix-data--winner' : ''}`}
+                        className={cn(
+                          `text-sm font-semibold text-foreground tabular-nums${isWinner ? ' text-primary font-extrabold text-primary font-extrabold bg-surface' : ''}`,
+                          'py-4 px-5 text-left border-b border-border',
+                        )}
                       >
                         {item.specs.boostClock}
                       </td>
                     );
                   })}
                   {items.length < 4 && (
-                    <td className="matrix-data matrix-data--empty" />
+                    <td className="text-sm font-semibold text-foreground tabular-nums bg-surface py-4 px-5 text-left border-b border-border" />
                   )}
                 </tr>
               </>
             )}
 
-            <tr className="matrix-section-row">
+            <tr>
               <th
                 colSpan={items.length + (items.length < 4 ? 2 : 1)}
                 scope="colgroup"
+                className="px-5 text-left border-b border-border bg-surface text-primary text-xs font-bold uppercase tracking-wide py-2.5"
               >
                 Power & Thermal Specifications
               </th>
             </tr>
             <tr>
-              <th scope="row">TDP Rating</th>
+              <th
+                scope="row"
+                className="py-4 px-5 text-left border-b border-border"
+              >
+                TDP Rating
+              </th>
               {items.map((item) => {
                 const isWinner =
                   highlightWinners &&
@@ -282,18 +369,26 @@ export function CompareTable({
                 return (
                   <td
                     key={item.id}
-                    className={`matrix-data${isWinner ? ' matrix-data--highlight matrix-data--winner' : ''}`}
+                    className={cn(
+                      `text-sm font-semibold text-foreground tabular-nums${isWinner ? ' text-primary font-extrabold text-primary font-extrabold bg-surface' : ''}`,
+                      'py-4 px-5 text-left border-b border-border',
+                    )}
                   >
                     {item.specs.tdp} Watts
                   </td>
                 );
               })}
               {items.length < 4 && (
-                <td className="matrix-data matrix-data--empty" />
+                <td className="text-sm font-semibold text-foreground tabular-nums bg-surface py-4 px-5 text-left border-b border-border" />
               )}
             </tr>
             <tr>
-              <th scope="row">Efficiency Rating</th>
+              <th
+                scope="row"
+                className="py-4 px-5 text-left border-b border-border"
+              >
+                Efficiency Rating
+              </th>
               {items.map((item) => {
                 const isWinner =
                   highlightWinners &&
@@ -302,14 +397,17 @@ export function CompareTable({
                 return (
                   <td
                     key={item.id}
-                    className={`matrix-data${isWinner ? ' matrix-data--highlight matrix-data--winner' : ''}`}
+                    className={cn(
+                      `text-sm font-semibold text-foreground tabular-nums${isWinner ? ' text-primary font-extrabold text-primary font-extrabold bg-surface' : ''}`,
+                      'py-4 px-5 text-left border-b border-border',
+                    )}
                   >
                     {item.benchmarks.efficiencyScore.toFixed(1)} / 10
                   </td>
                 );
               })}
               {items.length < 4 && (
-                <td className="matrix-data matrix-data--empty" />
+                <td className="text-sm font-semibold text-foreground tabular-nums bg-surface py-4 px-5 text-left border-b border-border" />
               )}
             </tr>
           </tbody>

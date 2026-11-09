@@ -1,4 +1,7 @@
 import { Cpu, Gauge, Layers, RotateCcw, Search } from 'lucide-react';
+import { Button } from '../../../components/ui/Button';
+import { Input } from '../../../components/ui/Input';
+import { cn } from '../../../lib/utils';
 
 interface FilterSidebarProps {
   searchQuery: string;
@@ -36,78 +39,105 @@ export function FilterSidebar({
   filteredCount,
 }: FilterSidebarProps) {
   return (
-    <aside className="catalog-filters" aria-label="Catalog filters">
-      <div className="catalog-filters__header">
-        <h2 className="catalog-filters__title">
+    <aside
+      className="bg-surface border border-border rounded-lg p-6 flex flex-col gap-6"
+      aria-label="Catalog filters"
+    >
+      <div className="flex items-baseline justify-between border-b border-border pb-2">
+        <h2 className="flex items-center gap-2 text-base font-bold text-foreground m-0">
           <Layers size={18} aria-hidden="true" /> Filters
         </h2>
-        <span className="catalog-filters__count">
+        <span className="text-xs text-muted">
           Showing {filteredCount} of {totalCount}
         </span>
       </div>
 
       {/* Search Input */}
-      <div className="filter-group">
-        <label htmlFor="catalog-search" className="filter-label">
+      <div className="flex flex-col gap-1.5">
+        <label
+          htmlFor="catalog-search"
+          className="text-xs font-semibold uppercase tracking-wide text-muted"
+        >
           Search silicon
         </label>
-        <div className="filter-search-wrap">
-          <Search size={16} className="filter-search-icon" aria-hidden="true" />
-          <input
+        <div className="relative flex items-center">
+          <Search
+            size={16}
+            className="absolute left-3 text-muted pointer-events-none"
+            aria-hidden="true"
+          />
+          <Input
             id="catalog-search"
             type="search"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="e.g. 9950X, Zenith, 24GB..."
-            className="filter-search-input"
+            className="w-full bg-background border border-border rounded-md text-foreground pt-2 pr-3 pb-2 pl-9 text-sm outline-none transition duration-200 motion-reduce:transition-none focus:border-primary"
           />
         </div>
       </div>
 
       {/* Category Filter */}
-      <div className="filter-group">
-        <span className="filter-label" id="category-filter-label">
+      <div className="flex flex-col gap-1.5">
+        <span
+          className="text-xs font-semibold uppercase tracking-wide text-muted"
+          id="category-filter-label"
+        >
           Category
         </span>
         <div
-          className="category-pills"
+          className="flex flex-col gap-1.5"
           role="group"
           aria-labelledby="category-filter-label"
         >
-          <button
+          <Button
+            variant="ghost"
             type="button"
-            className={`pill-button${selectedCategory === 'all' ? ' is-active' : ''}`}
+            className={cn(
+              `flex items-center gap-2 w-full py-2 px-3 rounded-sm bg-transparent border border-border text-muted text-sm font-medium cursor-pointer text-left transition duration-200 motion-reduce:transition-none hover:bg-raised hover:text-foreground${selectedCategory === 'all' ? ' bg-surface border-border text-primary font-bold' : ''}`,
+            )}
             onClick={() => onCategoryChange('all')}
             aria-pressed={selectedCategory === 'all'}
           >
             All Silicon
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
             type="button"
-            className={`pill-button${selectedCategory === 'cpu' ? ' is-active' : ''}`}
+            className={cn(
+              `flex items-center gap-2 w-full py-2 px-3 rounded-sm bg-transparent border border-border text-muted text-sm font-medium cursor-pointer text-left transition duration-200 motion-reduce:transition-none hover:bg-raised hover:text-foreground${selectedCategory === 'cpu' ? ' bg-surface border-border text-primary font-bold' : ''}`,
+            )}
             onClick={() => onCategoryChange('cpu')}
             aria-pressed={selectedCategory === 'cpu'}
           >
             <Cpu size={14} aria-hidden="true" /> CPUs
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
             type="button"
-            className={`pill-button${selectedCategory === 'gpu' ? ' is-active' : ''}`}
+            className={cn(
+              `flex items-center gap-2 w-full py-2 px-3 rounded-sm bg-transparent border border-border text-muted text-sm font-medium cursor-pointer text-left transition duration-200 motion-reduce:transition-none hover:bg-raised hover:text-foreground${selectedCategory === 'gpu' ? ' bg-surface border-border text-primary font-bold' : ''}`,
+            )}
             onClick={() => onCategoryChange('gpu')}
             aria-pressed={selectedCategory === 'gpu'}
           >
             <Gauge size={14} aria-hidden="true" /> GPUs
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Max Price Slider */}
-      <div className="filter-group">
-        <div className="filter-range-header">
-          <label htmlFor="price-range" className="filter-label">
+      <div className="flex flex-col gap-1.5">
+        <div className="flex justify-between items-baseline">
+          <label
+            htmlFor="price-range"
+            className="text-xs font-semibold uppercase tracking-wide text-muted"
+          >
             Max Price
           </label>
-          <span className="filter-range-val">${maxPrice.toLocaleString()}</span>
+          <span className="text-sm font-bold text-primary tabular-nums">
+            ${maxPrice.toLocaleString()}
+          </span>
         </div>
         <input
           id="price-range"
@@ -117,21 +147,26 @@ export function FilterSidebar({
           step={50}
           value={maxPrice}
           onChange={(e) => onMaxPriceChange(Number(e.target.value))}
-          className="filter-slider"
+          className="w-full cursor-pointer accent-primary"
         />
-        <div className="filter-range-hints">
+        <div className="flex justify-between text-xs text-muted">
           <span>$250</span>
           <span>$1,000</span>
         </div>
       </div>
 
       {/* Max TDP Slider */}
-      <div className="filter-group">
-        <div className="filter-range-header">
-          <label htmlFor="tdp-range" className="filter-label">
+      <div className="flex flex-col gap-1.5">
+        <div className="flex justify-between items-baseline">
+          <label
+            htmlFor="tdp-range"
+            className="text-xs font-semibold uppercase tracking-wide text-muted"
+          >
             Max TDP (Power Draw)
           </label>
-          <span className="filter-range-val">{maxTdp}W</span>
+          <span className="text-sm font-bold text-primary tabular-nums">
+            {maxTdp}W
+          </span>
         </div>
         <input
           id="tdp-range"
@@ -141,9 +176,9 @@ export function FilterSidebar({
           step={5}
           value={maxTdp}
           onChange={(e) => onMaxTdpChange(Number(e.target.value))}
-          className="filter-slider"
+          className="w-full cursor-pointer accent-primary"
         />
-        <div className="filter-range-hints">
+        <div className="flex justify-between text-xs text-muted">
           <span>65W</span>
           <span>400W</span>
         </div>
@@ -151,25 +186,31 @@ export function FilterSidebar({
 
       {/* Cores Facet (CPU or All) */}
       {selectedCategory !== 'gpu' && (
-        <div className="filter-group">
-          <span className="filter-label" id="cores-filter-label">
+        <div className="flex flex-col gap-1.5">
+          <span
+            className="text-xs font-semibold uppercase tracking-wide text-muted"
+            id="cores-filter-label"
+          >
             CPU Physical Cores
           </span>
           <div
-            className="category-pills"
+            className="flex flex-col gap-1.5"
             role="group"
             aria-labelledby="cores-filter-label"
           >
             {[0, 8, 16].map((cores) => (
-              <button
+              <Button
+                variant="ghost"
                 key={cores}
                 type="button"
-                className={`pill-button${minCores === cores ? ' is-active' : ''}`}
+                className={cn(
+                  `flex items-center gap-2 w-full py-2 px-3 rounded-sm bg-transparent border border-border text-muted text-sm font-medium cursor-pointer text-left transition duration-200 motion-reduce:transition-none hover:bg-raised hover:text-foreground${minCores === cores ? ' bg-surface border-border text-primary font-bold' : ''}`,
+                )}
                 onClick={() => onMinCoresChange(cores)}
                 aria-pressed={minCores === cores}
               >
                 {cores === 0 ? 'Any Cores' : `${cores}+ Cores`}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -177,37 +218,45 @@ export function FilterSidebar({
 
       {/* VRAM Facet (GPU or All) */}
       {selectedCategory !== 'cpu' && (
-        <div className="filter-group">
-          <span className="filter-label" id="vram-filter-label">
+        <div className="flex flex-col gap-1.5">
+          <span
+            className="text-xs font-semibold uppercase tracking-wide text-muted"
+            id="vram-filter-label"
+          >
             GPU Video Memory (VRAM)
           </span>
           <div
-            className="category-pills"
+            className="flex flex-col gap-1.5"
             role="group"
             aria-labelledby="vram-filter-label"
           >
             {[0, 12, 16, 24].map((vram) => (
-              <button
+              <Button
+                variant="ghost"
                 key={vram}
                 type="button"
-                className={`pill-button${minVram === vram ? ' is-active' : ''}`}
+                className={cn(
+                  `flex items-center gap-2 w-full py-2 px-3 rounded-sm bg-transparent border border-border text-muted text-sm font-medium cursor-pointer text-left transition duration-200 motion-reduce:transition-none hover:bg-raised hover:text-foreground${minVram === vram ? ' bg-surface border-border text-primary font-bold' : ''}`,
+                )}
                 onClick={() => onMinVramChange(vram)}
                 aria-pressed={minVram === vram}
               >
                 {vram === 0 ? 'Any VRAM' : `${vram}GB+`}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
       )}
 
-      <button
+      <Button
+        variant="secondary"
         type="button"
-        className="button button--quiet button--full"
+        className="w-full"
         onClick={onReset}
+        size="lg"
       >
         <RotateCcw size={14} aria-hidden="true" /> Reset all filters
-      </button>
+      </Button>
     </aside>
   );
 }

@@ -1,8 +1,8 @@
-import { queryOptions } from '@tanstack/react-query';
-import { ApiError, getJson } from '../../api/apiClient';
+import { ApiError, getJson } from '../../../lib/apiClient';
 import { isProduct, type Product } from '../types/product';
 
-const PRODUCTS_URL = `${import.meta.env.VITE_API_BASE_URL ?? '/api'}/products`;
+export const PRODUCTS_KEY = '/api/products';
+const PRODUCTS_URL = PRODUCTS_KEY;
 
 function isProductList(value: unknown): value is Product[] {
   return Array.isArray(value) && value.every(isProduct);
@@ -30,13 +30,3 @@ export async function fetchProductById(
     throw error;
   }
 }
-
-export const productListQuery = queryOptions({
-  queryKey: ['products'],
-  queryFn: ({ signal }) => fetchProducts({ signal }),
-});
-export const productQuery = (id: string) =>
-  queryOptions({
-    queryKey: ['product', id],
-    queryFn: ({ signal }) => fetchProductById(id, { signal }),
-  });

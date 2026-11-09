@@ -5,3 +5,11 @@
 # These files contain user-maintained Rules sections that must remain unchanged.
 AGENTS.md
 CLAUDE.md
+
+# Generated output and existing project notes are not application source.
+.next/
+dist/
+docs/superpowers/
+.superpowers/
+debug-lab-log.md
+DESIGN.md

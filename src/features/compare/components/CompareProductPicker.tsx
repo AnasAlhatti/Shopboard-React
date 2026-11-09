@@ -1,9 +1,14 @@
+'use client';
+import { RefreshNotice } from '../../../components/ui/RefreshNotice';
 import { useProducts } from '../../../shared/products/hooks/useProducts';
 import { useCompare } from '../hooks/useCompare';
 import { ProductPickerModal } from './ProductPickerModal';
 
-export function CompareProductPicker({ onClose }: { onClose: () => void }) {
-  const { products } = useProducts();
+export interface CompareProductPickerProps {
+  onClose: () => void;
+}
+export function CompareProductPicker({ onClose }: CompareProductPickerProps) {
+  const { products, error, refresh } = useProducts();
   const { category, comparedItems, toggleCompare } = useCompare();
   if (!category || category === 'storage') return null;
   const available = products.filter(
@@ -18,6 +23,8 @@ export function CompareProductPicker({ onClose }: { onClose: () => void }) {
       availableProducts={available}
       onSelect={toggleCompare}
       category={category}
-    />
+    >
+      {Boolean(error) && <RefreshNotice error={error} onRefresh={refresh} />}
+    </ProductPickerModal>
   );
 }

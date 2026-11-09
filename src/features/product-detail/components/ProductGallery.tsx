@@ -6,20 +6,23 @@ interface ProductGalleryProps {
 
 export function ProductGallery({ product }: ProductGalleryProps) {
   return (
-    <div className="product-gallery">
-      <div className="product-gallery__viewer">
+    <div className="relative bg-surface border border-border rounded-lg overflow-hidden shadow-card">
+      <div className="relative aspect-video bg-surface overflow-hidden">
         <img
           src={product.image}
           alt={product.name}
-          className="product-gallery__image"
+          className="w-full h-full object-cover transition duration-200 motion-reduce:transition-none"
         />
-        <div className="product-gallery__glow" aria-hidden="true" />
+        <div
+          className="absolute inset-0 bg-linear-to-t from-background/60 to-transparent pointer-events-none"
+          aria-hidden="true"
+        />
       </div>
-      <div className="product-gallery__meta">
-        <span className="product-gallery__badge">
+      <div className="py-3 px-6 border-t border-border flex flex-wrap justify-between items-center gap-2 bg-surface">
+        <span className="text-xs font-bold text-primary tracking-wide">
           {product.category.toUpperCase()} SILICON ARCHITECTURE
         </span>
-        <span className="product-gallery__lithography">
+        <span className="text-xs text-muted">
           3nm FinFET Manufacturing Node
         </span>
       </div>

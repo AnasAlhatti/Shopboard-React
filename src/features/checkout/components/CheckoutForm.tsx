@@ -1,10 +1,11 @@
-import { Controller, useForm } from 'react-hook-form';
+'use client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '../../../shared/ui/Button';
-import { Field } from '../../../shared/ui/Field';
-import { FieldLabel } from '../../../shared/ui/FieldLabel';
-import { FieldError } from '../../../shared/ui/FieldError';
-import { Input } from '../../../shared/ui/Input';
+import { Controller, useForm } from 'react-hook-form';
+import { Button } from '../../../components/ui/Button';
+import { Field } from '../../../components/ui/Field';
+import { FieldError } from '../../../components/ui/FieldError';
+import { FieldLabel } from '../../../components/ui/FieldLabel';
+import { Input } from '../../../components/ui/Input';
 import { checkoutSchema, type CheckoutValues } from '../schemas/checkoutSchema';
 
 interface CheckoutFormProps {
@@ -64,14 +65,15 @@ export function CheckoutForm({ onSubmit, disabled }: CheckoutFormProps) {
     }
   }
   return (
-    <form
-      noValidate
-      onSubmit={form.handleSubmit(submit)}
-      className="checkout-form"
-    >
-      <fieldset disabled={disabled || form.formState.isSubmitting}>
-        <legend>Contact and delivery</legend>
-        <p>
+    <form noValidate onSubmit={form.handleSubmit(submit)}>
+      <fieldset
+        disabled={
+          disabled || (form.formState.isSubmitting && form.formState.isValid)
+        }
+        className="grid gap-5 min-w-0 m-0 p-6 border border-border rounded-card"
+      >
+        <legend className="px-2 font-semibold">Contact and delivery</legend>
+        <p className="text-xs">
           Demo checkout. No payment is collected; delivery details are not
           saved.
         </p>

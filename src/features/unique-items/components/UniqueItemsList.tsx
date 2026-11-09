@@ -1,10 +1,14 @@
-import { useSearchParams } from 'react-router-dom';
+'use client';
+import { Button } from '../../../components/ui/Button';
+import { Input } from '../../../components/ui/Input';
+import { RefreshNotice } from '../../../components/ui/RefreshNotice';
 import { useCourseProducts } from '../../../shared/products/hooks/useCourseProducts';
+import { useProductFilters } from '../../../shared/products/hooks/useProductFilters';
 import { UniqueItemCard } from './UniqueItemCard';
 
 export function UniqueItemsList() {
-  const products = useCourseProducts();
-  const [params, setParams] = useSearchParams();
+  const { products, error, refresh } = useCourseProducts();
+  const [params, setParams] = useProductFilters();
   const search = params.get('search') ?? '';
   const category = params.get('category') ?? '';
   const categories = [...new Set(products.map((product) => product.category))];
@@ -14,30 +18,31 @@ export function UniqueItemsList() {
       product.name.toLowerCase().includes(search.trim().toLowerCase()),
   );
   function update(name: string, value: string) {
-    setParams(
-      (current) => {
-        const next = new URLSearchParams(current);
-        if (value) next.set(name, value);
-        else next.delete(name);
-        return next;
-      },
-      { replace: true },
-    );
+    setParams((current) => {
+      const next = new URLSearchParams(current);
+      if (value) next.set(name, value);
+      else next.delete(name);
+      return next;
+    });
   }
   if (products.length === 0)
     return (
-      <section className="async-state" role="status">
-        <h2>No unique items available</h2>
+      <section className="p-8 text-muted" role="status">
+        <h2 className="text-foreground">No unique items available</h2>
         <p>Check back soon for the next collection.</p>
+        <RefreshNotice error={error} onRefresh={refresh} />
       </section>
     );
   return (
     <>
-      <div className="unique-items-filters">
+      <RefreshNotice error={error} onRefresh={refresh} />
+      <div className="grid gap-4 my-8 md:grid-cols-2">
         <div>
-          <label htmlFor="unique-search">Search unique items</label>
-          <input
-            className="ui-input"
+          <label htmlFor="unique-search" className="block mb-2">
+            Search unique items
+          </label>
+          <Input
+            className="w-full min-h-11 p-3 border border-border rounded-md bg-carbon text-foreground text-base focus-visible:focus:outline-2 focus-visible:focus:outline-primary focus-visible:focus:outline-offset-2 aria-invalid:border-primary"
             id="unique-search"
             type="search"
             value={search}
@@ -45,9 +50,11 @@ export function UniqueItemsList() {
           />
         </div>
         <div>
-          <label htmlFor="unique-category">Category</label>
+          <label htmlFor="unique-category" className="block mb-2">
+            Category
+          </label>
           <select
-            className="ui-input"
+            className="w-full min-h-11 p-3 border border-border rounded-md bg-carbon text-foreground text-base focus-visible:focus:outline-2 focus-visible:focus:outline-primary focus-visible:focus:outline-offset-2 aria-invalid:border-primary"
             id="unique-category"
             value={category}
             onChange={(event) => update('category', event.target.value)}
@@ -65,22 +72,23 @@ export function UniqueItemsList() {
         {shown.length} {shown.length === 1 ? 'item' : 'items'} available
       </p>
       {shown.length > 0 ? (
-        <div className="unique-items-grid">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {shown.map((product) => (
             <UniqueItemCard key={product.id} product={product} />
           ))}
         </div>
       ) : (
-        <section className="async-state">
-          <h2>No matching unique items</h2>
+        <section className="p-8 text-muted">
+          <h2 className="text-foreground">No matching unique items</h2>
           <p>Try a different search or category.</p>
-          <button
+          <Button
+            variant="secondary"
             type="button"
-            className="button button--quiet"
             onClick={() => setParams({})}
+            size="lg"
           >
             Reset filters
-          </button>
+          </Button>
         </section>
       )}
     </>

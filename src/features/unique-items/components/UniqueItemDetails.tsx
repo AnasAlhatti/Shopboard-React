@@ -1,23 +1,26 @@
+'use client';
+import Link from 'next/link';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useCourseProduct } from '../../../shared/products/hooks/useCourseProduct';
-import { useCart } from '../../cart/hooks/useCart';
+import { Badge } from '../../../components/ui/Badge';
+import { Button } from '../../../components/ui/Button';
+import { Input } from '../../../components/ui/Input';
 import { notify } from '../../../shared/notifications/notify';
+import type { CourseProduct } from '../../../shared/products/types/courseProduct';
+import { useCart } from '../../cart/hooks/useCart';
 import { UniqueItemSymbol } from './UniqueItemSymbol';
 
 export interface UniqueItemDetailsProps {
-  id: string;
+  product: CourseProduct | null;
 }
-export function UniqueItemDetails({ id }: UniqueItemDetailsProps) {
-  const product = useCourseProduct(id);
+export function UniqueItemDetails({ product }: UniqueItemDetailsProps) {
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   if (!product)
     return (
-      <section className="async-state">
+      <section className="p-8 text-muted">
         <h1>Item not found</h1>
         <p>This item is no longer in the collection.</p>
-        <Link to="/unique-items">Browse unique items</Link>
+        <Link href="/products?collection=unique">Browse unique items</Link>
       </section>
     );
   function add() {
@@ -27,21 +30,27 @@ export function UniqueItemDetails({ id }: UniqueItemDetailsProps) {
   }
   return (
     <>
-      <Link to="/unique-items">Back to unique items</Link>
-      <div className="unique-item-detail">
+      <Link href="/products?collection=unique">Back to unique items</Link>
+      <div className="grid gap-8 py-12 md:grid-cols-2">
         <UniqueItemSymbol category={product.category} />
         <section>
-          <p className="eyebrow">Unique Items / {product.category}</p>
+          <p className="mb-3 text-primary text-xs font-extrabold tracking-widest uppercase">
+            Unique Items / {product.category}
+          </p>
           <h1>{product.name}</h1>
-          <p>
+          <Badge variant={product.inStock ? 'available' : 'unavailable'}>
             {product.inStock
               ? 'In stock and ready for your next adventure.'
               : 'This item is currently out of stock.'}
+          </Badge>
+          <p className="text-foreground text-3xl">
+            ${product.price.toFixed(2)}
           </p>
-          <p className="unique-item-price">${product.price.toFixed(2)}</p>
-          <label htmlFor="unique-quantity">Quantity</label>
-          <input
-            className="ui-input"
+          <label htmlFor="unique-quantity" className="block">
+            Quantity
+          </label>
+          <Input
+            className="w-full min-h-11 p-3 border border-border rounded-md bg-carbon text-foreground text-base focus-visible:focus:outline-2 focus-visible:focus:outline-primary focus-visible:focus:outline-offset-2 aria-invalid:border-primary max-w-24 mt-2 mb-6"
             id="unique-quantity"
             type="number"
             min={1}
@@ -57,16 +66,17 @@ export function UniqueItemDetails({ id }: UniqueItemDetailsProps) {
               )
             }
           />
-          <button
-            className="button button--primary"
+          <Button
+            variant="primary"
             type="button"
             onClick={add}
             disabled={!product.inStock}
+            size="lg"
           >
             {product.inStock
               ? `Add to cart ($${(product.price * quantity).toFixed(2)})`
               : 'Out of stock'}
-          </button>
+          </Button>
         </section>
       </div>
     </>

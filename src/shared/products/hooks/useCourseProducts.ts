@@ -1,7 +1,16 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { queryClient } from '../../api/queryClient';
-import { courseProductsQuery } from '../api/courseProductService';
-
+'use client';
+import useSWR from 'swr';
+import {
+  COURSE_PRODUCTS_KEY,
+  fetchCourseProducts,
+} from '../api/courseProductService';
 export function useCourseProducts() {
-  return useSuspenseQuery(courseProductsQuery, queryClient).data;
+  const result = useSWR(COURSE_PRODUCTS_KEY, () => fetchCourseProducts(), {
+    suspense: true,
+  });
+  return {
+    products: result.data,
+    error: result.error,
+    refresh: () => result.mutate(),
+  };
 }

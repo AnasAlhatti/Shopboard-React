@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  ignorePatterns: ['dist/', '.superpowers/'],
+  ignorePatterns: ['dist/', '.next/', 'next-env.d.ts', '.superpowers/'],
   env: {
     browser: true,
     es2022: true,
@@ -32,7 +32,11 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['src/shared/**/*.{ts,tsx}'],
+      files: [
+        'src/shared/**/*.{ts,tsx}',
+        'src/components/ui/**/*.{ts,tsx}',
+        'src/lib/**/*.{ts,tsx}',
+      ],
       rules: {
         'no-restricted-imports': [
           'error',

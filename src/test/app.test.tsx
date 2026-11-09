@@ -1,5 +1,3 @@
-import { getCartItemPrice } from '../features/cart/utils/cartOperations';
-import type { ReactNode } from 'react';
 import {
   act,
   fireEvent,
@@ -8,52 +6,67 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
-import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
+import type { ReactNode } from 'react';
+import { Suspense } from 'react';
+import { hydrateRoot } from 'react-dom/client';
+import { renderToString } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { GET as hardwareDetailApi } from '../app/api/products/[id]/route';
+import { GET as hardwareApi } from '../app/api/products/route';
+import ProductServerPage from '../app/products/[id]/page';
+import ProductError from '../app/products/error';
+import ProductsServerPage from '../app/products/page';
+import { ProductCache } from '../components/providers/ProductCache';
+import { Modal } from '../components/ui/Modal';
+import { ThemeToggle } from '../components/ui/ThemeToggle';
+import { getCartItemPrice } from '../features/cart/utils/cartOperations';
+import { NextTestRouter } from './NextTestRouter';
+import { ProductProbe } from './ProductProbe';
 
 // Contexts & Hooks
 import {
   CartContext,
   CartProvider,
 } from '../features/cart/context/CartContext';
+import { useCart } from '../features/cart/hooks/useCart';
 import {
   CompareContext,
   CompareProvider,
 } from '../features/compare/context/CompareContext';
-import { useCart } from '../features/cart/hooks/useCart';
 import { useCompare } from '../features/compare/hooks/useCompare';
 
 // Services & Types
+import type { CartContextValue, CartItem } from '../features/cart/types/cart';
 import {
   fetchProductById,
   fetchProducts,
 } from '../shared/products/api/productService';
-import type { CartContextValue, CartItem } from '../features/cart/types/cart';
-import type { Product } from '../shared/products/types/product';
 import type { CourseProduct } from '../shared/products/types/courseProduct';
+import type { Product } from '../shared/products/types/product';
 
 // Pages & Components
+import { Header } from '../components/layout/Header';
 import { CartPage } from '../features/cart/CartPage';
 import { CatalogPage } from '../features/catalog/CatalogPage';
+import { CheckoutPage } from '../features/checkout/CheckoutPage';
+import { CheckoutForm } from '../features/checkout/components/CheckoutForm';
 import { ComparePage } from '../features/compare/ComparePage';
 import { ProductPickerModal } from '../features/compare/components/ProductPickerModal';
 import { ConfiguratorPage } from '../features/configurator/ConfiguratorPage';
 import { HomePage } from '../features/home/HomePage';
 import { SiliconSpotlight } from '../features/home/components/SiliconSpotlight';
-import { ProductDetailPage } from '../features/product-detail/ProductDetailPage';
-import { Header } from '../app/layout/Header';
 import { getSiliconDashboard } from '../features/home/data/siliconArchitecture';
-import { CheckoutForm } from '../features/checkout/components/CheckoutForm';
-import { CheckoutPage } from '../features/checkout/CheckoutPage';
-import { createLazyPage } from '../app/routing/createLazyPage';
-import App from '../App';
-import { notify } from '../shared/notifications/notify';
+import { UniqueItemsPage } from '../features/unique-items/UniqueItemsPage';
 import {
   courseProductsUrl,
-  fetchCourseProduct,
-  fetchCourseProducts,
-} from '../shared/products/api/courseProductService';
-import { UniqueItemsPage } from '../features/unique-items/UniqueItemsPage';
+  fetchCourseProduct as fetchUpstreamCourseProduct,
+  fetchCourseProducts as fetchUpstreamCourseProducts,
+} from '../lib/products/courseProducts';
+import { notify } from '../shared/notifications/notify';
+import {} from '../shared/products/api/courseProductService';
+import { TestApplication as App } from './TestApplication';
+import { TestProductDetails as ProductDetailPage } from './TestProductDetails';
 
 // Shared Mock Fixtures
 const sampleCpu: Product = {
@@ -164,7 +177,7 @@ describe('course API and shared cart', () => {
       'fetch',
       vi.fn().mockResolvedValue({
         ok: true,
-        json: async () => ({ items: [apiProduct], total: 1 }),
+        json: async () => [courseProduct],
       }),
     );
   });
@@ -176,10 +189,13 @@ describe('course API and shared cart', () => {
     notify.dismiss();
   });
   it('maps the real API contract without hardware specifications or duplicated prices', async () => {
-    expect(await fetchCourseProducts()).toEqual([courseProduct]);
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ items: [apiProduct], total: 1 })),
+    );
+    expect(await fetchUpstreamCourseProducts()).toEqual([courseProduct]);
     expect(fetch).toHaveBeenCalledWith(
       'https://shopboard-api.vercel.app/api/products',
-      { signal: undefined },
+      { signal: undefined, cache: 'no-store' },
     );
   });
   it('builds the exact documented self-check endpoints and rejects unknown modes', () => {
@@ -200,14 +216,14 @@ describe('course API and shared cart', () => {
     vi.mocked(fetch).mockResolvedValueOnce(
       new Response(JSON.stringify(apiProduct)),
     );
-    expect(await fetchCourseProduct('1')).toEqual(courseProduct);
+    expect(await fetchUpstreamCourseProduct('1')).toEqual(courseProduct);
     expect(fetch).toHaveBeenCalledWith(
       'https://shopboard-api.vercel.app/api/products/1',
-      { signal: undefined },
+      { signal: undefined, cache: 'no-store' },
     );
-    expect(await fetchCourseProduct('../not-an-id')).toBeNull();
+    expect(await fetchUpstreamCourseProduct('../not-an-id')).toBeNull();
     vi.mocked(fetch).mockResolvedValueOnce(new Response(null, { status: 404 }));
-    expect(await fetchCourseProduct('999')).toBeNull();
+    expect(await fetchUpstreamCourseProduct('999')).toBeNull();
   });
   it('rejects invalid API cents rather than allowing an incorrect price into the cart', async () => {
     vi.stubGlobal(
@@ -220,7 +236,7 @@ describe('course API and shared cart', () => {
         }),
       }),
     );
-    await expect(fetchCourseProducts()).rejects.toThrow(
+    await expect(fetchUpstreamCourseProducts()).rejects.toThrow(
       'Invalid unique items data format.',
     );
   });
@@ -273,33 +289,36 @@ describe('course API and shared cart', () => {
       'fetch',
       vi.fn().mockResolvedValue({
         ok: true,
-        json: async () => ({
-          items: [
-            apiProduct,
-            { ...apiProduct, id: 2, title: 'Sold-out bag', in_stock: false },
-          ],
-          total: 2,
-        }),
+        json: async () => [
+          courseProduct,
+          { ...courseProduct, id: '2', name: 'Sold-out bag', inStock: false },
+        ],
       }),
     );
-    render(
-      <MemoryRouter>
-        <CartProvider>
-          <UniqueItemsPage />
-        </CartProvider>
-      </MemoryRouter>,
+    await act(async () =>
+      render(
+        <NextTestRouter>
+          <CartProvider>
+            <UniqueItemsPage />
+          </CartProvider>
+        </NextTestRouter>,
+      ),
     );
     await screen.findByRole('heading', { name: 'Leather Tote Bag' });
     expect(
       screen.getByRole('button', { name: 'Add Sold-out bag to cart' }),
     ).toBeDisabled();
-    fireEvent.change(screen.getByLabelText('Search unique items'), {
-      target: { value: 'no matches' },
-    });
+    await act(async () =>
+      fireEvent.change(screen.getByLabelText('Search unique items'), {
+        target: { value: 'no matches' },
+      }),
+    );
     expect(
       screen.getByRole('heading', { name: 'No matching unique items' }),
     ).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Reset filters' }));
+    await act(async () =>
+      fireEvent.click(screen.getByRole('button', { name: 'Reset filters' })),
+    );
     expect(
       screen.getByRole('heading', { name: 'Leather Tote Bag' }),
     ).toBeInTheDocument();
@@ -314,15 +333,17 @@ describe('course API and shared cart', () => {
         .mockRejectedValueOnce(new Error('Course API unavailable'))
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => ({ items: [apiProduct], total: 1 }),
+          json: async () => [courseProduct],
         }),
     );
-    render(
-      <MemoryRouter>
-        <CartProvider>
-          <UniqueItemsPage />
-        </CartProvider>
-      </MemoryRouter>,
+    await act(async () =>
+      render(
+        <NextTestRouter>
+          <CartProvider>
+            <UniqueItemsPage />
+          </CartProvider>
+        </NextTestRouter>,
+      ),
     );
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Course API unavailable',
@@ -331,7 +352,9 @@ describe('course API and shared cart', () => {
       screen.getByRole('heading', { name: 'Unique Items' }),
     ).toBeInTheDocument();
     expect(toast).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    await act(async () =>
+      fireEvent.click(screen.getByRole('button', { name: 'Try again' })),
+    );
     expect(
       await screen.findByRole('heading', { name: 'Leather Tote Bag' }),
     ).toBeInTheDocument();
@@ -341,15 +364,17 @@ describe('course API and shared cart', () => {
       'fetch',
       vi.fn().mockResolvedValue({
         ok: true,
-        json: async () => ({ items: [], total: 0 }),
+        json: async () => [],
       }),
     );
-    render(
-      <MemoryRouter>
-        <CartProvider>
-          <UniqueItemsPage />
-        </CartProvider>
-      </MemoryRouter>,
+    await act(async () =>
+      render(
+        <NextTestRouter>
+          <CartProvider>
+            <UniqueItemsPage />
+          </CartProvider>
+        </NextTestRouter>,
+      ),
     );
     expect(
       await screen.findByRole('heading', { name: 'No unique items available' }),
@@ -456,13 +481,19 @@ describe('checkout and route integration', () => {
 
   it('validates on submit, associates field errors, and focuses the first error', async () => {
     const onSubmit = vi.fn();
-    render(<CheckoutForm onSubmit={onSubmit} disabled={false} />);
+    await act(async () =>
+      render(<CheckoutForm onSubmit={onSubmit} disabled={false} />),
+    );
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText('Full name'), {
-      target: { value: 'A' },
-    });
+    await act(async () =>
+      fireEvent.change(screen.getByLabelText('Full name'), {
+        target: { value: 'A' },
+      }),
+    );
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Place order' }));
+    await act(async () =>
+      fireEvent.click(screen.getByRole('button', { name: 'Place order' })),
+    );
     expect(
       await screen.findByText('Enter your full name.'),
     ).toBeInTheDocument();
@@ -484,9 +515,13 @@ describe('checkout and route integration', () => {
           rejectOrder = reject;
         }),
     );
-    render(<CheckoutForm onSubmit={onSubmit} disabled={false} />);
+    await act(async () =>
+      render(<CheckoutForm onSubmit={onSubmit} disabled={false} />),
+    );
     fillCheckout();
-    fireEvent.click(screen.getByRole('button', { name: 'Place order' }));
+    await act(async () =>
+      fireEvent.click(screen.getByRole('button', { name: 'Place order' })),
+    );
     expect(
       await screen.findByRole('button', { name: /placing order/i }),
     ).toBeDisabled();
@@ -503,11 +538,11 @@ describe('checkout and route integration', () => {
 
   it('blocks empty-cart checkout', () => {
     render(
-      <MemoryRouter>
+      <NextTestRouter>
         <CartProvider>
           <CheckoutPage />
         </CartProvider>
-      </MemoryRouter>,
+      </NextTestRouter>,
     );
     expect(
       screen.getByRole('heading', { name: 'Your cart is empty' }),
@@ -520,20 +555,30 @@ describe('checkout and route integration', () => {
   it('keeps the same cart and promo across routes and clears it after validated checkout', async () => {
     seedCart();
     window.history.replaceState(null, '', '/cart');
-    render(<App />);
+    await act(async () => render(<App />));
     await screen.findByRole('heading', { name: /silicon shopping cart/i });
-    fireEvent.change(screen.getByLabelText('Promo Code'), {
-      target: { value: 'silicon10' },
-    });
-    fireEvent.click(screen.getByRole('button', { name: /apply promo/i }));
+    await act(async () =>
+      fireEvent.change(screen.getByLabelText('Promo Code'), {
+        target: { value: 'silicon10' },
+      }),
+    );
+    await act(async () =>
+      fireEvent.click(screen.getByRole('button', { name: /apply promo/i })),
+    );
     expect(screen.getByText(/10% promo applied/i)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('link', { name: /proceed to checkout/i }));
+    await act(async () =>
+      fireEvent.click(
+        screen.getByRole('link', { name: /proceed to checkout/i }),
+      ),
+    );
     await screen.findByRole('heading', {
       name: 'Contact and delivery details',
     });
     expect(screen.getByText('Promo discount')).toBeInTheDocument();
     fillCheckout();
-    fireEvent.click(screen.getByRole('button', { name: 'Place order' }));
+    await act(async () =>
+      fireEvent.click(screen.getByRole('button', { name: 'Place order' })),
+    );
     expect(
       await screen.findByRole('heading', { name: 'Order confirmed' }),
     ).toBeInTheDocument();
@@ -547,28 +592,22 @@ describe('checkout and route integration', () => {
     const fetch = vi.fn();
     vi.stubGlobal('fetch', fetch);
     window.history.replaceState(null, '', '/missing-route');
-    render(<App />);
+    await act(async () => render(<App />));
     expect(
-      await screen.findByRole('heading', { name: /this page doesn’t exist/i }),
+      await screen.findByRole('heading', {
+        name: /page not found/i,
+      }),
     ).toBeInTheDocument();
     expect(screen.getByRole('banner')).toBeInTheDocument();
     expect(screen.getByRole('contentinfo')).toBeInTheDocument();
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it('retries a rejected page import', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-    const load = vi
-      .fn<() => Promise<{ default: () => ReactNode }>>()
-      .mockRejectedValueOnce(new Error('Chunk failed'))
-      .mockResolvedValueOnce({ default: () => <h1>Recovered page</h1> });
-    const Page = createLazyPage(load);
-    render(<Page />);
-    fireEvent.click(await screen.findByRole('button', { name: 'Try again' }));
-    expect(
-      await screen.findByRole('heading', { name: 'Recovered page' }),
-    ).toBeInTheDocument();
-    expect(load).toHaveBeenCalledTimes(2);
+  it('retries the failed Next route through its supplied recovery action', () => {
+    const retry = vi.fn();
+    render(<ProductError error={new Error('Chunk failed')} retry={retry} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(retry).toHaveBeenCalledTimes(1);
   });
 
   it('preserves HTTP failures and forwards the cancellation signal', async () => {
@@ -578,7 +617,10 @@ describe('checkout and route integration', () => {
     await expect(fetchProducts({ signal })).rejects.toMatchObject({
       status: 503,
     });
-    expect(fetch).toHaveBeenCalledWith('/api/products', { signal });
+    expect(fetch).toHaveBeenCalledWith('/api/products', {
+      signal,
+      cache: 'no-store',
+    });
     fetch.mockResolvedValueOnce({ ok: false, status: 404 });
     await expect(fetchProductById('missing')).resolves.toBeNull();
   });
@@ -869,11 +911,11 @@ describe('Header', () => {
 
   function HeaderWrapper({ children }: { children: ReactNode }) {
     return (
-      <MemoryRouter>
+      <NextTestRouter>
         <CartProvider>
           <CompareProvider>{children}</CompareProvider>
         </CartProvider>
-      </MemoryRouter>
+      </NextTestRouter>
     );
   }
 
@@ -889,7 +931,7 @@ describe('Header', () => {
     );
     expect(screen.getByRole('link', { name: 'Catalog' })).toHaveAttribute(
       'href',
-      '/catalog',
+      '/products',
     );
     expect(
       screen.getByRole('link', { name: 'Benchmark Compare' }),
@@ -933,10 +975,12 @@ describe('HomePage', () => {
   });
 
   it('shows editorial photography, flagship data, and working product destinations', async () => {
-    render(
-      <MemoryRouter>
-        <HomePage />
-      </MemoryRouter>,
+    await act(async () =>
+      render(
+        <NextTestRouter>
+          <HomePage />
+        </NextTestRouter>,
+      ),
     );
 
     expect(
@@ -951,13 +995,13 @@ describe('HomePage', () => {
     expect(await screen.findByText('88.4 TFLOPs')).toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: 'Explore products' }),
-    ).toHaveAttribute('href', '/catalog');
+    ).toHaveAttribute('href', '/products');
     expect(
       screen.getByRole('link', { name: 'Build a custom rig' }),
     ).toHaveAttribute('href', '/configurator');
     expect(screen.getByRole('link', { name: 'View product' })).toHaveAttribute(
       'href',
-      '/product/zenith-9900xtx',
+      '/products/zenith-9900xtx',
     );
     expect(
       screen.getByAltText(
@@ -968,9 +1012,9 @@ describe('HomePage', () => {
 
   it('switches specs and keyboard focus together using arrow and boundary keys', () => {
     render(
-      <MemoryRouter>
+      <NextTestRouter>
         <SiliconSpotlight cpu={sampleCpu} gpu={sampleGpu} />
-      </MemoryRouter>,
+      </NextTestRouter>,
     );
     const cpu = screen.getByRole('tab', { name: 'Vortex processors' });
     const gpu = screen.getByRole('tab', { name: 'Zenith graphics' });
@@ -982,7 +1026,7 @@ describe('HomePage', () => {
     expect(screen.getByText('16 / 32')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'View product' })).toHaveAttribute(
       'href',
-      '/product/vortex-9950x',
+      '/products/vortex-9950x',
     );
     expect(screen.getByRole('tabpanel')).toHaveAttribute(
       'aria-labelledby',
@@ -997,15 +1041,15 @@ describe('HomePage', () => {
 
   it('keeps the product family navigation available when specs are unavailable', () => {
     render(
-      <MemoryRouter>
+      <NextTestRouter>
         <SiliconSpotlight />
-      </MemoryRouter>,
+      </NextTestRouter>,
     );
     expect(screen.getByRole('status')).toBeInTheDocument();
     expect(screen.queryByText('24 GB GDDR7')).not.toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: 'All graphics cards' }),
-    ).toHaveAttribute('href', '/catalog?category=gpu');
+    ).toHaveAttribute('href', '/products?category=gpu');
   });
 
   it('shows a loading status while the initial product request is pending', () => {
@@ -1014,9 +1058,9 @@ describe('HomePage', () => {
       vi.fn(() => new Promise(() => {})),
     );
     render(
-      <MemoryRouter>
+      <NextTestRouter>
         <HomePage />
-      </MemoryRouter>,
+      </NextTestRouter>,
     );
     expect(screen.getByRole('status')).toHaveTextContent(
       'Loading product specifications.',
@@ -1028,17 +1072,17 @@ describe('HomePage', () => {
 
   it('changes the product status from loading to unavailable after a request completes without data', () => {
     const { rerender } = render(
-      <MemoryRouter>
+      <NextTestRouter>
         <SiliconSpotlight loading />
-      </MemoryRouter>,
+      </NextTestRouter>,
     );
     expect(screen.getByRole('status')).toHaveTextContent(
       'Loading product specifications.',
     );
     rerender(
-      <MemoryRouter>
+      <NextTestRouter>
         <SiliconSpotlight loading={false} />
-      </MemoryRouter>,
+      </NextTestRouter>,
     );
     expect(screen.getByRole('status')).toHaveTextContent(
       'Product specifications are currently unavailable.',
@@ -1056,12 +1100,16 @@ describe('HomePage', () => {
           json: async () => [sampleCpu, sampleGpu],
         }),
     );
-    render(
-      <MemoryRouter>
-        <HomePage />
-      </MemoryRouter>,
+    await act(async () =>
+      render(
+        <NextTestRouter>
+          <HomePage />
+        </NextTestRouter>,
+      ),
     );
-    fireEvent.click(await screen.findByRole('button', { name: 'Try again' }));
+    await act(async () =>
+      fireEvent.click(await screen.findByRole('button', { name: 'Try again' })),
+    );
     expect(
       await screen.findByText('16 cores / 32 threads'),
     ).toBeInTheDocument();
@@ -1077,16 +1125,16 @@ describe('HomePage', () => {
 describe('CatalogPage', () => {
   function CatalogWrapper({ children }: { children: ReactNode }) {
     return (
-      <MemoryRouter initialEntries={['/catalog']}>
+      <NextTestRouter initialEntries={['/products']}>
         <CartProvider>
           <CompareProvider>{children}</CompareProvider>
         </CartProvider>
-      </MemoryRouter>
+      </NextTestRouter>
     );
   }
 
   beforeEach(() => {
-    window.history.replaceState(null, '', '/catalog');
+    window.history.replaceState(null, '', '/products');
     vi.stubGlobal(
       'fetch',
       vi
@@ -1101,24 +1149,26 @@ describe('CatalogPage', () => {
   });
 
   it('renders all products and filters by category', async () => {
-    render(<CatalogPage />, { wrapper: CatalogWrapper });
+    await act(async () => render(<CatalogPage />, { wrapper: CatalogWrapper }));
 
     expect(await screen.findByText('Aethel Vortex 9950X')).toBeInTheDocument();
     expect(screen.getByText('Aethel Zenith 9900 XTX')).toBeInTheDocument();
 
     const gpuFilterButton = screen.getByRole('button', { name: /GPUs/i });
-    fireEvent.click(gpuFilterButton);
+    await act(async () => fireEvent.click(gpuFilterButton));
 
     expect(screen.getByText('Aethel Zenith 9900 XTX')).toBeInTheDocument();
     expect(screen.queryByText('Aethel Vortex 9950X')).not.toBeInTheDocument();
   });
 
   it('filters products by text search', async () => {
-    render(<CatalogPage />, { wrapper: CatalogWrapper });
+    await act(async () => render(<CatalogPage />, { wrapper: CatalogWrapper }));
 
     await screen.findByText('Aethel Vortex 9950X');
     const searchInput = screen.getByLabelText(/search silicon/i);
-    fireEvent.change(searchInput, { target: { value: '9800X3D' } });
+    await act(async () =>
+      fireEvent.change(searchInput, { target: { value: '9800X3D' } }),
+    );
 
     expect(screen.getByText('Aethel Vortex 9800X3D')).toBeInTheDocument();
     expect(screen.queryByText('Aethel Vortex 9950X')).not.toBeInTheDocument();
@@ -1128,40 +1178,48 @@ describe('CatalogPage', () => {
   });
 
   it('sorts products by price ascending and descending', async () => {
-    render(<CatalogPage />, { wrapper: CatalogWrapper });
+    await act(async () => render(<CatalogPage />, { wrapper: CatalogWrapper }));
 
     await screen.findByText('Aethel Vortex 9950X');
     const sortSelect = screen.getByLabelText(/sort by/i);
 
-    fireEvent.change(sortSelect, { target: { value: 'price-asc' } });
+    await act(async () =>
+      fireEvent.change(sortSelect, { target: { value: 'price-asc' } }),
+    );
     const cardsAsc = screen.getAllByRole('heading', { level: 3 });
     expect(cardsAsc[0]).toHaveTextContent('Aethel Vortex 9800X3D');
 
-    fireEvent.change(sortSelect, { target: { value: 'price-desc' } });
+    await act(async () =>
+      fireEvent.change(sortSelect, { target: { value: 'price-desc' } }),
+    );
     const cardsDesc = screen.getAllByRole('heading', { level: 3 });
     expect(cardsDesc[0]).toHaveTextContent('Aethel Zenith 9900 XTX');
   });
 
   it('restores filters from history without overwriting them with component state', async () => {
     function HistoryControls() {
-      const navigate = useNavigate();
-      return <button onClick={() => navigate(-1)}>Previous filters</button>;
+      const router = useRouter();
+      return <button onClick={() => router.back()}>Previous filters</button>;
     }
-    render(
-      <MemoryRouter
-        initialEntries={['/catalog?category=cpu', '/catalog?category=gpu']}
-      >
-        <CartProvider>
-          <CompareProvider>
-            <HistoryControls />
-            <CatalogPage />
-          </CompareProvider>
-        </CartProvider>
-      </MemoryRouter>,
+    await act(async () =>
+      render(
+        <NextTestRouter
+          initialEntries={['/products?category=cpu', '/products?category=gpu']}
+        >
+          <CartProvider>
+            <CompareProvider>
+              <HistoryControls />
+              <CatalogPage />
+            </CompareProvider>
+          </CartProvider>
+        </NextTestRouter>,
+      ),
     );
     await screen.findByText('Aethel Zenith 9900 XTX');
     expect(screen.queryByText('Aethel Vortex 9950X')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Previous filters' }));
+    await act(async () =>
+      fireEvent.click(screen.getByRole('button', { name: 'Previous filters' })),
+    );
     expect(await screen.findByText('Aethel Vortex 9950X')).toBeInTheDocument();
     expect(
       screen.queryByText('Aethel Zenith 9900 XTX'),
@@ -1169,11 +1227,15 @@ describe('CatalogPage', () => {
   });
 
   it('shows a no-match message for filters that exclude all products', async () => {
-    const view = render(<CatalogPage />, { wrapper: CatalogWrapper });
+    const view = await act(async () =>
+      render(<CatalogPage />, { wrapper: CatalogWrapper }),
+    );
     await screen.findByText('Aethel Vortex 9950X');
-    fireEvent.change(screen.getByLabelText(/search silicon/i), {
-      target: { value: 'not-a-real-chip' },
-    });
+    await act(async () =>
+      fireEvent.change(screen.getByLabelText(/search silicon/i), {
+        target: { value: 'not-a-real-chip' },
+      }),
+    );
     expect(
       screen.getByRole('heading', {
         name: 'No matching processors or graphics cards',
@@ -1187,7 +1249,7 @@ describe('CatalogPage', () => {
       'fetch',
       vi.fn().mockResolvedValue({ ok: true, json: async () => [] }),
     );
-    render(<CatalogPage />, { wrapper: CatalogWrapper });
+    await act(async () => render(<CatalogPage />, { wrapper: CatalogWrapper }));
     expect(
       await screen.findByRole('heading', {
         name: 'No silicon products available',
@@ -1227,16 +1289,13 @@ describe('ProductDetailPage', () => {
   function renderDetailWithRoute(initialPath: string) {
     function DetailWrapper({ children }: { children: ReactNode }) {
       return (
-        <MemoryRouter initialEntries={[initialPath]}>
+        <NextTestRouter initialEntries={[initialPath]}>
           <CartProvider>
             <CompareProvider>
-              <Routes>
-                <Route path="/product/:id" element={children} />
-                <Route path="*" element={<div>Not found page</div>} />
-              </Routes>
+              <Suspense fallback={<p>Loading detail…</p>}>{children}</Suspense>
             </CompareProvider>
           </CartProvider>
-        </MemoryRouter>
+        </NextTestRouter>
       );
     }
 
@@ -1260,7 +1319,7 @@ describe('ProductDetailPage', () => {
   });
 
   it('renders product specifications, features, and benchmarks', async () => {
-    renderDetailWithRoute('/product/vortex-9950x');
+    await act(async () => renderDetailWithRoute('/products/vortex-9950x'));
 
     expect(
       await screen.findByRole('heading', {
@@ -1276,17 +1335,19 @@ describe('ProductDetailPage', () => {
   });
 
   it('allows adjusting quantity and adding to cart', async () => {
-    renderDetailWithRoute('/product/vortex-9950x');
+    await act(async () => renderDetailWithRoute('/products/vortex-9950x'));
 
     await screen.findByRole('heading', {
       level: 1,
       name: 'Aethel Vortex 9950X',
     });
     const qtyInput = screen.getByLabelText(/quantity/i);
-    fireEvent.change(qtyInput, { target: { value: '2' } });
+    await act(async () =>
+      fireEvent.change(qtyInput, { target: { value: '2' } }),
+    );
 
     const addButton = screen.getByRole('button', { name: /add to cart/i });
-    fireEvent.click(addButton);
+    await act(async () => fireEvent.click(addButton));
 
     expect(
       JSON.parse(window.localStorage.getItem('aethel-cart') ?? '[]'),
@@ -1299,12 +1360,12 @@ describe('ProductDetailPage', () => {
   });
 
   it('shows graceful missing state for unknown product id', async () => {
-    renderDetailWithRoute('/product/unknown-chip');
+    await act(async () => renderDetailWithRoute('/products/unknown-chip'));
 
     expect(await screen.findByText(/silicon not found/i)).toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: /return to catalog/i }),
-    ).toHaveAttribute('href', '/catalog');
+    ).toHaveAttribute('href', '/products');
   });
 });
 
@@ -1322,7 +1383,7 @@ describe('ComparePage', () => {
 
     function ComparePageWrapper({ children }: { children: ReactNode }) {
       return (
-        <MemoryRouter initialEntries={['/compare']}>
+        <NextTestRouter initialEntries={['/compare']}>
           <CartProvider>
             <CompareContext.Provider
               value={{
@@ -1337,7 +1398,7 @@ describe('ComparePage', () => {
               {children}
             </CompareContext.Provider>
           </CartProvider>
-        </MemoryRouter>
+        </NextTestRouter>
       );
     }
 
@@ -1364,7 +1425,7 @@ describe('ComparePage', () => {
   });
 
   it('renders head-to-head comparison specifications and benchmark charts', async () => {
-    renderComparePage([sampleCpu, sampleCpu2]);
+    await act(async () => renderComparePage([sampleCpu, sampleCpu2]));
 
     expect(
       screen.getByRole('heading', {
@@ -1407,7 +1468,7 @@ describe('ComparePage', () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: /explore catalog/i }),
-    ).toHaveAttribute('href', '/catalog');
+    ).toHaveAttribute('href', '/products');
   });
 });
 
@@ -1424,6 +1485,7 @@ describe('ConfiguratorPage', () => {
     const clearCart = vi.fn();
 
     const mockCartValue: CartContextValue = {
+      restored: true,
       items: [],
       appliedPromo: null,
       applyPromo: () => false,
@@ -1439,11 +1501,11 @@ describe('ConfiguratorPage', () => {
 
     function ConfiguratorWrapper({ children }: { children: ReactNode }) {
       return (
-        <MemoryRouter initialEntries={['/configurator']}>
+        <NextTestRouter initialEntries={['/configurator']}>
           <CartContext.Provider value={mockCartValue}>
             <CompareProvider>{children}</CompareProvider>
           </CartContext.Provider>
-        </MemoryRouter>
+        </NextTestRouter>
       );
     }
 
@@ -1470,7 +1532,7 @@ describe('ConfiguratorPage', () => {
   });
 
   it('renders custom rig visualizer, component slots, and live power meter', async () => {
-    renderConfigurator();
+    await act(async () => renderConfigurator());
 
     expect(
       await screen.findByRole('heading', {
@@ -1490,7 +1552,7 @@ describe('ConfiguratorPage', () => {
   });
 
   it('adds custom build as a bundled rig item when "Add as Assembled Rig" is clicked', async () => {
-    const { addRigToCart } = renderConfigurator();
+    const { addRigToCart } = await act(async () => renderConfigurator());
 
     await screen.findByRole('heading', {
       level: 1,
@@ -1499,7 +1561,7 @@ describe('ConfiguratorPage', () => {
     const bundleBtn = screen.getByRole('button', {
       name: /add as assembled custom rig/i,
     });
-    fireEvent.click(bundleBtn);
+    await act(async () => fireEvent.click(bundleBtn));
 
     expect(addRigToCart).toHaveBeenCalledTimes(1);
     expect(addRigToCart).toHaveBeenCalledWith(
@@ -1511,7 +1573,7 @@ describe('ConfiguratorPage', () => {
   });
 
   it('adds components individually when "Add Components Individually" is clicked', async () => {
-    const { addToCart } = renderConfigurator();
+    const { addToCart } = await act(async () => renderConfigurator());
 
     await screen.findByRole('heading', {
       level: 1,
@@ -1520,7 +1582,7 @@ describe('ConfiguratorPage', () => {
     const individualBtn = screen.getByRole('button', {
       name: /add components individually/i,
     });
-    fireEvent.click(individualBtn);
+    await act(async () => fireEvent.click(individualBtn));
 
     expect(addToCart).toHaveBeenCalledWith(
       expect.objectContaining({ id: 'vortex-9800x3d' }),
@@ -1582,6 +1644,7 @@ describe('CartPage', () => {
     );
 
     const mockCartValue: CartContextValue = {
+      restored: true,
       items: initialItems,
       appliedPromo: null,
       applyPromo: () => true,
@@ -1597,11 +1660,11 @@ describe('CartPage', () => {
 
     function CartWrapper({ children }: { children: ReactNode }) {
       return (
-        <MemoryRouter initialEntries={['/cart']}>
+        <NextTestRouter initialEntries={['/cart']}>
           <CartContext.Provider value={mockCartValue}>
             <CompareProvider>{children}</CompareProvider>
           </CartContext.Provider>
-        </MemoryRouter>
+        </NextTestRouter>
       );
     }
 
@@ -1686,5 +1749,198 @@ describe('CartPage', () => {
       screen.queryByRole('link', { name: sampleMemory.name }),
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/undefined/)).not.toBeInTheDocument();
+  });
+});
+
+describe('Next.js migration', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    window.history.replaceState(null, '', '/products');
+    document.documentElement.classList.add('dark');
+  });
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    window.localStorage.clear();
+    document.documentElement.classList.remove('dark');
+  });
+  it('recovers the Next error boundary when changing collections', async () => {
+    const retry = vi.fn();
+    await act(async () =>
+      render(
+        <NextTestRouter initialEntries={['/products?collection=unique']}>
+          <ProductError error={new Error('Course unavailable')} retry={retry} />
+        </NextTestRouter>,
+      ),
+    );
+    expect(retry).not.toHaveBeenCalled();
+    await act(async () => window.history.replaceState(null, '', '/products'));
+    expect(retry).toHaveBeenCalledTimes(1);
+  });
+  it('uses the server-loaded hardware collection without an immediate browser request', async () => {
+    const fetch = vi.fn();
+    vi.stubGlobal('fetch', fetch);
+    const page = await ProductsServerPage({
+      searchParams: Promise.resolve({}),
+    });
+    await act(async () =>
+      render(
+        <NextTestRouter>
+          <CartProvider>
+            <CompareProvider>{page}</CompareProvider>
+          </CartProvider>
+        </NextTestRouter>,
+      ),
+    );
+    expect(
+      screen.getByRole('heading', { name: sampleCpu.name }),
+    ).toBeInTheDocument();
+    expect(fetch).not.toHaveBeenCalled();
+  });
+  it('deduplicates simultaneous SWR consumers', async () => {
+    const fetch = vi
+      .fn()
+      .mockResolvedValue(new Response(JSON.stringify([sampleCpu])));
+    vi.stubGlobal('fetch', fetch);
+    await act(async () =>
+      render(
+        <NextTestRouter>
+          <Suspense fallback={<p>Loading probes</p>}>
+            <ProductProbe />
+            <ProductProbe />
+          </Suspense>
+        </NextTestRouter>,
+      ),
+    );
+    expect(screen.getAllByText(sampleCpu.name)).toHaveLength(2);
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+  it('retains rendered products on background failure and recovers on retry', async () => {
+    const fetch = vi
+      .fn()
+      .mockRejectedValueOnce(new Error('Offline'))
+      .mockResolvedValueOnce(new Response(JSON.stringify([sampleCpu2])));
+    vi.stubGlobal('fetch', fetch);
+    await act(async () =>
+      render(
+        <NextTestRouter>
+          <ProductCache fallback={{ '/api/products': [sampleCpu] }}>
+            <ProductProbe />
+          </ProductCache>
+        </NextTestRouter>,
+      ),
+    );
+    expect(fetch).not.toHaveBeenCalled();
+    await act(async () =>
+      fireEvent.click(screen.getByRole('button', { name: 'Refresh probe' })),
+    );
+    expect(screen.getByText(sampleCpu.name)).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('Refresh failed');
+    await act(async () =>
+      fireEvent.click(screen.getByRole('button', { name: 'Refresh probe' })),
+    );
+    expect(screen.getByText(sampleCpu2.name)).toBeInTheDocument();
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  });
+  it('keeps the shared hardware route-handler contract and returns 404 for missing IDs', async () => {
+    const list = await hardwareApi();
+    expect(list.status).toBe(200);
+    expect(await list.json()).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: sampleCpu.id })]),
+    );
+    const missing = await hardwareDetailApi(
+      new Request('http://localhost/api/products/missing'),
+      { params: Promise.resolve({ id: 'missing' }) },
+    );
+    expect(missing.status).toBe(404);
+  });
+  it('routes missing hardware and course IDs through Next notFound', async () => {
+    await expect(
+      ProductServerPage({ params: Promise.resolve({ id: 'abc' }) }),
+    ).rejects.toThrow('NEXT_NOT_FOUND');
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(new Response(null, { status: 404 })),
+    );
+    await expect(
+      ProductServerPage({ params: Promise.resolve({ id: '99999' }) }),
+    ).rejects.toThrow('NEXT_NOT_FOUND');
+  });
+  it('hydrates a saved cart without mismatch or an empty storage write', async () => {
+    const saved = JSON.stringify([
+      {
+        id: 'product-' + sampleCpu.id,
+        type: 'standalone',
+        product: sampleCpu,
+        quantity: 2,
+      },
+    ]);
+    localStorage.setItem('aethel-cart', saved);
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const write = vi.spyOn(Storage.prototype, 'setItem');
+    const element = (
+      <NextTestRouter>
+        <CartProvider>
+          <CartPage />
+        </CartProvider>
+      </NextTestRouter>
+    );
+    const container = document.createElement('div');
+    container.innerHTML = renderToString(element);
+    document.body.append(container);
+    expect(container).toHaveTextContent('Restoring your cart');
+    expect(write).not.toHaveBeenCalled();
+    const root = await act(async () => hydrateRoot(container, element));
+    expect(container).toHaveTextContent(sampleCpu.name);
+    expect(JSON.parse(localStorage.getItem('aethel-cart') ?? 'null')).toEqual(
+      JSON.parse(saved),
+    );
+    for (const [key, value] of write.mock.calls) {
+      if (key === 'aethel-cart')
+        expect(JSON.parse(value)).toEqual(JSON.parse(saved));
+    }
+    expect(error).not.toHaveBeenCalled();
+    await act(async () => root.unmount());
+    container.remove();
+  });
+  it('uses accessible native-dialog cancellation and restores focus', async () => {
+    const close = vi.fn();
+    await act(async () =>
+      render(
+        <>
+          <button>Opener</button>
+          <Modal open={false} onClose={close} title="Review modal">
+            <p>Modal content</p>
+          </Modal>
+        </>,
+      ),
+    );
+    screen.getByRole('button', { name: 'Opener' }).focus();
+    const view = render(
+      <Modal open onClose={close} title="Review modal">
+        <p>Inside</p>
+      </Modal>,
+    );
+    const dialog = screen.getByRole('dialog', { name: 'Review modal' });
+    fireEvent(dialog, new Event('cancel', { cancelable: true }));
+    expect(close).toHaveBeenCalledTimes(1);
+    view.unmount();
+    expect(screen.getByRole('button', { name: 'Opener' })).toHaveFocus();
+  });
+  it('switches and remembers the selected theme', async () => {
+    await act(async () => render(<ThemeToggle />));
+    await act(async () =>
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Switch to light theme' }),
+      ),
+    );
+    expect(document.documentElement).not.toHaveClass('dark');
+    expect(localStorage.getItem('aethel-theme')).toBe('light');
+    await act(async () =>
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Switch to dark theme' }),
+      ),
+    );
+    expect(document.documentElement).toHaveClass('dark');
   });
 });
