@@ -4,6 +4,8 @@ A React 19 storefront on Next.js 16 App Router. The hardware home, comparison be
 rig configurator, persistent mixed cart, and validated demo checkout remain.
 Hardware and benchmarks are fictional; Unique Items uses the real course API.
 
+**Live site:** [Aethel Silicon](https://aethelsilicon.netlify.app/)
+
 ## Run and verify
 
 Use Node.js 20.9 or newer.
@@ -22,6 +24,17 @@ npm run start
 Development normally uses http://localhost:3000. Stop development before starting production
 on that port, or inspect the production build with `npm run start -- --port 3100`.
 Vite and its React plugin are Vitest tooling, not the application framework.
+
+## Netlify deployment
+
+The deployed storefront runs on Netlify with the Next.js runtime. `netlify.toml`
+sets `npm run build` as the build command, `.next` as the publish directory, and
+enables `@netlify/plugin-nextjs`, which is declared in `devDependencies`.
+This supports server-rendered product routes and the same-origin API handlers.
+
+Server configuration such as `COURSE_API_URL`, `COURSE_API_MODE`, and optional
+`HARDWARE_API_BASE_URL` belongs in Netlify environment variables; `.env.local` is
+for local development. Leave `COURSE_API_MODE` unset for the normal course collection.
 
 ## Routes
 
