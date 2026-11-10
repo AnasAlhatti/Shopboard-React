@@ -170,6 +170,8 @@ for colors, radii, fonts, shadows, and named animations. Components use scale ut
 progress percentages remain inline values. The existing crimson aesthetic and assets remain.
 Dark is the default; saved light/dark preference is applied before paint, and notifications
 follow the selected theme. Motion respects reduced-motion preferences.
+Theme initialization uses Next.js Script with `beforeInteractive`. Keeping it framework-managed
+avoids a head-hydration mismatch when Netlify inserts its hosting comment among metadata tags.
 
 The local UI kit adapts actual shadcn registry source, configured in `components.json`:
 Button (primary/secondary/ghost, sm/md/lg), Input, Card, Badge, Modal, and form fields.

@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
 import type { ReactNode } from 'react';
 import { ApplicationLayout } from '../components/layout/ApplicationLayout';
 import { AppProviders } from '../components/providers/AppProviders';
@@ -24,10 +25,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
       className="dark"
       suppressHydrationWarning
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
       <body suppressHydrationWarning>
+        <Script id="theme-initialization" strategy="beforeInteractive">
+          {themeScript}
+        </Script>
         <AppProviders>
           <ApplicationLayout>{children}</ApplicationLayout>
         </AppProviders>
