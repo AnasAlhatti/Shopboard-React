@@ -1,4 +1,5 @@
 'use client';
+import { Card } from '@/components/ui/Card';
 import { ArrowRight, Check, Tag, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -40,8 +41,11 @@ export function OrderSummary({
   const { tax, total } = calculateOrderTotals(subtotal, appliedPromo);
 
   return (
-    <aside
-      className="bg-surface border border-border rounded-lg p-8 flex flex-col gap-6"
+    <Card
+      as="aside"
+      variant="flat"
+      padding="lg"
+      className="flex flex-col gap-6"
       aria-labelledby="order-summary-title"
     >
       <h2
@@ -118,7 +122,7 @@ export function OrderSummary({
               setPromoError(false);
             }}
             placeholder="Try SILICON10"
-            className="flex-1 min-w-0 bg-background border border-border rounded-sm text-foreground py-2 px-2.5 text-sm uppercase tracking-wide"
+            className="flex-1 min-w-0 bg-background rounded-sm py-2 px-2.5 text-sm uppercase tracking-wide"
           />
           <Button type="submit" size="sm" variant="secondary">
             Apply Promo
@@ -160,6 +164,6 @@ export function OrderSummary({
           <span>Clear Shopping Cart</span>
         </Button>
       </div>
-    </aside>
+    </Card>
   );
 }

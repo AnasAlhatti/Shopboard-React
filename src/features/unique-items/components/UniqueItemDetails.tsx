@@ -50,7 +50,7 @@ export function UniqueItemDetails({ product }: UniqueItemDetailsProps) {
             Quantity
           </label>
           <Input
-            className="w-full min-h-11 p-3 border border-border rounded-md bg-carbon text-foreground text-base focus-visible:focus:outline-2 focus-visible:focus:outline-primary focus-visible:focus:outline-offset-2 aria-invalid:border-primary max-w-24 mt-2 mb-6"
+            className="p-3 max-w-24 mt-2 mb-6"
             id="unique-quantity"
             type="number"
             min={1}

@@ -1,3 +1,4 @@
+import { Card } from '@/components/ui/Card';
 import { Activity, Flame, Zap } from 'lucide-react';
 import type { Product } from '../../../shared/products/types/product';
 
@@ -9,8 +10,11 @@ export function MiniBenchmarkCard({ product }: MiniBenchmarkCardProps) {
   const isCpu = product.category === 'cpu';
 
   return (
-    <section
-      className="bg-surface border border-border rounded-lg p-6 h-fit"
+    <Card
+      as="section"
+      variant="flat"
+      padding="md"
+      className="h-fit"
       aria-labelledby="benchmark-preview-heading"
     >
       <div className="flex items-center gap-2 mb-4">
@@ -122,6 +126,6 @@ export function MiniBenchmarkCard({ product }: MiniBenchmarkCardProps) {
           </div>
         </div>
       </div>
-    </section>
+    </Card>
   );
 }

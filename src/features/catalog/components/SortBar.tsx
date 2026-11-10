@@ -1,3 +1,4 @@
+import { NativeSelect } from '@/components/ui/NativeSelect';
 import { LayoutGrid, List } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { cn } from '../../../lib/utils';
@@ -31,7 +32,7 @@ export function SortBar({
           <label htmlFor="catalog-sort" className="shrink-0 text-xs text-muted">
             Sort by
           </label>
-          <select
+          <NativeSelect
             id="catalog-sort"
             value={sortOption}
             onChange={(e) => {
@@ -39,7 +40,7 @@ export function SortBar({
                 onSortChange(e.target.value);
               }
             }}
-            className="w-full min-w-0 bg-background border border-border rounded-sm text-foreground py-1.5 px-2.5 text-sm"
+            className="bg-background rounded-sm py-1.5 px-2.5 text-sm"
           >
             <option value="featured">Default (Featured)</option>
             <option value="price-asc">Price: Low to High</option>
@@ -48,7 +49,7 @@ export function SortBar({
             <option value="name-desc">Name: Z to A</option>
             <option value="clock-desc">Highest Clock Speed</option>
             <option value="compute-desc">Compute Throughput (TFLOPs)</option>
-          </select>
+          </NativeSelect>
         </div>
 
         <div

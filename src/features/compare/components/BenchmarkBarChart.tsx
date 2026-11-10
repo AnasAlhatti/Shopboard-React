@@ -1,3 +1,4 @@
+import { Card } from '@/components/ui/Card';
 import { BarChart3, Trophy } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import type { Product } from '../../../shared/products/types/product';
@@ -90,10 +91,7 @@ export function BenchmarkBarChart({ items }: BenchmarkBarChartProps) {
             : Math.min(...values);
 
           return (
-            <div
-              key={metric.title}
-              className="bg-surface border border-border rounded-lg p-6"
-            >
+            <Card variant="flat" padding="md" key={metric.title} className="">
               <div className="benchmark-chart-card__header">
                 <div>
                   <h3 className="flex items-center gap-2 text-lg font-bold text-foreground m-0">
@@ -153,7 +151,7 @@ export function BenchmarkBarChart({ items }: BenchmarkBarChartProps) {
                   );
                 })}
               </div>
-            </div>
+            </Card>
           );
         })}
       </div>

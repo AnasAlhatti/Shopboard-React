@@ -1,4 +1,5 @@
 'use client';
+import { Card } from '@/components/ui/Card';
 import { ArrowLeft, Layers, Plus, Scale } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -38,8 +39,10 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   if (!product) {
     return (
       <main className="pt-8 pb-16 w-shell max-w-page mx-auto">
-        <div
-          className="text-center py-16 px-6 bg-surface border border-border rounded-lg my-12"
+        <Card
+          variant="flat"
+          padding="none"
+          className="text-center py-16 px-6 my-12"
           role="alert"
         >
           <p className="text-xs font-extrabold tracking-widest uppercase text-muted mb-6">
@@ -55,7 +58,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               <ArrowLeft size={16} aria-hidden="true" /> Return to Catalog
             </Link>
           </Button>
-        </div>
+        </Card>
       </main>
     );
   }
@@ -112,7 +115,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
           <p className="product-info-desc">{product.description}</p>
 
-          <div className="bg-surface border border-border rounded-lg p-6">
+          <Card variant="flat" padding="md" className="">
             <h3 className="text-base font-bold uppercase tracking-wide text-muted mt-0 mr-0 mb-2 ml-0">
               Architectural Highlights
             </h3>
@@ -126,9 +129,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 </li>
               ))}
             </ul>
-          </div>
+          </Card>
 
-          <div className="bg-surface border border-border rounded-lg p-6 flex flex-col gap-4">
+          <Card variant="flat" padding="md" className="flex flex-col gap-4">
             <div className="flex items-center gap-4">
               <label
                 htmlFor="product-qty"
@@ -150,15 +153,15 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                     ),
                   )
                 }
-                className="w-18 bg-background border border-border rounded-sm text-foreground py-1.5 px-2.5 text-sm font-bold text-center"
+                className="w-18 bg-background rounded-sm py-1.5 px-2.5 text-sm font-bold text-center"
               />
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="flex flex-wrap gap-3">
               <Button
                 variant="primary"
                 type="button"
-                className="sm:flex-1"
+                className="flex-1 basis-48"
                 onClick={handleAddToCart}
                 size="lg"
               >
@@ -171,7 +174,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 type="button"
                 className={cn(
                   `hover:text-foreground${isCompared ? ' border-primary bg-primary/15 text-primary' : ''}`,
-                  'sm:flex-1',
+                  'flex-1 basis-48',
                 )}
                 disabled={Boolean(compareDisabled)}
                 onClick={() => toggleCompare(product)}
@@ -189,13 +192,13 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               </Button>
 
               <Button asChild variant="secondary" size="lg">
-                <Link href="/configurator" className="sm:flex-1">
+                <Link href="/configurator" className="flex-1 basis-48">
                   <Layers size={16} aria-hidden="true" />
                   <span>Custom Rig Builder</span>
                 </Link>
               </Button>
             </div>
-          </div>
+          </Card>
         </div>
       </section>
 

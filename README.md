@@ -160,7 +160,9 @@ follow the selected theme. Motion respects reduced-motion preferences.
 
 The local UI kit adapts actual shadcn registry source, configured in `components.json`:
 Button (primary/secondary/ghost, sm/md/lg), Input, Card, Badge, Modal, and form fields.
-`cva` owns variants; `cn` merges conditional utilities and overrides. Domain features supply
+`cva` owns Button, Badge, Card, Modal, and feature selection variants; `cn` merges
+conditional utilities and overrides. Card surface/padding variants are reused across
+feature panels. NativeSelect shares Input control styles, and error retries use Button. Domain features supply
 content/actions rather than teaching shared primitives about carts or comparisons.
 
 Enabled pointer-pressed buttons scale to 0.96 over 150ms; `static` opts out, and

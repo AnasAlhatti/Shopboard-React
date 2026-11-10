@@ -1,4 +1,5 @@
 'use client';
+import { Card } from '@/components/ui/Card';
 import { Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '../../../components/ui/Button';
@@ -41,7 +42,11 @@ export function CompareTable({
   );
 
   return (
-    <div className="bg-surface border border-border rounded-lg overflow-hidden mb-16 shadow-card">
+    <Card
+      variant="elevated"
+      padding="none"
+      className="overflow-hidden mb-16 rounded-lg"
+    >
       <div className="overflow-x-auto">
         <table className="w-full min-w-96">
           <thead>
@@ -413,6 +418,6 @@ export function CompareTable({
           </tbody>
         </table>
       </div>
-    </div>
+    </Card>
   );
 }

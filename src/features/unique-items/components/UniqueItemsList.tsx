@@ -1,4 +1,5 @@
 'use client';
+import { NativeSelect } from '@/components/ui/NativeSelect';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { RefreshNotice } from '../../../components/ui/RefreshNotice';
@@ -44,7 +45,7 @@ export function UniqueItemsList() {
             Search unique items
           </label>
           <Input
-            className="w-full min-h-11 p-3 border border-border rounded-md bg-carbon text-foreground text-base focus-visible:focus:outline-2 focus-visible:focus:outline-primary focus-visible:focus:outline-offset-2 aria-invalid:border-primary"
+            className="p-3"
             id="unique-search"
             type="search"
             value={search}
@@ -58,8 +59,8 @@ export function UniqueItemsList() {
           >
             Category
           </label>
-          <select
-            className="w-full min-h-11 p-3 border border-border rounded-md bg-carbon text-foreground text-base focus-visible:focus:outline-2 focus-visible:focus:outline-primary focus-visible:focus:outline-offset-2 aria-invalid:border-primary"
+          <NativeSelect
+            className="p-3"
             id="unique-category"
             value={category}
             onChange={(event) => update('category', event.target.value)}
@@ -70,7 +71,7 @@ export function UniqueItemsList() {
                 {item}
               </option>
             ))}
-          </select>
+          </NativeSelect>
         </div>
       </div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">

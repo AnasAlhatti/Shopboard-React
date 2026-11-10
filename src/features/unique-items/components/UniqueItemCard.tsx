@@ -19,8 +19,10 @@ export function UniqueItemCard({ product }: UniqueItemCardProps) {
   }
   return (
     <Card
+      variant="flat"
+      padding="none"
       as="article"
-      className="flex flex-col gap-4 p-5 border border-border rounded-lg bg-surface shadow-none"
+      className="flex flex-col gap-4 p-5 "
       aria-labelledby={`unique-title-${product.id}`}
     >
       <div className="flex items-center gap-3">

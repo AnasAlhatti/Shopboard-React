@@ -1,3 +1,4 @@
+import { Card } from '@/components/ui/Card';
 import { ShieldCheck } from 'lucide-react';
 import type { Product } from '../../../shared/products/types/product';
 
@@ -17,8 +18,11 @@ export function RigVisualizer({
   totalPrice,
 }: RigVisualizerProps) {
   return (
-    <section
-      className="overflow-hidden rounded-lg border border-border bg-surface"
+    <Card
+      as="section"
+      variant="flat"
+      padding="none"
+      className="overflow-hidden"
       aria-label="Your configured desktop"
     >
       <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-4">
@@ -66,6 +70,6 @@ export function RigVisualizer({
         <ShieldCheck size={16} aria-hidden="true" />
         3-Year Assembly Warranty
       </p>
-    </section>
+    </Card>
   );
 }

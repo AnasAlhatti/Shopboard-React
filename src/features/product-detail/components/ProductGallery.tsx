@@ -1,3 +1,4 @@
+import { Card } from '@/components/ui/Card';
 import type { Product } from '../../../shared/products/types/product';
 
 interface ProductGalleryProps {
@@ -6,7 +7,11 @@ interface ProductGalleryProps {
 
 export function ProductGallery({ product }: ProductGalleryProps) {
   return (
-    <div className="relative bg-surface border border-border rounded-lg overflow-hidden shadow-card">
+    <Card
+      variant="elevated"
+      padding="none"
+      className="relative overflow-hidden rounded-lg"
+    >
       <div className="relative h-feature-media bg-surface overflow-hidden">
         <img
           src={product.image}
@@ -26,6 +31,6 @@ export function ProductGallery({ product }: ProductGalleryProps) {
           3nm FinFET Manufacturing Node
         </span>
       </div>
-    </div>
+    </Card>
   );
 }

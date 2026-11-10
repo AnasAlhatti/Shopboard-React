@@ -1,3 +1,4 @@
+import { Card } from '@/components/ui/Card';
 import type { Product } from '../../../shared/products/types/product';
 
 interface ArchitectureSpecTableProps {
@@ -19,7 +20,7 @@ export function ArchitectureSpecTable({ product }: ArchitectureSpecTableProps) {
         Technical Specifications
       </h3>
 
-      <div className="bg-surface border border-border rounded-lg overflow-hidden">
+      <Card variant="flat" padding="none" className="overflow-hidden">
         <table className="w-full text-sm">
           <tbody>
             <tr>
@@ -207,7 +208,7 @@ export function ArchitectureSpecTable({ product }: ArchitectureSpecTableProps) {
             </tr>
           </tbody>
         </table>
-      </div>
+      </Card>
     </section>
   );
 }

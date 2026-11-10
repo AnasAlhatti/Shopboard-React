@@ -38,8 +38,10 @@ export function CartItemRow({
     const { rig } = item;
     return (
       <Card
+        variant="flat"
+        padding="none"
         as="article"
-        className="border rounded-lg p-4 flex flex-col gap-4 transition duration-200 motion-reduce:transition-none sm:flex-row sm:items-center sm:p-6 hover:border-border bg-surface border-border"
+        className="p-4 flex flex-col gap-4 transition duration-200 motion-reduce:transition-none sm:flex-row sm:items-center sm:p-6 hover:border-border"
         aria-labelledby={`rig-title-${item.id}`}
       >
         <div className="w-24 h-16 bg-surface rounded-md overflow-hidden shrink-0">
@@ -159,8 +161,10 @@ export function CartItemRow({
     }
     return (
       <Card
+        variant="flat"
+        padding="none"
         as="article"
-        className="bg-surface border border-border rounded-lg p-4 flex flex-col gap-4 transition duration-200 motion-reduce:transition-none sm:flex-row sm:items-center sm:p-6 hover:border-border"
+        className=" p-4 flex flex-col gap-4 transition duration-200 motion-reduce:transition-none sm:flex-row sm:items-center sm:p-6 hover:border-border"
         aria-labelledby={`item-title-${item.id}`}
       >
         <div className="w-24 h-16 bg-surface rounded-md overflow-hidden shrink-0">

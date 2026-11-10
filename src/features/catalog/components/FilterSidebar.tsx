@@ -1,7 +1,20 @@
+import { Card } from '@/components/ui/Card';
 import { Cpu, Gauge, Layers, RotateCcw, Search } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
-import { cn } from '../../../lib/utils';
+import { cva } from 'class-variance-authority';
+
+const filterOption = cva(
+  'flex items-center gap-2 w-full py-2 px-3 rounded-sm border border-border text-sm cursor-pointer text-left transition-colors duration-150 hover:bg-raised hover:text-foreground',
+  {
+    variants: {
+      selected: {
+        true: 'bg-surface text-primary font-bold',
+        false: 'bg-transparent text-muted font-medium',
+      },
+    },
+  },
+);
 
 interface FilterSidebarProps {
   searchQuery: string;
@@ -39,8 +52,11 @@ export function FilterSidebar({
   filteredCount,
 }: FilterSidebarProps) {
   return (
-    <aside
-      className="bg-surface border border-border rounded-lg p-4 grid gap-4 sm:grid-cols-2 lg:flex lg:flex-col lg:self-start lg:p-5 lg:gap-5"
+    <Card
+      as="aside"
+      variant="flat"
+      padding="sm"
+      className="grid gap-4 sm:grid-cols-2 lg:flex lg:flex-col lg:self-start lg:p-5 lg:gap-5"
       aria-label="Catalog filters"
     >
       <div className="col-span-full flex items-baseline justify-between border-b border-border pb-2">
@@ -72,7 +88,7 @@ export function FilterSidebar({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="e.g. 9950X, Zenith, 24GB..."
-            className="w-full bg-background border border-border rounded-md text-foreground pt-2 pr-3 pb-2 pl-9 text-sm outline-none transition duration-200 motion-reduce:transition-none focus:border-primary"
+            className="bg-background pt-2 pr-3 pb-2 pl-9 text-sm"
           />
         </div>
       </div>
@@ -93,9 +109,7 @@ export function FilterSidebar({
           <Button
             variant="ghost"
             type="button"
-            className={cn(
-              `flex items-center gap-2 w-full py-2 px-3 rounded-sm bg-transparent border border-border text-muted text-sm font-medium cursor-pointer text-left transition duration-200 motion-reduce:transition-none hover:bg-raised hover:text-foreground${selectedCategory === 'all' ? ' bg-surface border-border text-primary font-bold' : ''}`,
-            )}
+            className={filterOption({ selected: selectedCategory === 'all' })}
             onClick={() => onCategoryChange('all')}
             aria-pressed={selectedCategory === 'all'}
           >
@@ -104,9 +118,7 @@ export function FilterSidebar({
           <Button
             variant="ghost"
             type="button"
-            className={cn(
-              `flex items-center gap-2 w-full py-2 px-3 rounded-sm bg-transparent border border-border text-muted text-sm font-medium cursor-pointer text-left transition duration-200 motion-reduce:transition-none hover:bg-raised hover:text-foreground${selectedCategory === 'cpu' ? ' bg-surface border-border text-primary font-bold' : ''}`,
-            )}
+            className={filterOption({ selected: selectedCategory === 'cpu' })}
             onClick={() => onCategoryChange('cpu')}
             aria-pressed={selectedCategory === 'cpu'}
           >
@@ -115,9 +127,7 @@ export function FilterSidebar({
           <Button
             variant="ghost"
             type="button"
-            className={cn(
-              `flex items-center gap-2 w-full py-2 px-3 rounded-sm bg-transparent border border-border text-muted text-sm font-medium cursor-pointer text-left transition duration-200 motion-reduce:transition-none hover:bg-raised hover:text-foreground${selectedCategory === 'gpu' ? ' bg-surface border-border text-primary font-bold' : ''}`,
-            )}
+            className={filterOption({ selected: selectedCategory === 'gpu' })}
             onClick={() => onCategoryChange('gpu')}
             aria-pressed={selectedCategory === 'gpu'}
           >
@@ -203,9 +213,7 @@ export function FilterSidebar({
                 variant="ghost"
                 key={cores}
                 type="button"
-                className={cn(
-                  `flex items-center gap-2 w-full py-2 px-3 rounded-sm bg-transparent border border-border text-muted text-sm font-medium cursor-pointer text-left transition duration-200 motion-reduce:transition-none hover:bg-raised hover:text-foreground${minCores === cores ? ' bg-surface border-border text-primary font-bold' : ''}`,
-                )}
+                className={filterOption({ selected: minCores === cores })}
                 onClick={() => onMinCoresChange(cores)}
                 aria-pressed={minCores === cores}
               >
@@ -235,9 +243,7 @@ export function FilterSidebar({
                 variant="ghost"
                 key={vram}
                 type="button"
-                className={cn(
-                  `flex items-center gap-2 w-full py-2 px-3 rounded-sm bg-transparent border border-border text-muted text-sm font-medium cursor-pointer text-left transition duration-200 motion-reduce:transition-none hover:bg-raised hover:text-foreground${minVram === vram ? ' bg-surface border-border text-primary font-bold' : ''}`,
-                )}
+                className={filterOption({ selected: minVram === vram })}
                 onClick={() => onMinVramChange(vram)}
                 aria-pressed={minVram === vram}
               >
@@ -257,6 +263,6 @@ export function FilterSidebar({
       >
         <RotateCcw size={14} aria-hidden="true" /> Reset all filters
       </Button>
-    </aside>
+    </Card>
   );
 }

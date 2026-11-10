@@ -1,6 +1,7 @@
 'use client';
 import { Cpu, Gauge, Plus, Scale } from 'lucide-react';
 import Link from 'next/link';
+import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
 import { Card } from '../../../components/ui/Card';
 import { cn } from '../../../lib/utils';
@@ -24,11 +25,13 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
 
   return (
     <Card
+      variant="flat"
+      padding="none"
       as="article"
       className={cn(
         'p-0 min-w-0 w-full',
         cn(
-          'bg-surface border border-border rounded-lg overflow-hidden flex flex-col transition duration-150 motion-reduce:transition-none motion-safe:hover:-translate-y-1 hover:border-border hover:shadow-card',
+          'overflow-hidden flex flex-col transition duration-150 motion-reduce:transition-none motion-safe:hover:-translate-y-1 hover:border-border hover:shadow-card',
           layout === 'list' && 'md:flex-row',
         ),
       )}
@@ -46,7 +49,10 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
           alt={product.name}
           loading="lazy"
         />
-        <span className="absolute top-2.5 left-2.5 bg-surface backdrop-blur-md border border-border text-primary text-xs font-bold uppercase tracking-wide py-1 px-2 rounded-xl flex items-center gap-1">
+        <Badge
+          variant="neutral"
+          className="absolute top-2.5 left-2.5 bg-surface backdrop-blur-md border border-border text-primary font-bold uppercase tracking-wide px-2 gap-1"
+        >
           {product.category === 'cpu' ? (
             <>
               <Cpu size={12} aria-hidden="true" /> Processor
@@ -56,7 +62,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
               <Gauge size={12} aria-hidden="true" /> Graphics
             </>
           )}
-        </span>
+        </Badge>
       </div>
 
       <div className="p-4 flex flex-col flex-1">

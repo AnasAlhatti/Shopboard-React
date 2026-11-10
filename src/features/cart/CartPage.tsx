@@ -1,4 +1,5 @@
 'use client';
+import { Card } from '@/components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { ArrowLeft, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
@@ -30,8 +31,10 @@ export function CartPage() {
   if (items.length === 0) {
     return (
       <main className="pt-8 pb-16 w-shell max-w-page mx-auto">
-        <div
-          className="text-center py-16 px-6 bg-surface border border-border rounded-lg my-12"
+        <Card
+          variant="flat"
+          padding="none"
+          className="text-center py-16 px-6 my-12"
           role="status"
         >
           <ShoppingBag
@@ -54,7 +57,7 @@ export function CartPage() {
               <ArrowLeft size={16} aria-hidden="true" /> Explore Silicon Catalog
             </Link>
           </Button>
-        </div>
+        </Card>
       </main>
     );
   }

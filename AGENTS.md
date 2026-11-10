@@ -155,7 +155,8 @@ Shared UI contracts:
 - `Button`: native button props, `variant?: 'primary' | 'secondary' | 'ghost'`,
   `size?: 'sm' | 'md' | 'lg'`, `asChild?: boolean`.
 - `Input`: native input props, including React 19 `ref`.
-- `Card`: native div props and `as?: ElementType` for semantic surfaces.
+- `NativeSelect`: native select props; shares the Input control styles and keeps native keyboard behavior.
+- `Card`: native div props, `as?: ElementType`, `variant?: 'elevated' | 'flat' | 'inset'`, and `padding?: 'none' | 'sm' | 'md' | 'lg'`.
 - `Badge`: native span props and `variant?: 'neutral' | 'available' | 'unavailable'`.
 - `Modal`: `open: boolean`, `onClose: () => void`, `title: string`, `children: ReactNode`,
   optional `size: 'sm' | 'md' | 'lg'`, `placement: 'center' | 'drawer'`, `className`, `closeLabel`.

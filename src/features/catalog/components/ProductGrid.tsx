@@ -1,3 +1,4 @@
+import { Card } from '@/components/ui/Card';
 import { cn } from '../../../lib/utils';
 import type { Product } from '../../../shared/products/types/product';
 import { ProductCard } from './ProductCard';
@@ -16,8 +17,10 @@ export function ProductGrid({
   if (products.length === 0) {
     const isNoMatch = totalCount > 0;
     return (
-      <div
-        className="text-center py-16 px-6 bg-surface border border-border rounded-lg"
+      <Card
+        variant="flat"
+        padding="none"
+        className="text-center py-16 px-6"
         role="status"
       >
         <p className="mb-3 text-xs font-extrabold tracking-widest uppercase text-muted">
@@ -33,7 +36,7 @@ export function ProductGrid({
             ? 'Try clearing your active filters or searching for another model or architecture.'
             : 'Hardware inventory is currently unavailable.'}
         </p>
-      </div>
+      </Card>
     );
   }
 

@@ -1,6 +1,19 @@
+import { Card } from '@/components/ui/Card';
 import { Check, Cpu, HardDrive, Layers } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
-import { cn } from '../../../lib/utils';
+import { cva } from 'class-variance-authority';
+
+const componentOption = cva(
+  'border rounded-lg min-w-0 p-3 cursor-pointer flex flex-col items-stretch justify-start text-left whitespace-normal transition-colors duration-150 hover:border-primary/50',
+  {
+    variants: {
+      selected: {
+        true: 'bg-primary/5 border-primary',
+        false: 'bg-background border-border',
+      },
+    },
+  },
+);
 import type { Product } from '../../../shared/products/types/product';
 import { MEMORY_STORAGE_TIERS, type MemoryStorageTier } from '../data/tiers';
 
@@ -30,8 +43,11 @@ export function ComponentSlotSelector({
   return (
     <div className="flex min-w-0 flex-col gap-5">
       {/* Slot 1: CPU Selection */}
-      <section
-        className="bg-surface border border-border rounded-lg p-4 sm:p-5"
+      <Card
+        as="section"
+        variant="flat"
+        padding="sm"
+        className="sm:p-5"
         aria-labelledby="cpu-slot-title"
       >
         <div className="flex items-start gap-3 mb-4">
@@ -61,9 +77,7 @@ export function ComponentSlotSelector({
                 static
                 key={cpu.id}
                 type="button"
-                className={cn(
-                  `bg-background border border-border rounded-lg min-w-0 p-3 cursor-pointer flex flex-col items-stretch justify-start text-left whitespace-normal transition-colors duration-150 hover:border-primary/50${isSelected ? ' bg-primary/5 border-primary' : ''}`,
-                )}
+                className={componentOption({ selected: isSelected })}
                 onClick={() => onSelectCpu(cpu)}
                 aria-pressed={isSelected}
               >
@@ -99,11 +113,14 @@ export function ComponentSlotSelector({
             );
           })}
         </div>
-      </section>
+      </Card>
 
       {/* Slot 2: GPU Selection */}
-      <section
-        className="bg-surface border border-border rounded-lg p-4 sm:p-5"
+      <Card
+        as="section"
+        variant="flat"
+        padding="sm"
+        className="sm:p-5"
         aria-labelledby="gpu-slot-title"
       >
         <div className="flex items-start gap-3 mb-4">
@@ -133,9 +150,7 @@ export function ComponentSlotSelector({
                 static
                 key={gpu.id}
                 type="button"
-                className={cn(
-                  `bg-background border border-border rounded-lg min-w-0 p-3 cursor-pointer flex flex-col items-stretch justify-start text-left whitespace-normal transition-colors duration-150 hover:border-primary/50${isSelected ? ' bg-primary/5 border-primary' : ''}`,
-                )}
+                className={componentOption({ selected: isSelected })}
                 onClick={() => onSelectGpu(gpu)}
                 aria-pressed={isSelected}
               >
@@ -171,11 +186,14 @@ export function ComponentSlotSelector({
             );
           })}
         </div>
-      </section>
+      </Card>
 
       {/* Slot 3: Memory & Storage Tier */}
-      <section
-        className="bg-surface border border-border rounded-lg p-4 sm:p-5"
+      <Card
+        as="section"
+        variant="flat"
+        padding="sm"
+        className="sm:p-5"
         aria-labelledby="memory-slot-title"
       >
         <div className="flex items-start gap-3 mb-4">
@@ -205,9 +223,7 @@ export function ComponentSlotSelector({
                 static
                 key={tier.id}
                 type="button"
-                className={cn(
-                  `bg-background border border-border rounded-lg min-w-0 p-3 cursor-pointer flex flex-col items-stretch justify-start text-left whitespace-normal transition-colors duration-150 hover:border-primary/50${isSelected ? ' bg-primary/5 border-primary' : ''}`,
-                )}
+                className={componentOption({ selected: isSelected })}
                 onClick={() => onSelectTier(tier)}
                 aria-pressed={isSelected}
               >
@@ -240,7 +256,7 @@ export function ComponentSlotSelector({
             );
           })}
         </div>
-      </section>
+      </Card>
     </div>
   );
 }

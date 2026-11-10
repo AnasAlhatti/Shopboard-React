@@ -1,4 +1,5 @@
 'use client';
+import { Card } from '@/components/ui/Card';
 import {
   ArrowLeft,
   Cpu,
@@ -26,8 +27,10 @@ export function ComparePage() {
   if (comparedItems.length === 0) {
     return (
       <main className="pt-8 pb-16 w-shell max-w-page mx-auto">
-        <div
-          className="text-center py-16 px-6 bg-surface border border-border rounded-lg my-12"
+        <Card
+          variant="flat"
+          padding="none"
+          className="text-center py-16 px-6 my-12"
           role="status"
         >
           <Scale size={42} className="compare-empty__icon" aria-hidden="true" />
@@ -47,7 +50,7 @@ export function ComparePage() {
               <ArrowLeft size={16} aria-hidden="true" /> Explore Catalog
             </Link>
           </Button>
-        </div>
+        </Card>
       </main>
     );
   }

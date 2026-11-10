@@ -1,3 +1,4 @@
+import { Card } from '@/components/ui/Card';
 import {
   AlertTriangle,
   PackagePlus,
@@ -30,8 +31,10 @@ export function PowerSynergyMeter({
   const powerPercentage = Math.min(100, (totalTdp / 900) * 100);
 
   return (
-    <div
-      className="bg-surface border border-border rounded-lg p-4 sm:p-6"
+    <Card
+      variant="flat"
+      padding="sm"
+      className="sm:p-6"
       aria-labelledby="synergy-meter-heading"
     >
       <div className="flex flex-wrap items-center justify-between gap-3 mb-5 border-b border-border pb-2">
@@ -52,7 +55,7 @@ export function PowerSynergyMeter({
       </div>
 
       <div className="grid grid-cols-1 gap-4 mb-5 md:grid-cols-3">
-        <div className="bg-background border border-border rounded-lg p-4 flex flex-col">
+        <Card variant="inset" padding="sm" className="flex flex-col">
           <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1.5">
             <span className="text-xs uppercase text-muted">
               Estimated System Power
@@ -75,9 +78,9 @@ export function PowerSynergyMeter({
             <span>Target Sustained ({totalTdp}W)</span>
             <span>Limit (900W)</span>
           </div>
-        </div>
+        </Card>
 
-        <div className="bg-background border border-border rounded-lg p-4 flex flex-col">
+        <Card variant="inset" padding="sm" className="flex flex-col">
           <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1.5">
             <span className="text-xs uppercase text-muted">
               Recommended PSU
@@ -90,9 +93,9 @@ export function PowerSynergyMeter({
             Provides ample transient spike headroom for sustained all-core
             rendering and peak gaming clocks.
           </p>
-        </div>
+        </Card>
 
-        <div className="bg-background border border-border rounded-lg p-4 flex flex-col">
+        <Card variant="inset" padding="sm" className="flex flex-col">
           <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1.5">
             <span className="text-xs uppercase text-muted">
               Bottleneck Balance Index
@@ -117,7 +120,7 @@ export function PowerSynergyMeter({
           <p className="text-sm text-muted m-0 leading-normal">
             {diagnosis.description}
           </p>
-        </div>
+        </Card>
       </div>
 
       <div className="border-t border-border pt-6 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
@@ -152,6 +155,6 @@ export function PowerSynergyMeter({
           </Button>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
