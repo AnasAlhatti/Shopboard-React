@@ -31,13 +31,13 @@ export function PowerSynergyMeter({
 
   return (
     <div
-      className="bg-surface border border-border rounded-lg p-8"
+      className="bg-surface border border-border rounded-lg p-4 sm:p-6"
       aria-labelledby="synergy-meter-heading"
     >
-      <div className="flex items-center justify-between mb-6 border-b border-border pb-2">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-5 border-b border-border pb-2">
         <h3
           id="synergy-meter-heading"
-          className="flex items-center gap-2 text-xl font-extrabold m-0"
+          className="flex items-center gap-2 text-lg font-semibold m-0"
         >
           <Zap size={18} className="text-primary" aria-hidden="true" />
           Live Synergy & Power Diagnostics
@@ -51,9 +51,9 @@ export function PowerSynergyMeter({
         </span>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 mb-8 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 mb-5 md:grid-cols-3">
         <div className="bg-background border border-border rounded-lg p-4 flex flex-col">
-          <div className="flex items-baseline justify-between mb-1.5">
+          <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1.5">
             <span className="text-xs uppercase text-muted">
               Estimated System Power
             </span>
@@ -66,11 +66,11 @@ export function PowerSynergyMeter({
             aria-hidden="true"
           >
             <div
-              className="h-full bg-linear-to-r from-primary/70 to-primary rounded-xl transition-all duration-300 motion-reduce:transition-none"
+              className="h-full bg-linear-to-r from-primary/70 to-primary rounded-xl "
               style={{ width: `${powerPercentage}%` }}
             />
           </div>
-          <div className="flex justify-between text-2xs text-muted">
+          <div className="flex flex-wrap justify-between gap-2 text-xs text-muted">
             <span>Idle (80W)</span>
             <span>Target Sustained ({totalTdp}W)</span>
             <span>Limit (900W)</span>
@@ -78,7 +78,7 @@ export function PowerSynergyMeter({
         </div>
 
         <div className="bg-background border border-border rounded-lg p-4 flex flex-col">
-          <div className="flex items-baseline justify-between mb-1.5">
+          <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1.5">
             <span className="text-xs uppercase text-muted">
               Recommended PSU
             </span>
@@ -86,14 +86,14 @@ export function PowerSynergyMeter({
               {recommendedPsu}W 80+ Gold
             </strong>
           </div>
-          <p className="text-xs text-muted m-0 leading-normal">
+          <p className="text-sm text-muted m-0 leading-normal">
             Provides ample transient spike headroom for sustained all-core
             rendering and peak gaming clocks.
           </p>
         </div>
 
         <div className="bg-background border border-border rounded-lg p-4 flex flex-col">
-          <div className="flex items-baseline justify-between mb-1.5">
+          <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1.5">
             <span className="text-xs uppercase text-muted">
               Bottleneck Balance Index
             </span>
@@ -114,7 +114,7 @@ export function PowerSynergyMeter({
               {diagnosis.score}% {diagnosis.label}
             </strong>
           </div>
-          <p className="text-xs text-muted m-0 leading-normal">
+          <p className="text-sm text-muted m-0 leading-normal">
             {diagnosis.description}
           </p>
         </div>
@@ -135,7 +135,7 @@ export function PowerSynergyMeter({
             variant="primary"
             type="button"
             onClick={onAddAssembledRig}
-            size="lg"
+            size="md"
           >
             <PackagePlus size={16} aria-hidden="true" />
             <span>Add as Assembled Custom Rig</span>
@@ -145,7 +145,7 @@ export function PowerSynergyMeter({
             variant="secondary"
             type="button"
             onClick={onAddIndividualComponents}
-            size="lg"
+            size="md"
           >
             <ShoppingBag size={16} aria-hidden="true" />
             <span>Add Components Individually</span>

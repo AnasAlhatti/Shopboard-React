@@ -42,7 +42,7 @@ export function ProductGrid({
       className={cn(
         'grid gap-6',
         viewMode === 'grid'
-          ? 'grid-cols-1 md:grid-cols-2 2xl:grid-cols-3'
+          ? 'grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3'
           : 'grid-cols-1',
       )}
     >

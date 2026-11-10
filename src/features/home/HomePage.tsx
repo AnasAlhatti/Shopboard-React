@@ -26,7 +26,7 @@ export function HomePage() {
         <HomeProducts />
       </AsyncBoundary>
       <section
-        className="grid gap-8 items-center pt-8 pb-20 border-t border-border lg:grid-cols-2 lg:gap-16 lg:pt-14 lg:pb-20 w-shell max-w-page mx-auto"
+        className="grid gap-8 items-center pt-8 pb-12 border-t border-border md:grid-cols-2 md:gap-10 md:py-12 w-shell max-w-6xl mx-auto"
         aria-labelledby="home-build-title"
       >
         <div className="min-w-0">
@@ -36,22 +36,22 @@ export function HomePage() {
             width="1376"
             height="768"
             loading="lazy"
-            className="w-full h-auto rounded-sm outline-none"
+            className="w-full h-auto max-h-feature-media object-contain bg-carbon rounded-md photo-outline"
           />
         </div>
         <div>
-          <p className="mb-5 text-muted text-xs font-medium tracking-wide">
+          <p className="mb-3 text-muted text-sm font-medium tracking-wide">
             Your next build
           </p>
           <h2
             id="home-build-title"
-            className="font-medium tracking-tight mb-6 text-3xl lg:text-6xl leading-tight"
+            className="font-medium tracking-tight mb-4 text-2xl lg:text-4xl leading-tight"
           >
             Start with the parts.
             <br />
             Make it your own.
           </h2>
-          <p className="max-w-96 text-sm">
+          <p className="max-w-prose text-base">
             Choose your processor and graphics card, then check the estimated
             power draw before adding your build to the cart.
           </p>

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { BrandLockup } from '../ui/BrandLockup';
 
 export function Footer() {
   return (
@@ -6,8 +7,9 @@ export function Footer() {
       <Link
         className="text-foreground font-extrabold tracking-widest no-underline"
         href="/"
+        aria-label="AETHEL SILICON"
       >
-        AETHEL SILICON
+        <BrandLockup />
       </Link>
       <p className="m-0 text-xs">Forged for Extreme Compute.</p>
       <span>© {new Date().getFullYear()} Aethel Silicon</span>

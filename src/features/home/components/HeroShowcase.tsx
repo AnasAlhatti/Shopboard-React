@@ -23,84 +23,77 @@ export function HeroShowcase({ cpu, gpu, loading }: HeroShowcaseProps) {
     : 'Specifications unavailable';
 
   return (
-    <section className="pt-10 lg:pt-20" aria-labelledby="home-title">
-      <div className="grid gap-4 lg:grid-cols-hero lg:gap-12 lg:items-end w-shell max-w-page mx-auto">
+    <section className="pt-6 lg:pt-10" aria-labelledby="home-title">
+      <div className="grid items-center gap-6 w-shell max-w-6xl mx-auto lg:grid-cols-2 lg:gap-10">
         <div>
-          <p className="mb-5 text-xs font-medium tracking-wide text-muted">
+          <p className="mb-3 text-sm font-medium tracking-wide text-muted">
             Aethel Silicon / Desktop hardware
           </p>
           <h1
             id="home-title"
-            className="m-0 text-4xl md:text-6xl lg:text-7xl leading-tight"
+            className="mb-5 text-3xl sm:text-4xl lg:text-5xl leading-tight"
           >
             Vortex processors.
             <br />
             <span className="text-muted">Zenith graphics.</span>
           </h1>
-        </div>
-        <div className="lg:justify-self-end lg:pb-1">
           <p className="mb-4 text-muted text-base leading-relaxed">
             For the games you play.
             <br />
             And the work you put into them.
           </p>
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-x-5 gap-y-1">
             <Link
-              className="inline-flex w-fit items-center gap-3 min-h-11 p-0 border-0 bg-transparent text-foreground text-sm font-medium no-underline"
+              className="inline-flex items-center gap-2 min-h-11 text-foreground text-sm font-semibold no-underline"
               href="/products"
             >
               Explore products{' '}
               <ArrowUpRight
                 size={16}
+                className="text-primary"
                 aria-hidden="true"
-                className="text-primary transition duration-200 motion-reduce:duration-200 motion-reduce:transition-none"
               />
             </Link>
             <a
-              className="inline-flex w-fit min-h-11 items-center gap-2.5 text-muted text-xs no-underline hover:text-foreground"
+              className="inline-flex items-center gap-2 min-h-11 text-muted text-sm no-underline hover:text-foreground"
               href="#home-products"
             >
               Meet the range <ArrowDown size={14} aria-hidden="true" />
             </a>
           </div>
         </div>
+        <figure className="m-0 min-w-0">
+          <img
+            src="/assets/aethel-silicon-studio.jpg"
+            alt="Silver Vortex processor beside a graphite triple-fan Zenith graphics card"
+            width="1376"
+            height="768"
+            fetchPriority="high"
+            className="block w-full h-auto rounded-md photo-outline motion-safe:animate-photo-enter"
+          />
+          <figcaption className="pt-3 text-muted text-xs">
+            Vortex 9950X &amp; Zenith 9900 XTX
+          </figcaption>
+        </figure>
       </div>
-      <figure className="mt-8 mb-0 lg:mt-11 w-shell max-w-page mx-auto">
-        <img
-          src="/assets/aethel-silicon-studio.jpg"
-          alt="Silver Vortex processor beside a graphite triple-fan Zenith graphics card"
-          width="1376"
-          height="768"
-          fetchPriority="high"
-          className="w-full h-auto rounded-sm outline-none motion-safe:animate-photo-enter"
-        />
-        <figcaption className="flex justify-between gap-4 py-4 text-muted text-2xs">
-          <span className="last:hidden sm:last:inline">
-            Vortex 9950X & Zenith 9900 XTX
-          </span>
-          <span className="last:hidden sm:last:inline">
-            Processors & graphics
-          </span>
-        </figcaption>
-      </figure>
       <dl
-        className="grid grid-cols-2 gap-6 items-center mt-2 mb-0 py-6 border-t border-b border-border sm:grid-cols-3 lg:grid-cols-2 w-shell max-w-page mx-auto"
+        className="grid grid-cols-2 gap-4 items-center mt-6 mb-0 py-4 border-t border-b border-border md:grid-cols-4 w-shell max-w-6xl mx-auto"
         aria-label="Flagship specifications"
         aria-busy={loading}
       >
         {specifications.map((specification) => (
           <div key={specification.label}>
-            <dt className="mb-2 text-muted text-2xs">{specification.label}</dt>
+            <dt className="mb-1 text-muted text-xs">{specification.label}</dt>
             <dd className="m-0 text-foreground text-sm tabular-nums">
               {loading ? statusText : (specification.value ?? statusText)}
             </dd>
           </div>
         ))}
         <div>
-          <dt className="mb-2 text-muted text-2xs">The full range</dt>
+          <dt className="mb-1 text-muted text-xs">The full range</dt>
           <dd className="m-0 text-foreground text-sm tabular-nums">
             <Link
-              className="inline-flex w-fit min-h-11 items-center gap-2.5 text-muted text-xs no-underline hover:text-foreground sm:col-span-full lg:col-auto"
+              className="inline-flex w-fit min-h-11 items-center gap-2.5 text-muted text-sm no-underline hover:text-foreground sm:col-span-full lg:col-auto"
               href="/compare"
             >
               Compare hardware <ArrowUpRight size={14} aria-hidden="true" />

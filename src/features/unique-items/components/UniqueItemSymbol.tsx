@@ -9,10 +9,10 @@ export function UniqueItemSymbol({ category }: UniqueItemSymbolProps) {
   else if (category === 'Accessories') Icon = Glasses;
   return (
     <div
-      className="grid min-h-32 place-items-center text-muted bg-carbon rounded-md mb-6"
+      className="grid h-12 w-12 shrink-0 place-items-center text-muted bg-background border border-border rounded-lg"
       aria-hidden="true"
     >
-      <Icon size={56} strokeWidth={1.2} />
+      <Icon size={24} strokeWidth={1.5} />
     </div>
   );
 }

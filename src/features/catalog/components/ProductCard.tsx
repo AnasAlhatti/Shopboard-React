@@ -26,9 +26,9 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
     <Card
       as="article"
       className={cn(
-        'p-0',
+        'p-0 min-w-0 w-full',
         cn(
-          'bg-surface border border-border rounded-lg overflow-hidden flex flex-col transition duration-200 motion-reduce:transition-none hover:-translate-y-1 hover:border-border hover:shadow-card',
+          'bg-surface border border-border rounded-lg overflow-hidden flex flex-col transition duration-150 motion-reduce:transition-none motion-safe:hover:-translate-y-1 hover:border-border hover:shadow-card',
           layout === 'list' && 'md:flex-row',
         ),
       )}
@@ -36,17 +36,17 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
     >
       <div
         className={cn(
-          'relative aspect-video bg-surface overflow-hidden',
-          layout === 'list' && 'md:w-64 md:shrink-0',
+          'relative h-44 bg-surface overflow-hidden sm:h-40 lg:h-44',
+          layout === 'list' && 'md:w-56 md:h-auto md:shrink-0',
         )}
       >
         <img
-          className="w-full h-full object-cover transition duration-200 motion-reduce:transition-none"
+          className="w-full h-full object-contain transition duration-200 motion-reduce:transition-none"
           src={product.image}
           alt={product.name}
           loading="lazy"
         />
-        <span className="absolute top-2.5 left-2.5 bg-surface backdrop-blur-md border border-border text-primary text-2xs font-bold uppercase tracking-wide py-1 px-2 rounded-xl flex items-center gap-1">
+        <span className="absolute top-2.5 left-2.5 bg-surface backdrop-blur-md border border-border text-primary text-xs font-bold uppercase tracking-wide py-1 px-2 rounded-xl flex items-center gap-1">
           {product.category === 'cpu' ? (
             <>
               <Cpu size={12} aria-hidden="true" /> Processor
@@ -65,11 +65,11 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
         </p>
         <h3
           id={`title-${product.id}`}
-          className="text-lg font-extrabold leading-tight mt-0 mr-0 mb-1 ml-0"
+          className="text-lg font-semibold leading-tight mt-0 mr-0 mb-1 ml-0"
         >
           <Link href={`/products/${product.id}`}>{product.name}</Link>
         </h3>
-        <p className="text-xs text-muted mt-0 mr-0 mb-4 ml-0">
+        <p className="text-sm text-muted mt-0 mr-0 mb-4 ml-0">
           {product.tagline}
         </p>
 
@@ -77,25 +77,25 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
           {product.category === 'cpu' ? (
             <>
               <div className="flex flex-col">
-                <dt className="text-2xs uppercase text-muted">Cores</dt>
+                <dt className="text-xs uppercase text-muted">Cores</dt>
                 <dd className="text-sm font-bold text-foreground m-0 tabular-nums">
                   {product.specs.cores}C / {product.specs.threads}T
                 </dd>
               </div>
               <div className="flex flex-col">
-                <dt className="text-2xs uppercase text-muted">Boost</dt>
+                <dt className="text-xs uppercase text-muted">Boost</dt>
                 <dd className="text-sm font-bold text-foreground m-0 tabular-nums">
                   {product.specs.boostClock}
                 </dd>
               </div>
               <div className="flex flex-col">
-                <dt className="text-2xs uppercase text-muted">Cache</dt>
+                <dt className="text-xs uppercase text-muted">Cache</dt>
                 <dd className="text-sm font-bold text-foreground m-0 tabular-nums">
                   {product.specs.cache}
                 </dd>
               </div>
               <div className="flex flex-col">
-                <dt className="text-2xs uppercase text-muted">TDP</dt>
+                <dt className="text-xs uppercase text-muted">TDP</dt>
                 <dd className="text-sm font-bold text-foreground m-0 tabular-nums">
                   {product.specs.tdp}W
                 </dd>
@@ -104,25 +104,25 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
           ) : (
             <>
               <div className="flex flex-col">
-                <dt className="text-2xs uppercase text-muted">VRAM</dt>
+                <dt className="text-xs uppercase text-muted">VRAM</dt>
                 <dd className="text-sm font-bold text-foreground m-0 tabular-nums">
                   {product.specs.vram}
                 </dd>
               </div>
               <div className="flex flex-col">
-                <dt className="text-2xs uppercase text-muted">Boost</dt>
+                <dt className="text-xs uppercase text-muted">Boost</dt>
                 <dd className="text-sm font-bold text-foreground m-0 tabular-nums">
                   {product.specs.boostClock}
                 </dd>
               </div>
               <div className="flex flex-col">
-                <dt className="text-2xs uppercase text-muted">Compute</dt>
+                <dt className="text-xs uppercase text-muted">Compute</dt>
                 <dd className="text-sm font-bold text-foreground m-0 tabular-nums">
                   {product.specs.tflops?.toFixed(1)} TFLOPs
                 </dd>
               </div>
               <div className="flex flex-col">
-                <dt className="text-2xs uppercase text-muted">TDP</dt>
+                <dt className="text-xs uppercase text-muted">TDP</dt>
                 <dd className="text-sm font-bold text-foreground m-0 tabular-nums">
                   {product.specs.tdp}W
                 </dd>
@@ -132,9 +132,9 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
         </dl>
       </div>
 
-      <footer className="border-t border-border py-3 px-4 flex items-center justify-between bg-surface">
+      <footer className="border-t border-border py-3 px-4 flex flex-wrap gap-3 items-center justify-between bg-surface">
         <div className="flex flex-col">
-          <span className="text-2xs uppercase text-muted">MSRP</span>
+          <span className="text-xs uppercase text-muted">MSRP</span>
           <span className="text-xl font-extrabold text-foreground tabular-nums">
             ${product.price.toLocaleString()}
           </span>

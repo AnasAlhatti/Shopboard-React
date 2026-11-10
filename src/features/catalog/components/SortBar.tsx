@@ -39,7 +39,7 @@ export function SortBar({
                 onSortChange(e.target.value);
               }
             }}
-            className="w-full min-w-0 bg-background border border-border rounded-sm text-foreground py-1.5 px-2.5 text-sm outline-none"
+            className="w-full min-w-0 bg-background border border-border rounded-sm text-foreground py-1.5 px-2.5 text-sm"
           >
             <option value="featured">Default (Featured)</option>
             <option value="price-asc">Price: Low to High</option>

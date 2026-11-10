@@ -1,20 +1,14 @@
-import Link from 'next/link';
 import { AsyncBoundary } from '../../shared/async/AsyncBoundary';
 import { LoadingState } from '../../shared/async/LoadingState';
 import { UniqueItemsList } from './components/UniqueItemsList';
 export function UniqueItemsPage() {
   return (
-    <main className="pt-12 pb-16 w-shell max-w-page mx-auto">
-      <header className="mb-8">
-        <p className="mb-3 text-primary text-xs font-extrabold tracking-widest uppercase">
-          The class collection
+    <main className="pt-8 pb-12 w-shell max-w-6xl mx-auto">
+      <header className="mb-6">
+        <h1 className="mb-3 text-3xl lg:text-4xl">Unique Items</h1>
+        <p className="m-0 max-w-prose text-base">
+          Everyday essentials from the class collection.
         </p>
-        <h1 className="text-3xl lg:text-6xl">Unique Items</h1>
-        <p>
-          A small collection of everyday essentials, alongside our silicon
-          range.
-        </p>
-        <Link href="/products">Back to hardware</Link>
       </header>
       <AsyncBoundary fallback={<LoadingState label="Loading unique items…" />}>
         <UniqueItemsList />

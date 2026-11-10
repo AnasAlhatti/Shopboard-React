@@ -40,10 +40,10 @@ export function FilterSidebar({
 }: FilterSidebarProps) {
   return (
     <aside
-      className="bg-surface border border-border rounded-lg p-6 flex flex-col gap-6"
+      className="bg-surface border border-border rounded-lg p-4 grid gap-4 sm:grid-cols-2 lg:flex lg:flex-col lg:self-start lg:p-5 lg:gap-5"
       aria-label="Catalog filters"
     >
-      <div className="flex items-baseline justify-between border-b border-border pb-2">
+      <div className="col-span-full flex items-baseline justify-between border-b border-border pb-2">
         <h2 className="flex items-center gap-2 text-base font-bold text-foreground m-0">
           <Layers size={18} aria-hidden="true" /> Filters
         </h2>
@@ -53,7 +53,7 @@ export function FilterSidebar({
       </div>
 
       {/* Search Input */}
-      <div className="flex flex-col gap-1.5">
+      <div className="col-span-full flex flex-col gap-1.5">
         <label
           htmlFor="catalog-search"
           className="text-xs font-semibold uppercase tracking-wide text-muted"

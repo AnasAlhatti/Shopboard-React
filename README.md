@@ -163,6 +163,20 @@ Button (primary/secondary/ghost, sm/md/lg), Input, Card, Badge, Modal, and form 
 `cva` owns variants; `cn` merges conditional utilities and overrides. Domain features supply
 content/actions rather than teaching shared primitives about carts or comparisons.
 
+Enabled pointer-pressed buttons scale to 0.96 over 150ms; `static` opts out, and
+keyboard and reduced-motion interactions do not scale. Product-family photos stay
+mounted for interruptible 150ms pointer crossfades; keyboard switches are immediate.
+Theme swaps suppress transitions until the new palette is painted. Editorial photos
+share a subtle inset outline, and card movement respects reduced-motion preferences.
+The home hero pairs copy and a naturally proportioned photograph without letterboxing.
+Supporting media uses viewport-aware height limits to stay in context with its copy. Feature sections use two columns from tablet widths;
+body copy uses a readable 16px size, and catalog photography has compact fixed heights.
+Unique Items uses compact category symbols and clear stock/price/action groups. The
+configurator pairs a sticky desktop preview with compact part selectors; its diagnostics
+remain below both columns. On smaller screens, the build summary collapses behind
+an accessible toggle so part choices come first. A shared vector BrandLockup supplies
+the header/footer identity, with a matching favicon.
+
 Modal review decisions:
 
 - Native `dialog.showModal()` supplies modal semantics and background inertness. A scoped

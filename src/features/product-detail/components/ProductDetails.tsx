@@ -82,7 +82,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       </nav>
 
       <section
-        className="flex flex-col gap-12 mb-16 lg:grid lg:grid-cols-2 lg:gap-16"
+        className="flex flex-col gap-8 mb-12 md:grid md:grid-cols-2 md:items-start md:gap-8 lg:gap-12"
         aria-labelledby="product-name-heading"
       >
         <ProductGallery product={product} />

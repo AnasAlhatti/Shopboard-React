@@ -7,6 +7,7 @@ import { useCompare } from '../../features/compare/hooks/useCompare';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/Button';
 import { ThemeToggle } from '../ui/ThemeToggle';
+import { BrandLockup } from '../ui/BrandLockup';
 import { NavigationLink as NavLink } from './NavigationLink';
 
 interface HeaderProps {
@@ -35,20 +36,15 @@ export function Header({ onOpenCart }: HeaderProps) {
         <Link
           className="inline-flex w-fit items-center gap-2 text-foreground text-xs font-extrabold tracking-widest no-underline whitespace-nowrap sm:gap-2.5 sm:text-sm"
           href="/"
+          aria-label="AETHEL SILICON"
           onClick={closeMenu}
         >
-          <span
-            className="grid w-8 aspect-square place-items-center border border-primary/55 rounded-lg text-primary shadow-card text-base tracking-normal"
-            aria-hidden="true"
-          >
-            A
-          </span>
-          <span>AETHEL SILICON</span>
+          <BrandLockup />
         </Link>
 
         <Button
           variant="ghost"
-          className="inline-grid w-10 h-10 flex-none place-items-center border border-border rounded-lg bg-surface text-foreground transition motion-reduce:transition-none duration-150 hover:border-primary/45 hover:text-primary motion-safe:enabled:active:scale-95 motion-safe:enabled:active:duration-150 motion-reduce:duration-150 col-start-3 row-start-1 justify-self-end xl:hidden"
+          className="inline-grid w-10 h-10 flex-none place-items-center border border-border rounded-lg bg-surface text-foreground transition motion-reduce:transition-none duration-150 hover:border-primary/45 hover:text-primary  motion-safe:enabled:active:duration-150 motion-reduce:duration-150 col-start-3 row-start-1 justify-self-end xl:hidden"
           type="button"
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={menuOpen}
@@ -96,7 +92,7 @@ export function Header({ onOpenCart }: HeaderProps) {
           </span>
           <Button
             variant="ghost"
-            className="inline-flex min-h-10 items-center gap-1.5 py-2 px-2 border rounded-lg bg-surface text-2xs font-bold border-primary/30 text-foreground cursor-pointer tracking-normal xl:gap-2 xl:px-3 motion-safe:enabled:active:scale-95 motion-safe:enabled:active:duration-150 motion-reduce:duration-150"
+            className="inline-flex min-h-10 items-center gap-1.5 py-2 px-2 border rounded-lg bg-surface text-2xs font-bold border-primary/30 text-foreground cursor-pointer tracking-normal xl:gap-2 xl:px-3  motion-safe:enabled:active:duration-150 motion-reduce:duration-150"
             type="button"
             aria-label={`Open quick cart, ${itemCount} items`}
             onClick={onOpenCart}

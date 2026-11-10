@@ -35,10 +35,12 @@ export function UniqueItemsList() {
     );
   return (
     <>
-      <RefreshNotice error={error} onRefresh={refresh} />
-      <div className="grid gap-4 my-8 md:grid-cols-2">
+      <div className="grid gap-4 mb-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="unique-search" className="block mb-2">
+          <label
+            htmlFor="unique-search"
+            className="block mb-2 text-sm font-medium"
+          >
             Search unique items
           </label>
           <Input
@@ -50,7 +52,10 @@ export function UniqueItemsList() {
           />
         </div>
         <div>
-          <label htmlFor="unique-category" className="block mb-2">
+          <label
+            htmlFor="unique-category"
+            className="block mb-2 text-sm font-medium"
+          >
             Category
           </label>
           <select
@@ -68,11 +73,14 @@ export function UniqueItemsList() {
           </select>
         </div>
       </div>
-      <p role="status">
-        {shown.length} {shown.length === 1 ? 'item' : 'items'} available
-      </p>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+        <p role="status" className="text-sm mb-0">
+          {shown.length} {shown.length === 1 ? 'item' : 'items'} available
+        </p>
+        <RefreshNotice error={error} onRefresh={refresh} />
+      </div>
       {shown.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {shown.map((product) => (
             <UniqueItemCard key={product.id} product={product} />
           ))}

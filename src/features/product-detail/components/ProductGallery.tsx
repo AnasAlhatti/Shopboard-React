@@ -7,11 +7,11 @@ interface ProductGalleryProps {
 export function ProductGallery({ product }: ProductGalleryProps) {
   return (
     <div className="relative bg-surface border border-border rounded-lg overflow-hidden shadow-card">
-      <div className="relative aspect-video bg-surface overflow-hidden">
+      <div className="relative h-feature-media bg-surface overflow-hidden">
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover transition duration-200 motion-reduce:transition-none"
+          className="w-full h-full object-contain transition duration-200 motion-reduce:transition-none"
         />
         <div
           className="absolute inset-0 bg-linear-to-t from-background/60 to-transparent pointer-events-none"

@@ -17,68 +17,55 @@ export function RigVisualizer({
   totalPrice,
 }: RigVisualizerProps) {
   return (
-    <div className="bg-surface border border-border rounded-lg overflow-hidden shadow-card">
-      <div className="relative aspect-square sm:aspect-video bg-surface overflow-hidden">
-        <img
-          src="/assets/pc-hardware-glass-case-a7ed0ff3.jpg"
-          alt="Aethel battlestation inside illuminated tempered glass chassis"
-          className="w-full h-full object-cover"
-        />
-        <div
-          className="absolute inset-0 bg-linear-to-t from-background/60 to-transparent pointer-events-none"
-          aria-hidden="true"
-        />
-
-        <div className="absolute bg-surface backdrop-blur-md border border-border rounded-md py-2 px-3 flex items-center gap-2.5 shadow-card top-4 left-4">
-          <span className="w-2 h-2 rounded-full bg-primary shadow-card" />
-          <div className="flex flex-col">
-            <span className="text-2xs uppercase text-muted">Processor</span>
-            <strong className="text-sm text-foreground break-words">
-              {selectedCpu ? selectedCpu.name : 'Select CPU'}
-            </strong>
-          </div>
-        </div>
-
-        <div className="absolute bg-surface backdrop-blur-md border border-border rounded-md py-2 px-3 flex items-center gap-2.5 shadow-card bottom-4 right-4">
-          <span className="w-2 h-2 rounded-full bg-primary shadow-card" />
-          <div className="flex flex-col">
-            <span className="text-2xs uppercase text-muted">
-              Graphics Engine
-            </span>
-            <strong className="text-sm text-foreground break-words">
-              {selectedGpu ? selectedGpu.name : 'Select GPU'}
-            </strong>
-          </div>
-        </div>
+    <section
+      className="overflow-hidden rounded-lg border border-border bg-surface"
+      aria-label="Your configured desktop"
+    >
+      <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-4">
+        <h2 className="m-0 text-lg font-semibold">Your build</h2>
+        <span className="text-xs text-muted">Illustrative preview</span>
       </div>
-
-      <div className="py-4 px-8 border-t border-border flex flex-wrap items-center justify-between gap-4 bg-surface">
-        <div className="flex flex-col">
-          <span className="text-xs uppercase text-muted">Memory & Storage</span>
-          <strong className="text-base font-bold text-foreground tabular-nums">
-            {selectedRamTier}
-          </strong>
+      <img
+        src="/assets/pc-hardware-glass-case-a7ed0ff3.jpg"
+        alt="Aethel battlestation inside illuminated tempered glass chassis"
+        className="h-40 w-full object-cover sm:h-72"
+      />
+      <dl className="m-0 grid gap-4 border-t border-border p-5 sm:grid-cols-2">
+        <div>
+          <dt className="mb-1 text-xs text-muted">Processor</dt>
+          <dd className="m-0 text-sm font-medium">
+            {selectedCpu?.name ?? 'Select CPU'}
+          </dd>
         </div>
-
-        <div className="flex flex-col">
-          <span className="text-xs uppercase text-muted">Total Power Draw</span>
-          <strong className="text-base font-bold tabular-nums text-primary">
+        <div>
+          <dt className="mb-1 text-xs text-muted">Graphics Engine</dt>
+          <dd className="m-0 text-sm font-medium">
+            {selectedGpu?.name ?? 'Select GPU'}
+          </dd>
+        </div>
+        <div className="sm:col-span-2">
+          <dt className="mb-1 text-xs text-muted">Memory &amp; Storage</dt>
+          <dd className="m-0 text-sm font-medium">{selectedRamTier}</dd>
+        </div>
+      </dl>
+      <div className="flex flex-wrap justify-between gap-4 border-t border-border px-5 py-4">
+        <div>
+          <span className="block text-xs text-muted">Total Power Draw</span>
+          <strong className="text-lg font-semibold tabular-nums">
             {totalTdp}W TDP
           </strong>
         </div>
-
-        <div className="flex flex-col">
-          <span className="text-xs uppercase text-muted">Rig Price</span>
-          <strong className="text-base font-bold text-foreground tabular-nums">
+        <div>
+          <span className="block text-xs text-muted">Rig Price</span>
+          <strong className="text-lg font-semibold tabular-nums">
             ${totalPrice.toLocaleString()}
           </strong>
         </div>
-
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-muted">
-          <ShieldCheck size={16} aria-hidden="true" />
-          <span>3-Year Assembly Warranty</span>
-        </div>
       </div>
-    </div>
+      <p className="m-0 flex items-center gap-2 border-t border-border px-5 py-3 text-xs text-muted">
+        <ShieldCheck size={16} aria-hidden="true" />
+        3-Year Assembly Warranty
+      </p>
+    </section>
   );
 }

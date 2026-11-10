@@ -48,6 +48,7 @@ export function SiliconSpotlight({
   loading = false,
 }: SiliconSpotlightProps) {
   const [active, setActive] = useState<SiliconKind>('gpu');
+  const [animatePhotos, setAnimatePhotos] = useState(false);
   const product = active === 'cpu' ? cpu : gpu;
   const content = spotlightContent[active];
   const metrics = getSiliconDashboard(product, active);
@@ -69,6 +70,7 @@ export function SiliconSpotlight({
         return;
     }
     event.preventDefault();
+    setAnimatePhotos(false);
     setActive(next);
     document.getElementById(`spotlight-tab-${next}`)?.focus();
   }
@@ -76,17 +78,17 @@ export function SiliconSpotlight({
   return (
     <section
       id="home-products"
-      className="scroll-mt-24 pt-4 pb-16 lg:pb-28 w-shell max-w-page mx-auto"
+      className="scroll-mt-24 pt-4 pb-10 md:pb-14 w-shell max-w-6xl mx-auto"
       aria-labelledby="spotlight-title"
     >
-      <div className="flex flex-col gap-2 mb-8 sm:flex-row sm:justify-between sm:items-end sm:gap-8">
+      <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:justify-between sm:items-end sm:gap-8">
         <div>
-          <p className="mb-5 text-xs font-medium tracking-wide text-muted">
+          <p className="mb-3 text-sm font-medium tracking-wide text-muted">
             The range
           </p>
           <h2
             id="spotlight-title"
-            className="text-3xl lg:text-6xl leading-tight mb-2"
+            className="text-2xl lg:text-4xl leading-tight mb-2"
           >
             Choose your hardware.
           </h2>
@@ -95,6 +97,7 @@ export function SiliconSpotlight({
           {siliconKinds.map((kind) => (
             <Button
               variant="ghost"
+              static
               key={kind}
               id={`spotlight-tab-${kind}`}
               type="button"
@@ -102,9 +105,12 @@ export function SiliconSpotlight({
               aria-controls="spotlight-panel"
               aria-selected={active === kind}
               tabIndex={active === kind ? 0 : -1}
-              onClick={() => setActive(kind)}
+              onClick={(event) => {
+                setAnimatePhotos(event.detail > 0);
+                setActive(kind);
+              }}
               onKeyDown={handleTabKeyDown}
-              className="min-h-12 py-3 px-0 border-0 border-b-2 border-border bg-transparent text-muted text-xs transition duration-200 aria-selected:border-b-primary aria-selected:text-foreground hover:text-foreground motion-reduce:duration-200 motion-reduce:transition-none"
+              className="min-h-12 py-3 px-0 border-0 border-b-2 border-border bg-transparent text-muted text-sm aria-selected:border-b-primary aria-selected:text-foreground hover:text-foreground transition-none"
             >
               {spotlightContent[kind].tab}
             </Button>
@@ -114,39 +120,48 @@ export function SiliconSpotlight({
       <Card
         as="article"
         id="spotlight-panel"
-        className="p-0 grid items-center gap-8 border-0 bg-transparent shadow-none lg:grid-cols-2 lg:gap-16"
+        className="p-0 grid items-center gap-8 border-0 bg-transparent shadow-none md:grid-cols-2 md:gap-10"
         role="tabpanel"
         aria-labelledby={`spotlight-tab-${active}`}
       >
         <div
           className={cn(
-            `overflow-hidden aspect-product rounded-sm bg-carbon sm:aspect-product lg:aspect-product home-product-panel__photo--${active}`,
+            'grid overflow-hidden h-feature-media rounded-md bg-carbon',
           )}
         >
-          <img
-            key={active}
-            src={content.image}
-            alt={content.alt}
-            width={content.width}
-            height={content.height}
-            loading="lazy"
-            className="w-full h-full object-cover outline-none motion-safe:animate-photo-change"
-          />
+          {siliconKinds.map((kind) => (
+            <img
+              key={kind}
+              src={spotlightContent[kind].image}
+              alt={active === kind ? spotlightContent[kind].alt : ''}
+              aria-hidden={active !== kind}
+              width={spotlightContent[kind].width}
+              height={spotlightContent[kind].height}
+              loading="lazy"
+              className={cn(
+                'col-start-1 row-start-1 w-full h-full min-h-0 object-cover photo-outline',
+                active === kind ? 'opacity-100' : 'opacity-0',
+                animatePhotos
+                  ? 'transition-opacity duration-150 ease-out'
+                  : 'transition-none',
+              )}
+            />
+          ))}
         </div>
         <div>
-          <p className="mb-5 text-xs font-medium tracking-wide text-muted">
+          <p className="mb-3 text-sm font-medium tracking-wide text-muted">
             {content.label}
           </p>
-          <h3 className="mb-4 text-3xl lg:text-4xl">
+          <h3 className="mb-3 text-2xl lg:text-3xl">
             {product ? product.name.replace(/^Aethel\s+/, '') : content.name}
           </h3>
-          <p className="max-w-96 text-sm">{content.description}</p>
+          <p className="max-w-prose text-base">{content.description}</p>
           {product ? (
             <>
-              <dl className="grid grid-cols-2 gap-6 my-6 py-6 border-t border-b border-border">
+              <dl className="grid grid-cols-2 gap-4 my-4 py-4 border-t border-b border-border">
                 {metrics.map((metric) => (
                   <div key={metric.label}>
-                    <dt className="mb-2 text-muted text-2xs">{metric.label}</dt>
+                    <dt className="mb-1 text-muted text-xs">{metric.label}</dt>
                     <dd className="m-0 text-base tabular-nums">
                       {metric.value}
                     </dd>
@@ -176,7 +191,7 @@ export function SiliconSpotlight({
             </>
           ) : (
             <p
-              className="home-product-panel__unavailable max-w-96 text-sm"
+              className="home-product-panel__unavailable max-w-prose text-base"
               role="status"
             >
               {loading
@@ -185,7 +200,7 @@ export function SiliconSpotlight({
             </p>
           )}
           <Link
-            className="inline-flex w-fit min-h-11 items-center gap-2.5 text-muted text-xs no-underline hover:text-foreground"
+            className="inline-flex w-fit min-h-11 items-center gap-2.5 text-muted text-sm no-underline hover:text-foreground"
             href={`/products?category=${active}`}
           >
             All {active === 'cpu' ? 'processors' : 'graphics cards'}{' '}

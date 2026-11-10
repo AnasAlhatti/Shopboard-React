@@ -4,7 +4,7 @@ import { Slot } from 'radix-ui';
 import type { ComponentProps } from 'react';
 import { cn } from '../../lib/utils';
 export const buttonVariants = cva(
-  'inline-flex shrink-0 items-center justify-center gap-2 rounded-lg font-semibold no-underline transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none',
+  'inline-flex shrink-0 items-center justify-center gap-2 rounded-lg font-semibold no-underline transition-button duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none',
   {
     variants: {
       variant: {
@@ -18,8 +18,9 @@ export const buttonVariants = cva(
         md: 'min-h-11 px-4 py-3 text-sm',
         lg: 'min-h-12 px-6 py-3 text-base',
       },
+      static: { true: '', false: 'press-feedback' },
     },
-    defaultVariants: { variant: 'primary', size: 'md' },
+    defaultVariants: { variant: 'primary', size: 'md', static: false },
   },
 );
 export interface ButtonProps
@@ -31,6 +32,7 @@ export function Button({
   className,
   variant,
   size,
+  static: isStatic,
   type,
   ...props
 }: ButtonProps) {
@@ -38,7 +40,10 @@ export function Button({
   return (
     <Component
       type={asChild ? undefined : (type ?? 'button')}
-      className={cn(buttonVariants({ variant, size }), className)}
+      className={cn(
+        buttonVariants({ variant, size, static: isStatic }),
+        className,
+      )}
       {...props}
     />
   );

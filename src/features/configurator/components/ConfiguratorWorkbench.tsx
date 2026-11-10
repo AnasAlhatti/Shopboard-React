@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { Button } from '../../../components/ui/Button';
 import { notify } from '../../../shared/notifications/notify';
 import { RefreshNotice } from '../../../components/ui/RefreshNotice';
 import { useProducts } from '../../../shared/products/hooks/useProducts';
@@ -13,6 +14,7 @@ import { PowerSynergyMeter } from './PowerSynergyMeter';
 import { RigVisualizer } from './RigVisualizer';
 
 export function ConfiguratorWorkbench() {
+  const [previewOpen, setPreviewOpen] = useState(false);
   const { products, error, refresh } = useProducts();
   const { addRigToCart, addToCart } = useCart();
 
@@ -113,31 +115,48 @@ export function ConfiguratorWorkbench() {
     );
 
   return (
-    <main className="pt-8 pb-16 w-shell max-w-page mx-auto">
+    <main className="pt-8 pb-16 w-shell max-w-6xl mx-auto">
       {Boolean(error) && <RefreshNotice error={error} onRefresh={refresh} />}
-      <header className="mb-12">
+      <header className="mb-6">
         <p className="mb-3 text-xs font-extrabold tracking-widest uppercase text-muted max-w-prose">
-          Precision System Engineering
+          Your desktop, your choice
         </p>
-        <h1 className="text-3xl lg:text-5xl font-extrabold tracking-tight mt-1 mr-0 mb-0 ml-0">
+        <h1 className="text-3xl lg:text-4xl font-semibold tracking-tight mt-1 mr-0 mb-0 ml-0">
           Custom Rig Engine
         </h1>
         <p className="text-muted max-w-prose">
-          Configure an extreme workstation or gaming battlestation. Monitor
-          real-time TDP power dissipation, verify PSU headroom, and validate
-          zero compute bottleneck.
+          Choose a processor, graphics card, and memory package. Review
+          estimated power and pricing as you build.
         </p>
       </header>
 
-      <div className="flex flex-col gap-12">
-        <RigVisualizer
-          selectedCpu={activeCpu}
-          selectedGpu={activeGpu}
-          selectedRamTier={selectedTier.specs}
-          totalTdp={totalTdp}
-          totalPrice={totalPrice}
-        />
-
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+        <div className="min-w-0 lg:sticky lg:top-24">
+          <Button
+            variant="secondary"
+            className="w-full justify-between lg:hidden"
+            aria-expanded={previewOpen}
+            aria-controls="rig-preview"
+            onClick={() => setPreviewOpen((open) => !open)}
+          >
+            <span>
+              {previewOpen ? 'Hide build summary' : 'View build summary'}
+            </span>
+            <span className="tabular-nums">${totalPrice.toLocaleString()}</span>
+          </Button>
+          <div
+            id="rig-preview"
+            className={`${previewOpen ? 'block mt-3' : 'hidden'} lg:block lg:mt-0`}
+          >
+            <RigVisualizer
+              selectedCpu={activeCpu}
+              selectedGpu={activeGpu}
+              selectedRamTier={selectedTier.specs}
+              totalTdp={totalTdp}
+              totalPrice={totalPrice}
+            />
+          </div>
+        </div>
         <ComponentSlotSelector
           cpus={cpus}
           gpus={gpus}
@@ -148,7 +167,9 @@ export function ConfiguratorWorkbench() {
           selectedTier={selectedTier}
           onSelectTier={(tier) => setSelectedTierId(tier.id)}
         />
+      </div>
 
+      <div className="mt-6 min-w-0">
         <PowerSynergyMeter
           totalTdp={totalTdp}
           recommendedPsu={recommendedPsu}

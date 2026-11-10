@@ -8,24 +8,24 @@ export interface ArchitectureStoryProps {
 export function ArchitectureStory({ cpu }: ArchitectureStoryProps) {
   return (
     <section
-      className="grid gap-8 items-center py-16 lg:py-32 lg:grid-cols-2 lg:gap-16 w-shell max-w-page mx-auto"
+      className="grid gap-8 items-center py-10 md:py-14 md:grid-cols-2 md:gap-10 w-shell max-w-6xl mx-auto"
       aria-labelledby="architecture-title"
     >
       <div>
-        <p className="mb-5 text-xs font-medium tracking-wide text-muted">
+        <p className="mb-3 text-sm font-medium tracking-wide text-muted">
           A closer look
         </p>
         <h2
           id="architecture-title"
-          className="mb-6 text-3xl lg:text-6xl leading-tight"
+          className="mb-4 text-2xl lg:text-4xl leading-tight"
         >
           Inside Vortex.
         </h2>
-        <p className="max-w-96 text-sm">
+        <p className="max-w-prose text-base">
           A metal heat spreader. A dense circuit layout. A processor built for
           long rendering sessions and everyday desktop work.
         </p>
-        <p className="text-foreground max-w-96 text-sm">
+        <p className="text-foreground max-w-prose text-base">
           {cpu?.specs.cores && cpu.specs.threads
             ? `${cpu.specs.cores} cores and ${cpu.specs.threads} threads, with ${cpu.specs.cache ?? 'on-chip'} cache.`
             : 'Explore the core counts, clocks, and cache across the Vortex processor range.'}
@@ -49,9 +49,9 @@ export function ArchitectureStory({ cpu }: ArchitectureStoryProps) {
           width="1200"
           height="896"
           loading="lazy"
-          className="block w-full h-auto rounded-sm outline-none"
+          className="block w-full h-feature-media object-cover rounded-md photo-outline"
         />
-        <figcaption className="pt-3 text-muted text-2xs">
+        <figcaption className="pt-3 text-muted text-xs">
           Package detail — heat spreader and substrate
         </figcaption>
       </figure>

@@ -13,6 +13,7 @@
   --primary: #d92332;
   --success: #087e4b;
   --card-shadow: 0 16px 48px rgb(0 0 0 / 8%);
+  --image-outline: oklch(0 0 0 / 0.1);
 }
 .dark {
   color-scheme: dark;
@@ -26,6 +27,7 @@
   --primary: #ff3333;
   --success: #00e676;
   --card-shadow: 0 24px 70px rgb(0 0 0 / 35%);
+  --image-outline: oklch(1 0 0 / 0.1);
 }
 @theme inline {
   --color-background: var(--background);
@@ -54,8 +56,28 @@
   --container-page: 82.5rem;
   --text-2xs: 0.625rem;
   --shadow-card: var(--card-shadow);
+  --spacing-feature-media: clamp(14rem, 36svh, 22rem);
   --animate-photo-enter: photo-enter 650ms ease-out both;
-  --animate-photo-change: photo-change 220ms ease-out;
+}
+@utility photo-outline {
+  outline: 1px solid var(--image-outline);
+  outline-offset: -1px;
+}
+@utility press-feedback {
+  @media (prefers-reduced-motion: no-preference) {
+    &:active:not(:disabled):not([aria-disabled='true']):not(:focus-visible) {
+      scale: 0.96;
+    }
+  }
+}
+@utility transition-button {
+  transition-property: color, background-color, border-color, scale;
+}
+/* Unlayered rules override utility transitions without !important. */
+html[data-theme-changing] *,
+html[data-theme-changing] *::before,
+html[data-theme-changing] *::after {
+  transition: none;
 }
 @utility w-shell {
   width: calc(100% - 2rem);
@@ -166,14 +188,6 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-@keyframes photo-change {
-  from {
-    opacity: 0.5;
-  }
-  to {
-    opacity: 1;
   }
 }
 

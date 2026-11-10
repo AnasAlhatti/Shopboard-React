@@ -6,7 +6,7 @@ export default function Loading() {
         {['first', 'second', 'third', 'fourth', 'fifth', 'sixth'].map((id) => (
           <div
             key={id}
-            className="h-80 rounded-card border border-border bg-surface motion-safe:animate-pulse"
+            className="h-56 rounded-card border border-border bg-surface motion-safe:animate-pulse"
             aria-hidden="true"
           />
         ))}
