@@ -16,6 +16,8 @@ npm run dev
 npm run typecheck
 npm run lint
 npm test
+npm run test:watch
+npm run test:e2e
 npm run format:check
 npm run build
 npm run start
@@ -209,6 +211,18 @@ automatic agent-file editing is disabled to preserve those sections. Full upstre
 skills remain under `.claude/skills/`.
 
 ## Verification
+
+Vitest runs unit and component tests in jsdom with React Testing Library and
+jest-dom assertions. `user-event` covers user interactions, and `vite-tsconfig-paths`
+resolves the same aliases as TypeScript. Use `npm test` for one run or
+`npm run test:watch` during development.
+
+Playwright runs real Chromium tests from `e2e/`. `npm run test:e2e` builds Next.js
+and starts an isolated production server on port 3109. These tests check homepage
+hydration with Netlify's injected head comment, theme restoration, cart persistence,
+and navigation to checkout. Use `npm run test:e2e:ui` for the interactive runner.
+After a fresh install, run `npx playwright install chromium` to download the browser.
+Browser reports and traces are ignored by Git.
 
 The unified Vitest suite covers both data contracts, stock protection, mixed-cart persistence,
 legacy migration, filters/history, home retry, comparisons, configurator/unbundling, and checkout

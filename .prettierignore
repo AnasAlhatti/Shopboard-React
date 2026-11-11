@@ -13,3 +13,8 @@ docs/superpowers/
 .superpowers/
 debug-lab-log.md
 DESIGN.md
+
+# Playwright output is generated, not authored source.
+test-results/
+playwright-report/
+blob-report/

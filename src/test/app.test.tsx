@@ -7,6 +7,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
+import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { Suspense } from 'react';
 import { hydrateRoot } from 'react-dom/client';
@@ -1928,18 +1929,15 @@ describe('Next.js migration', () => {
     expect(screen.getByRole('button', { name: 'Opener' })).toHaveFocus();
   });
   it('switches and remembers the selected theme', async () => {
+    const user = userEvent.setup();
     await act(async () => render(<ThemeToggle />));
-    await act(async () =>
-      fireEvent.click(
-        screen.getByRole('button', { name: 'Switch to light theme' }),
-      ),
+    await user.click(
+      screen.getByRole('button', { name: 'Switch to light theme' }),
     );
     expect(document.documentElement).not.toHaveClass('dark');
     expect(localStorage.getItem('aethel-theme')).toBe('light');
-    await act(async () =>
-      fireEvent.click(
-        screen.getByRole('button', { name: 'Switch to dark theme' }),
-      ),
+    await user.click(
+      screen.getByRole('button', { name: 'Switch to dark theme' }),
     );
     expect(document.documentElement).toHaveClass('dark');
   });

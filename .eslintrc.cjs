@@ -1,6 +1,14 @@
 module.exports = {
   root: true,
-  ignorePatterns: ['dist/', '.next/', 'next-env.d.ts', '.superpowers/'],
+  ignorePatterns: [
+    'dist/',
+    '.next/',
+    'next-env.d.ts',
+    '.superpowers/',
+    'playwright-report/',
+    'test-results/',
+    'blob-report/',
+  ],
   env: {
     browser: true,
     es2022: true,
